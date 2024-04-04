@@ -29,9 +29,7 @@ frappe.ui.form.on('Stock Entry', {
                             get_query: function() {
                                 return {
                                     filters: [
-                                        // Optionally, you can filter tasks based on certain conditions
-                                        // For example:
-                                        // ['status', '=', 'Open']
+                                        ['status', 'in', ['Open', 'Working', 'Overdue']]
                                     ]
                                 };
                             },
@@ -72,52 +70,11 @@ frappe.ui.form.on('Stock Entry', {
                                     }
                                 });
                                 
-                                
-                                
-                                
-                                
-                                
-
-                                // Add selected tasks to the child table
-                                // selections.forEach(function(task) {
-                                //     const childRow = frappe.model.add_child(frm.doc, 'tasks', 'tasks');
-                                //     childRow.task_name = task.name;
-                                //     childRow.task_status = task.status;
-                                // });
-                                // Refresh the form to reflect the changes
-                                // frm.refresh_field('tasks');
-
-                                // Hide the entire dialog box
                                 taskDialog.dialog.hide();
                             },
                             primary_action_label: __('Get Item'),
                             primary_action: function() {
 
-
-                                // Get selected task names
-                                // const selectedTasks = taskDialog.get_selected();
-                                // console.log("Selected Tasks:", selectedTasks);
-
-                                // // Fetch items related to selected tasks
-                                // frappe.call({
-                                //     method: "harness.api.job_order_item.get_items",
-                                //     args: {
-                                //         tasks: selectedTasks
-                                //     },
-                                //     callback: function(response) {
-                                //         if (response.message) {
-                                //             // Populate Sales Invoice Item table with fetched items
-                                //             response.message.forEach(function(item) {
-                                //                 const itemRow = frappe.model.add_child(frm.doc, 'items', 'items');
-                                //                 itemRow.item_name = item.name;
-                                //                 // Set other item properties as needed
-                                //             });
-
-                                //             // Refresh the form to reflect the changes
-                                //             frm.refresh_field('items');
-                                //         }
-                                //     }
-                                // });
 
                             }
                         });
