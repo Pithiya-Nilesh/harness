@@ -152,22 +152,24 @@ function create_stock_entry(frm){
             items_table.push(items_row);
         });
 
-            stock_entry.stock_entry_type = "Material Transfer"
+            stock_entry.stock_entry_type = "Material Transfer for Manufacture"
             stock_entry.items = items_table;
 
-            // Save the new document
-            frappe.call({
-                method: 'frappe.client.insert',
-                args: {
-                    doc: stock_entry
-                },
-                callback: function(response) {
-                    if (!response.exc) {
-                        frappe.msgprint("Stock Entry created successfully!");
-                    } else {
-                        frappe.msgprint("Error creating Stock Entry: " + response.exc);
-                    }
-                }
-            });
+            // // Save the new document
+            // frappe.call({
+            //     method: 'frappe.client.insert',
+            //     args: {
+            //         doc: stock_entry
+            //     },
+            //     callback: function(response) {
+            //         if (!response.exc) {
+            //             frappe.msgprint("Stock Entry created successfully!");
+            //         } else {
+            //             frappe.msgprint("Error creating Stock Entry: " + response.exc);
+            //         }
+            //     }
+            // });
+
+            frappe.ui.form.make_quick_entry('Stock Entry', null, null, stock_entry);
     });
 }
