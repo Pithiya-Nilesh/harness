@@ -36,6 +36,8 @@ frappe.ui.form.on("Task", {
                             // Refresh the child table field
                             refresh_field("items");
                         });
+                        frappe.model.set_value(stock_entry.doctype, stock_entry.name, 'stock_entry_type', 'Material Transfer for Manufacture');
+
                         frappe.ui.form.make_quick_entry('Stock Entry', null, null, stock_entry);
                     });
                 }
