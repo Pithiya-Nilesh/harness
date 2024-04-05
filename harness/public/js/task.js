@@ -170,6 +170,7 @@ function create_stock_entry(frm){
             //     }
             // });
 
-            frappe.ui.form.make_quick_entry('Stock Entry', null, null, stock_entry);
+            // frappe.ui.form.make_quick_entry('Stock Entry', null, null, stock_entry);
+            frappe.set_route('Form',"Stock Entry", stock_entry.name);
     });
 }
