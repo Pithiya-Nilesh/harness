@@ -4,7 +4,7 @@ frappe.ui.form.on('Stock Entry', {
         let taskDialog;
 
         // Add a custom button for selecting tasks and adding them to the Sales Invoice
-        frm.add_custom_button(__('Job Order'), function() {
+        frm.add_custom_button(__('Jobs'), function() {
             // Fetch tasks using Frappe Client API, fetching the 'name' and 'status' fields
             frappe.call({
                 method: 'frappe.client.get_list',
@@ -56,6 +56,8 @@ frappe.ui.form.on('Stock Entry', {
                                             frappe.model.set_value(child.doctype, child.name, 'item_code', task.item_code);
                                             frappe.model.set_value(child.doctype, child.name, 'custom_job_order', task.custom_job_order);
                                             frappe.model.set_value(child.doctype, child.name, 'qty', task.qty);
+                                            frappe.model.set_value(child.doctype, child.name, 'basic_rate', task.basic_rate);
+                                            frappe.model.set_value(child.doctype, child.name, 'basic_amount', task.basic_amount);
                                 
                                             // Add a new row for each subsequent task
                                             if (index < tasks.length - 1) {

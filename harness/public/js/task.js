@@ -9,11 +9,38 @@ frappe.ui.form.on("Task", {
             create_timesheet(frm)
         }, __("Create"))
         
-        frm.add_custom_button("Stock Entry", function(){
-            create_stock_entry(frm)
-        }, __("Create"))
+        frm.add_custom_button("Stock Entry", function() {
+            frappe.call({
+                method: "harness.api.task.create_stock_entry",
+                args: {
+                    docname: frm.docname
+                },
+                callback: function(response) {
+                    frappe.model.with_doctype("Stock Entry", function() {
+                        var tasks = response.message; // response contains child table data of JOB
+                        console.log(tasks);
+                        // Create a new Stock Entry
+                        var stock_entry = frappe.model.get_new_doc("Stock Entry");
 
+                        // Iterate over tasks data and add rows to Stock Entry's items table
+                        $.each(tasks, function(index, task) {
+                            var item_row = frappe.model.add_child(stock_entry, "Stock Entry Detail", "items");
+                            frappe.model.set_value(item_row.doctype, item_row.name, 's_warehouse', task.s_warehouse);
+                            frappe.model.set_value(item_row.doctype, item_row.name, 't_warehouse', task.t_warehouse);
+                            frappe.model.set_value(item_row.doctype, item_row.name, 'item_code', task.item_code);
+                            frappe.model.set_value(item_row.doctype, item_row.name, 'qty', task.qty);
+                            frappe.model.set_value(item_row.doctype, item_row.name, 'basic_rate', task.basic_rate);
+                            frappe.model.set_value(item_row.doctype, item_row.name, 'basic_amount', task.basic_amount);
+                            frappe.model.set_value(item_row.doctype, item_row.name, 'custom_job_order', task.custom_job_order);
 
+                            // Refresh the child table field
+                            refresh_field("items");
+                        });
+                        frappe.ui.form.make_quick_entry('Stock Entry', null, null, stock_entry);
+                    });
+                }
+            });
+        }, __("Create"));        
         frm.page.set_inner_btn_group_as_primary(__('Create'));
     }
 
@@ -129,50 +156,5 @@ function create_timesheet(frm){
                 }
             });
         });
-    });
-}
-
-// Create Stock Entry
-function create_stock_entry(frm){
-    frappe.model.with_doctype("Stock Entry", function() {
-        var stock_entry = frappe.model.get_new_doc("Stock Entry");
-        
-        var items_table = [];
-        frm.doc.custom_mterials.forEach(function(row) {
-            var items_row = {};
-
-            items_row.item_code = row.material_item
-            items_row.custom_job_order = frm.doc.name
-            items_row.qty = row.quentity
-            items_row.basic_rate = row.rate
-            items_row.basic_amount = row.amount
-            items_row.s_warehouse = row.source_warehouse
-            items_row.t_warehouse = row.target_warehouse
-        
-            items_table.push(items_row);
-        });
-
-            stock_entry.stock_entry_type = "Material Transfer for Manufacture"
-            stock_entry.items = items_table;
-
-            // // Save the new document
-            // frappe.call({
-            //     method: 'frappe.client.insert',
-            //     args: {
-            //         doc: stock_entry
-            //     },
-            //     callback: function(response) {
-            //         if (!response.exc) {
-            //             frappe.msgprint("Stock Entry created successfully!");
-            //         } else {
-            //             frappe.msgprint("Error creating Stock Entry: " + response.exc);
-            //         }
-            //     }
-            // });
-
-            // frappe.ui.form.make_quick_entry('Stock Entry', null, null, stock_entry);
-            frappe.set_route('Form',"Stock Entry", stock_entry.name); 
-
-            
     });
 }

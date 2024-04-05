@@ -121,13 +121,14 @@ doctype_js = {"Sales Order" : "public/js/sales_order.js",
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	"Stock Entry": {
+    "on_submit": "harness.api.task.update_status_on_jobs"
+		# "on_update": "method",
+		# "on_cancel": "method",
+		# "on_trash": "method"
+	}
+}
 
 # Scheduled Tasks
 # ---------------
