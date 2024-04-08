@@ -1,4 +1,14 @@
 frappe.ui.form.on('Sales Invoice', {
+    // onload(frm){
+    //     // frm.refresh_field("items");
+    //     // frm.refresh()
+    //     frm.fields_dict['items'].grid.get_field('item_code').$input.on('change', function() {
+    //         // Your code to execute when the child table is refreshed
+    //         console.log("Child table refreshed");
+    //         // You can perform any action you want here
+    //     });
+    // },
+
     refresh(frm) {
         // Declare the dialog variable outside the button function
         let taskDialog;
@@ -29,7 +39,8 @@ frappe.ui.form.on('Sales Invoice', {
                             get_query: function() {
                                 return {
                                     filters: [
-                                        ['custom_sales_order', 'not like', '']            
+                                        ['custom_sales_order', 'not like', ''],
+                                        ['status', 'in', ['Open', 'Working', 'Overdue']]        
                                     ]
                                 };
                             },
@@ -83,3 +94,4 @@ frappe.ui.form.on('Sales Invoice', {
         }, __("Get Items From"));
     }
 });
+

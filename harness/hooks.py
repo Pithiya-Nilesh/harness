@@ -123,7 +123,13 @@ doctype_js = {"Sales Order" : "public/js/sales_order.js",
 
 doc_events = {
 	"Stock Entry": {
-    "on_submit": "harness.api.task.update_status_on_jobs"
+    "on_submit": "harness.api.task.update_status_and_set_actual_in_jobs"
+		# "on_update": "method",
+		# "on_cancel": "method",
+		# "on_trash": "method"
+	},
+  "Timesheet": {
+    "on_submit": "harness.api.task.update_actual_in_jobs_from_timesheet"
 		# "on_update": "method",
 		# "on_cancel": "method",
 		# "on_trash": "method"
