@@ -2,6 +2,7 @@ import frappe, json
 
 @frappe.whitelist()
 def get_task_for_stock_entry(tasks):
+    """ get items from job to show in stock entry popup when click on get items from """
     data = []
     tasks = json.loads(tasks)
     for task in tasks["tasks"]:
@@ -12,6 +13,7 @@ def get_task_for_stock_entry(tasks):
     
 @frappe.whitelist()
 def get_task_for_sales_invoice(tasks):
+    """ get items from job to show in sales invoice popup when click on get items from """
     invoice_data = []
     tasks = json.loads(tasks)
     for task in tasks["tasks"]:
@@ -22,8 +24,8 @@ def get_task_for_sales_invoice(tasks):
             invoice_data.append({"item_code": i.service_item , "qty": i.spent_hours, "base_rate":i.rate, "base_amount":i.total_spend_hours})
     return invoice_data
 
-
 def update_status_and_set_actual_in_jobs(doc, method):
+    """ update status when stock entry doctype submited and also get all items and store in jb atual material table """
     for i in doc.items:
         if i.custom_job_order:
             frappe.db.set_value('Task', i.custom_job_order, 'custom_internal_status', 'Material Transferred')
@@ -92,15 +94,12 @@ def create_sales_invoice(docname):
     customer = frappe.db.get_value("Sales Order", task.custom_sales_order, fieldname=["customer"])
     sid = {"custom_job_order": task.name, "customer": customer}
 
-    # doc = frappe.new_doc("Sales Invoice")
-    # doc.items = items_table
-    # print("\n\n doc", doc)
-    # return doc
-
     return [sid, items_table]
 
 
 def update_actual_in_jobs_from_timesheet(doc, method):
+    """ update status when stock entry doctype submited and also get all items and store in jb atual resource table """
+
     for i in doc.time_logs:
         if i.task:
             task = frappe.get_doc("Task", i.task)
@@ -115,4 +114,72 @@ def update_actual_in_jobs_from_timesheet(doc, method):
             task.save()
         else:
             pass
+
+
+def cancelled_status_in_jobs(doc, method):
+    """ cancelled status in job when canclled doctype in sales order"""
+    tasks = frappe.db.get_list("Task", filters={"custom_sales_order": doc.name}, fields=["name"])
+    for task in tasks:
+        frappe.db.set_value('Task', task.name, 'status', 'Cancelled')
+        frappe.db.commit()
+
+
+@frappe.whitelist()
+def make_test(source_name, target_doc=None, ignore_permissions=False):
+    from frappe.model.mapper import get_mapped_doc
+    
+    def set_missing_values(row, target):
+        target.append(
+            "items",
+            {
+                "item_code": row.service_item,
+                "qty": row.spent_hours,
+                "rate": row.rate,
+                "amount": row.total_spend_hours,
+                "warehouse": "",
+                "target_warehouse": "",
+                # "sales_order": task.custom_sales_order
+            },
+        )
+
+    doclist = get_mapped_doc(
+        "Sales Invoice",
+        source_name,
+        {"Task": {"doctype": "Sales Invoice"}},
+        target_doc,
+        postprocess=set_missing_values,
+        ignore_permissions=ignore_permissions,
+    )
+
+    print("\n\n asdf", doclist)
+    return doclist
+
+
+def sum_of_all_data(doc, method):
+    sum_of_m_amount(doc, method)
+    sum_of_r_amount(doc, method)
+
+def sum_of_m_amount(doc, method):
+
+    m_e_total = sum(row.get('amount', 0) for row in doc.get('custom_mterials', []))
+    m_a_total = sum(row.get('amount', 0) for row in doc.get('custom_materials1', []))
+
+    frappe.db.set_value(doc.doctype, doc.name, 'custom_material_total_estimated_amount', m_e_total)
+    frappe.db.set_value(doc.doctype, doc.name, 'custom_material_total_actual_costing1', m_a_total)
+    frappe.db.commit()
+
+def sum_of_r_amount(doc, method):
+    r_e_total = sum(row.get('total_spend_hours', 0) for row in doc.get('custom_resources', []))
+    r_a_total = sum(row.get('total_spend_hours', 0) for row in doc.get('custom_resources1', []))
+
+    r_e_hour = sum(row.get('spent_hours', 0) for row in doc.get('custom_resources', []))
+    r_a_hour = sum(row.get('spent_hours', 0) for row in doc.get('custom_resources1', []))
+
+    frappe.db.set_value(doc.doctype, doc.name, 'custom_resource_total_estimated_hours', r_e_hour)
+    frappe.db.set_value(doc.doctype, doc.name, 'custom_estimated_total_resource_cost', r_e_total)
+    frappe.db.commit()
+
+    frappe.db.set_value(doc.doctype, doc.name, 'custom_resource_total_actual_hours1', r_a_hour)
+    frappe.db.set_value(doc.doctype, doc.name, 'custom_resource_total_actual_cost', r_a_total)
+    frappe.db.commit()
 

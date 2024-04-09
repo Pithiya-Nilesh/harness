@@ -1,10 +1,4 @@
 frappe.ui.form.on("Task", {
-    onload: function(frm) {
-            sum_of_m_amount(frm);
-            sum_of_r_amount(frm);
-            // frm.save()
-    },
-
     refresh: function(frm){
         frm.add_custom_button("Timesheet", function(){
             create_timesheet(frm)
@@ -120,24 +114,22 @@ function create_timesheet(frm){
     frappe.model.with_doctype("Timesheet", function() {
         var timesheet = frappe.model.get_new_doc("Timesheet");
         
-        
-        frm.doc.custom_resources.forEach(function(row) {
+        var count = 0; // Initialize count variable outside the loop
+        var promises = []; // Array to hold all the promises
+
+        frm.doc.custom_resources.forEach(function(row, index) {
             var time_log_table = [];
             var time_log_row = {};
             time_log_row.custom_service_item = row.service_item;
             time_log_row.hours = row.spent_hours;
-            time_log_row.custom_department = row.department
-
+            time_log_row.custom_department = row.department;
             time_log_row.activity_type = row.activity_type;
-            
-            time_log_row.custom_sales_order = frm.doc.custom_sales_order
-            time_log_row.task = frm.doc.name
-            time_log_row.is_billable = 1
+            time_log_row.custom_sales_order = frm.doc.custom_sales_order;
+            time_log_row.task = frm.doc.name;
+            time_log_row.is_billable = 1;
             time_log_row.billing_hours = row.spent_hours;
-            
-            time_log_row.base_billing_rate = row.rate
-            time_log_row.base_billing_amount = row.total_spend_hours
-
+            time_log_row.base_billing_rate = row.rate;
+            time_log_row.base_billing_amount = row.total_spend_hours;
             time_log_row.billing_rate = row.rate;
             time_log_row.billing_amount = row.total_spend_hours;
 
@@ -146,21 +138,39 @@ function create_timesheet(frm){
             timesheet.time_logs = time_log_table;
             timesheet.employee = row.resource_name;
 
-            // Save the new document
-            frappe.call({
-                method: 'frappe.client.insert',
-                args: {
-                    doc: timesheet
-                },
-                callback: function(response) {
-                    if (!response.exc) {
-                        frappe.msgprint("Timesheet created successfully!");
-                    } else {
-                        frappe.msgprint("Error creating Timesheet: " + response.exc);
+            // Create a promise for each call and push it to promises array
+            var promise = new Promise(function(resolve, reject) {
+                frappe.call({
+                    method: 'frappe.client.insert',
+                    args: {
+                        doc: timesheet
+                    },
+                    callback: function(response) {
+                        if (!response.exc) {
+                            count++; // Increment count after successful creation
+                            resolve(); // Resolve the promise
+                        } else {
+                            reject(response.exc); // Reject the promise with the error message
+                        }
                     }
-                }
+                });
             });
+
+            promises.push(promise); // Push the promise to the array
         });
+
+        // When all promises are resolved, display the message
+        Promise.all(promises)
+            .then(function() {
+                frappe.msgprint(count +" Timesheets created successfully. Please verify.");
+            })
+            .catch(function(error) {
+                frappe.msgprint("Error creating Timesheets: " + error);
+            });
+
+
+
+
     });
 }
 
@@ -200,6 +210,11 @@ function create_stock_entry(frm){
 }
 
 function create_sales_invoice(frm){
+    // frappe.model.open_mapped_doc({
+    //     method: "harness.api.task.make_test",
+    //     frm: frm,
+    // })
+
     frappe.call({
         method: "harness.api.task.create_sales_invoice",
         args: {
@@ -243,6 +258,7 @@ function create_sales_invoice(frm){
 
         }
     });
+
 }
 
 // Create Stock Entry

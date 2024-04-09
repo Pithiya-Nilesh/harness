@@ -9,6 +9,7 @@
  "field_order": [
   "service_item",
   "resource_name",
+  "resource_name1",
   "department",
   "activity_type",
   "spent_hours",
@@ -17,6 +18,7 @@
  ],
  "fields": [
   {
+   "columns": 2,
    "fieldname": "service_item",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -24,19 +26,22 @@
    "options": "Item"
   },
   {
+   "columns": 1,
    "fieldname": "resource_name",
    "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Resource Name",
+   "label": "Resource ID",
    "options": "Employee"
   },
   {
+   "columns": 1,
    "fieldname": "department",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Department"
   },
   {
+   "columns": 1,
    "fieldname": "activity_type",
    "fieldtype": "Select",
    "in_list_view": 1,
@@ -44,26 +49,36 @@
    "options": "Planning\nExecution"
   },
   {
+   "columns": 1,
    "fieldname": "spent_hours",
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Estimated Hours"
   },
   {
+   "columns": 1,
    "fieldname": "rate",
    "fieldtype": "Currency",
    "label": "Rate"
   },
   {
+   "columns": 1,
    "fieldname": "total_spend_hours",
    "fieldtype": "Float",
    "label": "Estimated  Cost"
+  },
+  {
+   "columns": 2,
+   "fetch_from": "resource_name.employee_name",
+   "fieldname": "resource_name1",
+   "fieldtype": "Data",
+   "label": "Resource Name"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-04-03 19:49:45.659318",
+ "modified": "2024-04-09 15:24:31.060803",
  "modified_by": "Administrator",
  "module": "Harness",
  "name": "Resource",
