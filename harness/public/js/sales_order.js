@@ -89,7 +89,7 @@ frappe.ui.form.on("Sales Order", {
                         // Check if all tasks have been processed
                         if (successfulInsertions === numberOfVehicles && !errorsEncountered) {
                             // frappe.msgprint("Jobss successfully created " + numberOfVehicles + " times.");
-                            frappe.msgprint(numberOfVehicles + "  Jobs created successfully. Please verify.");
+                            frappe.msgprint(numberOfVehicles + "  Jobs created successfully.");
                         }
                     });
                 }

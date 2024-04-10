@@ -163,7 +163,7 @@ function create_timesheet(frm){
         // When all promises are resolved, display the message
         Promise.all(promises)
             .then(function() {
-                frappe.msgprint(count +" Timesheets created successfully. Please verify.");
+                frappe.msgprint(count +" Timesheets created successfully.");
             })
             .catch(function(error) {
                 frappe.msgprint("Error creating Timesheets: " + error);
