@@ -51,7 +51,7 @@ def create_stock_entry(docname):
             items_row = {
                 "item_code": row.material_item,
                 "qty": row.quentity,
-                "transfer_qty": row.transfer_qty,
+                "transfer_qty": row.quentity,
                 "basic_rate": row.rate,
                 "basic_amount": row.amount,
                 "s_warehouse": row.source_warehouse,
@@ -68,44 +68,47 @@ def get_uom(item):
     uom = frappe.db.get_value("Item", filters={"item_code": item}, fieldname=["stock_uom"])
     return uom if uom else ""
 
-# def get_conversion_factor(item):
-#     conversion_factor = 
+def get_conversion_factor(item):
+    conversion_factor = frappe.db.get_value("UOM Conversion Detail", 
+                                                filters={"parent": item}, 
+                                                fieldname=["conversion_factor"])
+    return conversion_factor if conversion_factor else ""
 
 
-@frappe.whitelist()
-def create_sales_invoice(docname):
-    task = frappe.get_doc("Task", docname)
-    items_table = []
-    if task.custom_materials1:
-        for row in task.custom_materials1:
-            items_row = {
-                "item_code": row.material_item,
-                "qty": row.quentity,
-                "rate": row.rate,
-                "amount": row.amount,
-                "warehouse": row.source_warehouse,
-                "target_warehouse": row.target_warehouse,
-                "sales_order": task.custom_sales_order
-            }
-            items_table.append(items_row)
+# @frappe.whitelist()
+# def create_sales_invoice(docname):
+#     task = frappe.get_doc("Task", docname)
+#     items_table = []
+#     if task.custom_materials1:
+#         for row in task.custom_materials1:
+#             items_row = {
+#                 "item_code": row.material_item,
+#                 "qty": row.quentity,
+#                 "rate": row.rate,
+#                 "amount": row.amount,
+#                 "warehouse": row.source_warehouse,
+#                 "target_warehouse": row.target_warehouse,
+#                 "sales_order": task.custom_sales_order
+#             }
+#             items_table.append(items_row)
 
-    if task.custom_resources1:
-        for row in task.custom_resources1:
-            items_row = {
-                "item_code": row.service_item,
-                "qty": row.spent_hours,
-                "rate": row.rate,
-                "amount": row.total_spend_hours,
-                "warehouse": "",
-                "target_warehouse": "",
-                "sales_order": task.custom_sales_order
-            }
-            items_table.append(items_row)
+#     if task.custom_resources1:
+#         for row in task.custom_resources1:
+#             items_row = {
+#                 "item_code": row.service_item,
+#                 "qty": row.spent_hours,
+#                 "rate": row.rate,
+#                 "amount": row.total_spend_hours,
+#                 "warehouse": "",
+#                 "target_warehouse": "",
+#                 "sales_order": task.custom_sales_order
+#             }
+#             items_table.append(items_row)
 
-    customer = frappe.db.get_value("Sales Order", task.custom_sales_order, fieldname=["customer"])
-    sid = {"custom_job_order": task.name, "customer": customer}
+#     customer = frappe.db.get_value("Sales Order", task.custom_sales_order, fieldname=["customer"])
+#     sid = {"custom_job_order": task.name, "customer": customer}
 
-    return [sid, items_table]
+#     return [sid, items_table]
 
 
 def update_actual_in_jobs_from_timesheet(doc, method):
@@ -163,40 +166,84 @@ def sum_of_r_amount(doc, method):
     frappe.db.set_value(doc.doctype, doc.name, 'custom_resource_total_actual_cost', r_a_total)
     frappe.db.commit()
 
-
-
-# below code is dummy and test purpose
-
-
-# {"doctype": "Task"}
-
-
 @frappe.whitelist()
-def make_test(task):
-    task = frappe.get_doc("Task", task)
+def create_sales_invoice(task):
+    task = frappe.get_doc("Task", task)    
     sales_invoice = frappe.new_doc("Sales Invoice")
 
     if task.custom_materials1:
-        for row in task.custom_materials1:
+        for row in task.custom_materials1:  
+            item_data = frappe.db.sql("""
+                        SELECT 
+                            i.item_name, 
+                            i.stock_uom,
+                            i.description,
+                            ia.default_warehouse,
+                            ia.selling_cost_center,
+                            ia.income_account,
+                            ia.company
+                                                                                            
+                        FROM 
+                            `tabItem` i
+                        LEFT JOIN
+                            `tabItem Default` ia ON i.name = ia.parent                                      
+                        WHERE 
+                            i.name = %s
+                    """, (row.material_item), as_dict=True)
+            
+            debtor_account =  frappe.db.sql(" select default_receivable_account from `tabCompany` where name=%s ", (item_data[0]['company']), as_dict=True)
+
             item_row = sales_invoice.append("items", {})
             item_row.item_code = row.material_item
+            item_row.item_name = item_data[0]['item_name']
+            item_row.uom = item_data[0]['stock_uom']
+            item_row.income_account = item_data[0]['income_account']
+            item_row.cost_center = item_data[0]['selling_cost_center']
+            item_row.warehouse = item_data[0]['default_warehouse']
             item_row.qty = row.quentity
             item_row.rate = row.rate
             item_row.amount = row.amount
             item_row.warehouse = row.source_warehouse
             item_row.target_warehouse = row.target_warehouse
             item_row.sales_order = task.custom_sales_order
+            item_row.description = item_data[0]['description']
 
     if task.custom_resources1:
         for row in task.custom_resources1:
+            item_data = frappe.db.sql("""
+                        SELECT 
+                            i.item_name, 
+                            i.stock_uom, 
+                            i.description,
+                            ia.default_warehouse,
+                            ia.selling_cost_center,
+                            ia.income_account,
+                            ia.company
+                                                                                            
+                        FROM 
+                            `tabItem` i
+                        LEFT JOIN
+                            `tabItem Default` ia ON i.name = ia.parent                                      
+                        WHERE 
+                            i.name = %s
+                    """, (row.service_item), as_dict=True)
+            
             item_row = sales_invoice.append("items", {})
             item_row.item_code = row.service_item
+            item_row.item_name = item_data[0]['item_name']
+            item_row.uom = item_data[0]['stock_uom']
+            item_row.income_account = item_data[0]['income_account']
+            item_row.cost_center = item_data[0]['selling_cost_center']
+            item_row.warehouse = item_data[0]['default_warehouse']
             item_row.qty = row.spent_hours
             item_row.rate = row.rate
             item_row.amount = row.total_spend_hours
             item_row.warehouse = ""
             item_row.target_warehouse = ""
             item_row.sales_order = task.custom_sales_order
+            item_row.description = item_data[0]['description']
+
+    sales_invoice.debit_to = debtor_account[0]['default_receivable_account']
 
     sales_invoice.customer = frappe.db.get_value("Sales Order", task.custom_sales_order, fieldname=["customer"])
     sales_invoice.custom_job_order = task.name

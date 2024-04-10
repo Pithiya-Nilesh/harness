@@ -195,9 +195,13 @@ function create_stock_entry(frm){
                     frappe.model.set_value(item_row.doctype, item_row.name, 't_warehouse', task.t_warehouse);
                     frappe.model.set_value(item_row.doctype, item_row.name, 'item_code', task.item_code);
                     frappe.model.set_value(item_row.doctype, item_row.name, 'qty', task.qty);
+                    frappe.model.set_value(item_row.doctype, item_row.name, 'transfer_qty', task.transfer_qty);
                     frappe.model.set_value(item_row.doctype, item_row.name, 'basic_rate', task.basic_rate);
                     frappe.model.set_value(item_row.doctype, item_row.name, 'basic_amount', task.basic_amount);
                     frappe.model.set_value(item_row.doctype, item_row.name, 'custom_job_order', task.custom_job_order);
+                    frappe.model.set_value(item_row.doctype, item_row.name, 'uom', task.uom);
+                    frappe.model.set_value(item_row.doctype, item_row.name, 'stock_uom', task.stock_uom);
+                    frappe.model.set_value(item_row.doctype, item_row.name, 'conversion_factor', task.conversion_factor);
 
                     // Refresh the child table field
                     refresh_field("items");
@@ -212,7 +216,7 @@ function create_stock_entry(frm){
 
 function create_sales_invoice(frm){
     frappe.model.open_mapped_doc({
-        method: "harness.api.task.make_test",
+        method: "harness.api.task.create_sales_invoice",
         frm: frm,
     })
 
