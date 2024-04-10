@@ -198,7 +198,7 @@ def create_sales_invoice(task):
             item_row.item_name = item_data[0]['item_name']
             item_row.uom = item_data[0]['stock_uom']
             item_row.income_account = item_data[0]['income_account']
-            item_row.cost_center = item_data[0]['selling_cost_center']
+            # item_row.cost_center = item_data[0]['selling_cost_center']
             item_row.warehouse = item_data[0]['default_warehouse']
             item_row.qty = row.quentity
             item_row.rate = row.rate
@@ -233,7 +233,7 @@ def create_sales_invoice(task):
             item_row.item_name = item_data[0]['item_name']
             item_row.uom = item_data[0]['stock_uom']
             item_row.income_account = item_data[0]['income_account']
-            item_row.cost_center = item_data[0]['selling_cost_center']
+            # item_row.cost_center = item_data[0]['selling_cost_center']
             item_row.warehouse = item_data[0]['default_warehouse']
             item_row.qty = row.spent_hours
             item_row.rate = row.rate
