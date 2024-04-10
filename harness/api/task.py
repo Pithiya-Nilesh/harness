@@ -51,14 +51,25 @@ def create_stock_entry(docname):
             items_row = {
                 "item_code": row.material_item,
                 "qty": row.quentity,
+                "transfer_qty": row.transfer_qty,
                 "basic_rate": row.rate,
                 "basic_amount": row.amount,
                 "s_warehouse": row.source_warehouse,
                 "t_warehouse": row.target_warehouse,
-                "custom_job_order": docname
+                "custom_job_order": docname,
+                "uom": get_uom(row.material_item),
+                "stock_uom": get_uom(row.material_item),
+                "conversion_factor": get_conversion_factor(row.material_item)
             }
             items_table.append(items_row)
     return items_table
+
+def get_uom(item):
+    uom = frappe.db.get_value("Item", filters={"item_code": item}, fieldname=["stock_uom"])
+    return uom if uom else ""
+
+# def get_conversion_factor(item):
+#     conversion_factor = 
 
 
 @frappe.whitelist()
@@ -124,37 +135,6 @@ def cancelled_status_in_jobs(doc, method):
         frappe.db.commit()
 
 
-@frappe.whitelist()
-def make_test(source_name, target_doc=None, ignore_permissions=False):
-    from frappe.model.mapper import get_mapped_doc
-    
-    def set_missing_values(row, target):
-        target.append(
-            "items",
-            {
-                "item_code": row.service_item,
-                "qty": row.spent_hours,
-                "rate": row.rate,
-                "amount": row.total_spend_hours,
-                "warehouse": "",
-                "target_warehouse": "",
-                # "sales_order": task.custom_sales_order
-            },
-        )
-
-    doclist = get_mapped_doc(
-        "Sales Invoice",
-        source_name,
-        {"Task": {"doctype": "Sales Invoice"}},
-        target_doc,
-        postprocess=set_missing_values,
-        ignore_permissions=ignore_permissions,
-    )
-
-    print("\n\n asdf", doclist)
-    return doclist
-
-
 def sum_of_all_data(doc, method):
     sum_of_m_amount(doc, method)
     sum_of_r_amount(doc, method)
@@ -183,3 +163,43 @@ def sum_of_r_amount(doc, method):
     frappe.db.set_value(doc.doctype, doc.name, 'custom_resource_total_actual_cost', r_a_total)
     frappe.db.commit()
 
+
+
+# below code is dummy and test purpose
+
+
+# {"doctype": "Task"}
+
+
+@frappe.whitelist()
+def make_test(task):
+    task = frappe.get_doc("Task", task)
+    sales_invoice = frappe.new_doc("Sales Invoice")
+
+    if task.custom_materials1:
+        for row in task.custom_materials1:
+            item_row = sales_invoice.append("items", {})
+            item_row.item_code = row.material_item
+            item_row.qty = row.quentity
+            item_row.rate = row.rate
+            item_row.amount = row.amount
+            item_row.warehouse = row.source_warehouse
+            item_row.target_warehouse = row.target_warehouse
+            item_row.sales_order = task.custom_sales_order
+
+    if task.custom_resources1:
+        for row in task.custom_resources1:
+            item_row = sales_invoice.append("items", {})
+            item_row.item_code = row.service_item
+            item_row.qty = row.spent_hours
+            item_row.rate = row.rate
+            item_row.amount = row.total_spend_hours
+            item_row.warehouse = ""
+            item_row.target_warehouse = ""
+            item_row.sales_order = task.custom_sales_order
+
+    sales_invoice.customer = frappe.db.get_value("Sales Order", task.custom_sales_order, fieldname=["customer"])
+    sales_invoice.custom_job_order = task.name
+
+    print("sales invoice", frappe.as_json(sales_invoice))
+    return sales_invoice

@@ -13,6 +13,7 @@ frappe.ui.form.on("Task", {
         }, __("Create")); 
 
         frm.page.set_inner_btn_group_as_primary(__('Create'));
+
     }
 
 });
@@ -210,54 +211,54 @@ function create_stock_entry(frm){
 }
 
 function create_sales_invoice(frm){
-    // frappe.model.open_mapped_doc({
-    //     method: "harness.api.task.make_test",
-    //     frm: frm,
-    // })
+    frappe.model.open_mapped_doc({
+        method: "harness.api.task.make_test",
+        frm: frm,
+    })
 
-    frappe.call({
-        method: "harness.api.task.create_sales_invoice",
-        args: {
-            docname: frm.docname
-        },
-        callback: function(response) {
+    // frappe.call({
+    //     method: "harness.api.task.create_sales_invoice",
+    //     args: {
+    //         docname: frm.docname
+    //     },
+    //     callback: function(response) {
 
-            console.log("asdfasdf", response.message)
-            // frappe.set_route('Form', "Sales Invoice", response.message)
+    //         console.log("asdfasdf", response.message)
+    //         // frappe.set_route('Form', "Sales Invoice", response.message)
 
-            frappe.model.with_doctype("Sales Invoice", function() {
-                var tasks = response.message[1]; // response contains child table data of JOB
-                console.log(tasks);
-                // Create a new Sales Invoice
-                var sales_invoice = frappe.model.get_new_doc("Sales Invoice");
+    //         frappe.model.with_doctype("Sales Invoice", function() {
+    //             var tasks = response.message[1]; // response contains child table data of JOB
+    //             console.log(tasks);
+    //             // Create a new Sales Invoice
+    //             var sales_invoice = frappe.model.get_new_doc("Sales Invoice");
 
-                // Iterate over tasks data and add rows to Sales Invoice's items table
-                $.each(tasks, function(index, task) {
-                    var item_row = frappe.model.add_child(sales_invoice, "Sales Invoice Item", "items");
-                    frappe.model.set_value(item_row.doctype, item_row.name, 'item_code', task.item_code);
-                    frappe.model.set_value(item_row.doctype, item_row.name, 'qty', task.qty);
-                    frappe.model.set_value(item_row.doctype, item_row.name, 'rate', task.rate);
-                    frappe.model.set_value(item_row.doctype, item_row.name, 'amount', task.amount);
-                    frappe.model.set_value(item_row.doctype, item_row.name, 'warehouse', task.warehouse);
-                    frappe.model.set_value(item_row.doctype, item_row.name, 'target_warehouse', task.target_warehouse);
-                    frappe.model.set_value(item_row.doctype, item_row.name, 'sales order', task.sales_order);
+    //             // Iterate over tasks data and add rows to Sales Invoice's items table
+    //             $.each(tasks, function(index, task) {
+    //                 var item_row = frappe.model.add_child(sales_invoice, "Sales Invoice Item", "items");
+    //                 frappe.model.set_value(item_row.doctype, item_row.name, 'item_code', task.item_code);
+    //                 frappe.model.set_value(item_row.doctype, item_row.name, 'qty', task.qty);
+    //                 frappe.model.set_value(item_row.doctype, item_row.name, 'rate', task.rate);
+    //                 frappe.model.set_value(item_row.doctype, item_row.name, 'amount', task.amount);
+    //                 frappe.model.set_value(item_row.doctype, item_row.name, 'warehouse', task.warehouse);
+    //                 frappe.model.set_value(item_row.doctype, item_row.name, 'target_warehouse', task.target_warehouse);
+    //                 frappe.model.set_value(item_row.doctype, item_row.name, 'sales order', task.sales_order);
 
-                    // Refresh the child table field
-                    // refresh_field("items");
-                });
+    //                 // Refresh the child table field
+    //                 // refresh_field("items");
+    //             });
 
-                var sid = response.message[0]; // response contains child table data of JOB
+    //             var sid = response.message[0]; // response contains child table data of JOB
 
-                frappe.model.set_value(sales_invoice.doctype, sales_invoice.name, 'customer', sid["customer"]);
-                frappe.model.set_value(sales_invoice.doctype, sales_invoice.name, 'custom_job_order', sid["custom_job_order"]);
+    //             frappe.model.set_value(sales_invoice.doctype, sales_invoice.name, 'customer', sid["customer"]);
+    //             frappe.model.set_value(sales_invoice.doctype, sales_invoice.name, 'custom_job_order', sid["custom_job_order"]);
 
-                frappe.ui.form.make_quick_entry('Sales Invoice', null, null, sales_invoice);
-                refresh_field("items");
+    //             frappe.ui.form.make_quick_entry('Sales Invoice', null, null, sales_invoice);
+    //             refresh_field("items");
 
-            });
+    //         });
 
-        }
-    });
+    //     }
+    // });
 
 }
 
