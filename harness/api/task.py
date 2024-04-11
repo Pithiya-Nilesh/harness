@@ -248,5 +248,4 @@ def create_sales_invoice(task):
     sales_invoice.customer = frappe.db.get_value("Sales Order", task.custom_sales_order, fieldname=["customer"])
     sales_invoice.custom_job_order = task.name
 
-    print("sales invoice", frappe.as_json(sales_invoice))
     return sales_invoice
