@@ -146,8 +146,8 @@ frappe.ui.form.on("Sales Order", {
                     });
             
                     Promise.all(promises).then(function() {
-                        task.custom_mterials = material_child_table;
-                        task.custom_resources = resource_child_table;
+                        // task.custom_mterials = material_child_table;
+                        // task.custom_resources = resource_child_table;
             
                         frappe.call({
                             method: 'frappe.client.insert',
