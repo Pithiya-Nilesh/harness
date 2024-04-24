@@ -14,7 +14,9 @@
   "activity_type",
   "spent_hours",
   "rate",
-  "total_spend_hours"
+  "total_spend_hours",
+  "priority",
+  "status"
  ],
  "fields": [
   {
@@ -43,10 +45,10 @@
   {
    "columns": 1,
    "fieldname": "activity_type",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Activity Type",
-   "options": "Planning\nExecution"
+   "options": "Activity Type"
   },
   {
    "columns": 1,
@@ -73,12 +75,24 @@
    "fieldname": "resource_name1",
    "fieldtype": "Data",
    "label": "Resource Name"
+  },
+  {
+   "fieldname": "priority",
+   "fieldtype": "Select",
+   "label": "Priority",
+   "options": "Low priority\nMedium priority\nHigh priority"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "To do\nIn progress\nComplete\nCan't do"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-04-09 15:24:31.060803",
+ "modified": "2024-04-24 13:20:28.782210",
  "modified_by": "Administrator",
  "module": "Harness",
  "name": "Resource",
