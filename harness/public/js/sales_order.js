@@ -2,7 +2,7 @@ frappe.ui.form.on("Sales Order", {
     refresh: function(frm) {
 
         let html = `
-            <div class="mt-5"><strong>Job 1</strong></div>
+            <div class="mt-3"><strong>Job 1</strong></div>
             <table border="1" class="full-width-table mb-3">
                 <tr>
                     <th rowspan="2">Description</th>
@@ -13,20 +13,20 @@ frappe.ui.form.on("Sales Order", {
                 </tr>
                 <tr>
                 <th>Qty</th>
-                <th>Rate</th>
+                <th>Price</th>
                 <th>Amount</th>
                 <th>Qty</th>
-                <th>Rate</th>
+                <th>Cost</th>
                 <th>Amount</th>
                 <th>Qty</th>
-                <th>Rate</th>
+                <th>Price</th>
                 <th>Amount</th>
                 <th>Qty</th>
-                <th>Rate</th>
+                <th>Price</th>
                 <th>Amount</th>
                 </tr>
                 <tr>
-                <td>Material #1</td>
+                <td style="text-align: left;"><div style="margin-left: 5px">Material #1</div></td>
                 <td>2</td>
                 <td>$10.00</td>
                 <td>$20.00</td>
@@ -41,7 +41,7 @@ frappe.ui.form.on("Sales Order", {
                 <td>$10.00</td>
                 </tr>
                 <tr>
-                <td>Material #2</td>
+                <td style="text-align: left;"><div style="margin-left: 5px">Material #2</div></td>
                 <td>1</td>
                 <td>$5.00</td>
                 <td>$5.00</td>
@@ -56,7 +56,7 @@ frappe.ui.form.on("Sales Order", {
                 <td>$5.00</td>
                 </tr>
                 <tr>
-                <td>Labor #1</td>
+                <td style="text-align: left;"><div style="margin-left: 5px">Labor #1</div></td>
                 <td>1</td>
                 <td>$2.00</td>
                 <td>$2.00</td>
@@ -71,7 +71,7 @@ frappe.ui.form.on("Sales Order", {
                 <td>$2.00</td>
                 </tr>
                 <tr>
-                <td>Consumables</td>
+                <td style="text-align: left;"><div style="margin-left: 5px">Consumables</div></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -86,7 +86,7 @@ frappe.ui.form.on("Sales Order", {
                 <td>$0.00</td>
                 </tr>
                 <tr>
-                <td>Material #3</td>
+                <td style="text-align: left;"><div style="margin-left: 5px">Material #3</div></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -102,7 +102,7 @@ frappe.ui.form.on("Sales Order", {
                 </tr>
             </table>
 
-            <div class="mt-5"><strong>Job 2</strong></div>
+            <div class="mt-3"><strong>Job 2</strong></div>
             <table border="1" class="full-width-table mb-3">
                 <tr>
                     <th rowspan="2">Description</th>
@@ -113,20 +113,20 @@ frappe.ui.form.on("Sales Order", {
                 </tr>
                 <tr>
                 <th>Qty</th>
-                <th>Rate</th>
+                <th>Price</th>
                 <th>Amount</th>
                 <th>Qty</th>
-                <th>Rate</th>
+                <th>Cost</th>
                 <th>Amount</th>
                 <th>Qty</th>
-                <th>Rate</th>
+                <th>Price</th>
                 <th>Amount</th>
                 <th>Qty</th>
-                <th>Rate</th>
+                <th>Price</th>
                 <th>Amount</th>
                 </tr>
                 <tr>
-                <td>Material #1</td>
+                <td style="text-align: left;"><div style="margin-left: 5px">Material #1</div></td>
                 <td>2</td>
                 <td>$10.00</td>
                 <td>$20.00</td>
@@ -141,7 +141,7 @@ frappe.ui.form.on("Sales Order", {
                 <td>$10.00</td>
                 </tr>
                 <tr>
-                <td>Material #2</td>
+                <td style="text-align: left;"><div style="margin-left: 5px">Material #2</div></td>
                 <td>1</td>
                 <td>$5.00</td>
                 <td>$5.00</td>
@@ -156,7 +156,7 @@ frappe.ui.form.on("Sales Order", {
                 <td>$5.00</td>
                 </tr>
                 <tr>
-                <td>Labor #1</td>
+                <td style="text-align: left;"><div style="margin-left: 5px">Labor #1</div></td>
                 <td>1</td>
                 <td>$2.00</td>
                 <td>$2.00</td>
@@ -171,7 +171,7 @@ frappe.ui.form.on("Sales Order", {
                 <td>$2.00</td>
                 </tr>
                 <tr>
-                <td>Consumables</td>
+                <td style="text-align: left;"><div style="margin-left: 5px">Consumables</div></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -186,7 +186,7 @@ frappe.ui.form.on("Sales Order", {
                 <td>$0.00</td>
                 </tr>
                 <tr>
-                <td>Material #3</td>
+                <td style="text-align: left;"><div style="margin-left: 5px">Material #3</div></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -202,7 +202,7 @@ frappe.ui.form.on("Sales Order", {
                 </tr>
             </table>
 
-            <div class="mt-5"><strong>Job 3</strong></div>
+            <div class="mt-3"><strong>Job 3</strong></div>
             <table border="1" class="full-width-table mb-3">
                 <tr>
                     <th rowspan="2">Description</th>
@@ -213,20 +213,20 @@ frappe.ui.form.on("Sales Order", {
                 </tr>
                 <tr>
                 <th>Qty</th>
-                <th>Rate</th>
+                <th>Price</th>
                 <th>Amount</th>
                 <th>Qty</th>
-                <th>Rate</th>
+                <th>Cost</th>
                 <th>Amount</th>
                 <th>Qty</th>
-                <th>Rate</th>
+                <th>Price</th>
                 <th>Amount</th>
                 <th>Qty</th>
-                <th>Rate</th>
+                <th>Price</th>
                 <th>Amount</th>
                 </tr>
                 <tr>
-                <td>Material #1</td>
+                <td style="text-align: left;"><div style="margin-left: 5px">Material #1</div></td>
                 <td>2</td>
                 <td>$10.00</td>
                 <td>$20.00</td>
@@ -241,7 +241,7 @@ frappe.ui.form.on("Sales Order", {
                 <td>$10.00</td>
                 </tr>
                 <tr>
-                <td>Material #2</td>
+                <td style="text-align: left;"><div style="margin-left: 5px">Material #2</div></td>
                 <td>1</td>
                 <td>$5.00</td>
                 <td>$5.00</td>
@@ -256,7 +256,7 @@ frappe.ui.form.on("Sales Order", {
                 <td>$5.00</td>
                 </tr>
                 <tr>
-                <td>Labor #1</td>
+                <td style="text-align: left;"><div style="margin-left: 5px">Labor #1</div></td>
                 <td>1</td>
                 <td>$2.00</td>
                 <td>$2.00</td>
@@ -271,7 +271,7 @@ frappe.ui.form.on("Sales Order", {
                 <td>$2.00</td>
                 </tr>
                 <tr>
-                <td>Consumables</td>
+                <td style="text-align: left;"><div style="margin-left: 5px">Consumables</div></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -286,7 +286,7 @@ frappe.ui.form.on("Sales Order", {
                 <td>$0.00</td>
                 </tr>
                 <tr>
-                <td>Material #3</td>
+                <td style="text-align: left;"><div style="margin-left: 5px">Material #3</div></td>
                 <td></td>
                 <td></td>
                 <td></td>
