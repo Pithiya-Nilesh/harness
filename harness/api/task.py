@@ -249,3 +249,13 @@ def create_sales_invoice(task):
     sales_invoice.custom_job_order = task.name
 
     return sales_invoice
+
+
+@frappe.whitelist()
+def test(t=""):
+    # item = frappe.flags.args.item
+    # key = frappe.flags.args.key
+    # print("\n\n t", item)
+    # print("\n\n t", key)
+    task = frappe.new_doc("Sales Invoice")
+    return task

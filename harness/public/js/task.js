@@ -14,7 +14,118 @@ frappe.ui.form.on("Task", {
 
         frm.page.set_inner_btn_group_as_primary(__('Create'));
 
-    }
+        let html = `
+            <table border="1" class="full-width-table mb-3">
+            <tr>
+                <th rowspan="2">Description</th>
+            <th colspan="3">Planned Costing</th>
+            <th colspan="3">Actual Costing</th>
+            <th colspan="3">Previously Invoiced</th>
+            <th colspan="3">Available to be Invoiced</th>
+            </tr>
+            <tr>
+            <th>Qty</th>
+            <th>Rate</th>
+            <th>Amount</th>
+            <th>Qty</th>
+            <th>Rate</th>
+            <th>Amount</th>
+            <th>Qty</th>
+            <th>Rate</th>
+            <th>Amount</th>
+            <th>Qty</th>
+            <th>Rate</th>
+            <th>Amount</th>
+            </tr>
+            <tr>
+            <td>Material #1</td>
+            <td>2</td>
+            <td>$10.00</td>
+            <td>$20.00</td>
+            <td>2</td>
+            <td>$5.00</td>
+            <td>$10.00</td>
+            <td>1</td>
+            <td>$10.00</td>
+            <td>$10.00</td>
+            <td>1</td>
+            <td>$10.00</td>
+            <td>$10.00</td>
+            </tr>
+            <tr>
+            <td>Material #2</td>
+            <td>1</td>
+            <td>$5.00</td>
+            <td>$5.00</td>
+            <td>1</td>
+            <td>$2.00</td>
+            <td>$2.00</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>1</td>
+            <td>$5.00</td>
+            <td>$5.00</td>
+            </tr>
+            <tr>
+            <td>Labor #1</td>
+            <td>1</td>
+            <td>$2.00</td>
+            <td>$2.00</td>
+            <td>1</td>
+            <td>$0.50</td>
+            <td>$0.50</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>1</td>
+            <td>$2.00</td>
+            <td>$2.00</td>
+            </tr>
+            <tr>
+            <td>Consumables</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>1</td>
+            <td>$1.00</td>
+            <td>$1.00</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>1</td>
+            <td>$0.00</td>
+            <td>$0.00</td>
+            </tr>
+            <tr>
+            <td>Material #3</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>1</td>
+            <td>$1.00</td>
+            <td>$1.00</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>1</td>
+            <td>$0.00</td>
+            <td>$0.00</td>
+            </tr>
+        </table>
+        <style>
+            .full-width-table {
+                width: 100%;
+                text-align: center; /* Center align all content */
+            }
+        </style>
+            `;
+            // Set the above `html` as Summary HTML
+        frm.set_df_property("custom_test", "options", html);
+    },
+    custom_button: function(frm){
+	    window.location.href = "/app/job-page"
+	}
 
 });
 

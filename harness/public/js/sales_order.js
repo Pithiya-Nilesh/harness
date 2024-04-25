@@ -1,5 +1,318 @@
 frappe.ui.form.on("Sales Order", {
     refresh: function(frm) {
+
+        let html = `
+            <div class="mt-5"><strong>Job 1</strong></div>
+            <table border="1" class="full-width-table mb-3">
+                <tr>
+                    <th rowspan="2">Description</th>
+                <th colspan="3">Planned Costing</th>
+                <th colspan="3">Actual Costing</th>
+                <th colspan="3">Previously Invoiced</th>
+                <th colspan="3">Available to be Invoiced</th>
+                </tr>
+                <tr>
+                <th>Qty</th>
+                <th>Rate</th>
+                <th>Amount</th>
+                <th>Qty</th>
+                <th>Rate</th>
+                <th>Amount</th>
+                <th>Qty</th>
+                <th>Rate</th>
+                <th>Amount</th>
+                <th>Qty</th>
+                <th>Rate</th>
+                <th>Amount</th>
+                </tr>
+                <tr>
+                <td>Material #1</td>
+                <td>2</td>
+                <td>$10.00</td>
+                <td>$20.00</td>
+                <td>2</td>
+                <td>$5.00</td>
+                <td>$10.00</td>
+                <td>1</td>
+                <td>$10.00</td>
+                <td>$10.00</td>
+                <td>1</td>
+                <td>$10.00</td>
+                <td>$10.00</td>
+                </tr>
+                <tr>
+                <td>Material #2</td>
+                <td>1</td>
+                <td>$5.00</td>
+                <td>$5.00</td>
+                <td>1</td>
+                <td>$2.00</td>
+                <td>$2.00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>1</td>
+                <td>$5.00</td>
+                <td>$5.00</td>
+                </tr>
+                <tr>
+                <td>Labor #1</td>
+                <td>1</td>
+                <td>$2.00</td>
+                <td>$2.00</td>
+                <td>1</td>
+                <td>$0.50</td>
+                <td>$0.50</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>1</td>
+                <td>$2.00</td>
+                <td>$2.00</td>
+                </tr>
+                <tr>
+                <td>Consumables</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>1</td>
+                <td>$1.00</td>
+                <td>$1.00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>1</td>
+                <td>$0.00</td>
+                <td>$0.00</td>
+                </tr>
+                <tr>
+                <td>Material #3</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>1</td>
+                <td>$1.00</td>
+                <td>$1.00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>1</td>
+                <td>$0.00</td>
+                <td>$0.00</td>
+                </tr>
+            </table>
+
+            <div class="mt-5"><strong>Job 2</strong></div>
+            <table border="1" class="full-width-table mb-3">
+                <tr>
+                    <th rowspan="2">Description</th>
+                <th colspan="3">Planned Costing</th>
+                <th colspan="3">Actual Costing</th>
+                <th colspan="3">Previously Invoiced</th>
+                <th colspan="3">Available to be Invoiced</th>
+                </tr>
+                <tr>
+                <th>Qty</th>
+                <th>Rate</th>
+                <th>Amount</th>
+                <th>Qty</th>
+                <th>Rate</th>
+                <th>Amount</th>
+                <th>Qty</th>
+                <th>Rate</th>
+                <th>Amount</th>
+                <th>Qty</th>
+                <th>Rate</th>
+                <th>Amount</th>
+                </tr>
+                <tr>
+                <td>Material #1</td>
+                <td>2</td>
+                <td>$10.00</td>
+                <td>$20.00</td>
+                <td>2</td>
+                <td>$5.00</td>
+                <td>$10.00</td>
+                <td>1</td>
+                <td>$10.00</td>
+                <td>$10.00</td>
+                <td>1</td>
+                <td>$10.00</td>
+                <td>$10.00</td>
+                </tr>
+                <tr>
+                <td>Material #2</td>
+                <td>1</td>
+                <td>$5.00</td>
+                <td>$5.00</td>
+                <td>1</td>
+                <td>$2.00</td>
+                <td>$2.00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>1</td>
+                <td>$5.00</td>
+                <td>$5.00</td>
+                </tr>
+                <tr>
+                <td>Labor #1</td>
+                <td>1</td>
+                <td>$2.00</td>
+                <td>$2.00</td>
+                <td>1</td>
+                <td>$0.50</td>
+                <td>$0.50</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>1</td>
+                <td>$2.00</td>
+                <td>$2.00</td>
+                </tr>
+                <tr>
+                <td>Consumables</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>1</td>
+                <td>$1.00</td>
+                <td>$1.00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>1</td>
+                <td>$0.00</td>
+                <td>$0.00</td>
+                </tr>
+                <tr>
+                <td>Material #3</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>1</td>
+                <td>$1.00</td>
+                <td>$1.00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>1</td>
+                <td>$0.00</td>
+                <td>$0.00</td>
+                </tr>
+            </table>
+
+            <div class="mt-5"><strong>Job 3</strong></div>
+            <table border="1" class="full-width-table mb-3">
+                <tr>
+                    <th rowspan="2">Description</th>
+                <th colspan="3">Planned Costing</th>
+                <th colspan="3">Actual Costing</th>
+                <th colspan="3">Previously Invoiced</th>
+                <th colspan="3">Available to be Invoiced</th>
+                </tr>
+                <tr>
+                <th>Qty</th>
+                <th>Rate</th>
+                <th>Amount</th>
+                <th>Qty</th>
+                <th>Rate</th>
+                <th>Amount</th>
+                <th>Qty</th>
+                <th>Rate</th>
+                <th>Amount</th>
+                <th>Qty</th>
+                <th>Rate</th>
+                <th>Amount</th>
+                </tr>
+                <tr>
+                <td>Material #1</td>
+                <td>2</td>
+                <td>$10.00</td>
+                <td>$20.00</td>
+                <td>2</td>
+                <td>$5.00</td>
+                <td>$10.00</td>
+                <td>1</td>
+                <td>$10.00</td>
+                <td>$10.00</td>
+                <td>1</td>
+                <td>$10.00</td>
+                <td>$10.00</td>
+                </tr>
+                <tr>
+                <td>Material #2</td>
+                <td>1</td>
+                <td>$5.00</td>
+                <td>$5.00</td>
+                <td>1</td>
+                <td>$2.00</td>
+                <td>$2.00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>1</td>
+                <td>$5.00</td>
+                <td>$5.00</td>
+                </tr>
+                <tr>
+                <td>Labor #1</td>
+                <td>1</td>
+                <td>$2.00</td>
+                <td>$2.00</td>
+                <td>1</td>
+                <td>$0.50</td>
+                <td>$0.50</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>1</td>
+                <td>$2.00</td>
+                <td>$2.00</td>
+                </tr>
+                <tr>
+                <td>Consumables</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>1</td>
+                <td>$1.00</td>
+                <td>$1.00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>1</td>
+                <td>$0.00</td>
+                <td>$0.00</td>
+                </tr>
+                <tr>
+                <td>Material #3</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>1</td>
+                <td>$1.00</td>
+                <td>$1.00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>1</td>
+                <td>$0.00</td>
+                <td>$0.00</td>
+                </tr>
+            </table>
+    <style>
+        .full-width-table {
+            width: 100%;
+            text-align: center; /* Center align all content */
+        }
+    </style>
+        `;
+
+    // Set the above `html` as Summary HTML
+    frm.set_df_property("custom_test", "options", html);
+
+   
         if (frm.doc.docstatus === 1) {
             // frm.add_custom_button("Create Jobs", function() {
             //     frappe.model.with_doctype("Task", function() {
@@ -166,5 +479,9 @@ frappe.ui.form.on("Sales Order", {
                 });
             }
         }
+    },
+
+    custom_create_sales_invoice: function(frm){
+        window.location.href = "/app/sales-order-page"
     }
 });
