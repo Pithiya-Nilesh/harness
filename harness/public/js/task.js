@@ -38,7 +38,7 @@ frappe.ui.form.on("Task", {
             <th>Amount</th>
             </tr>
             <tr>
-            <td>Material #1</td>
+            <td>KT02</td>
             <td>2</td>
             <td>$10.00</td>
             <td>$20.00</td>
@@ -53,7 +53,7 @@ frappe.ui.form.on("Task", {
             <td>$10.00</td>
             </tr>
             <tr>
-            <td>Material #2</td>
+            <td>KT01</td>
             <td>1</td>
             <td>$5.00</td>
             <td>$5.00</td>
@@ -68,7 +68,7 @@ frappe.ui.form.on("Task", {
             <td>$5.00</td>
             </tr>
             <tr>
-            <td>Labor #1</td>
+            <td>SL01</td>
             <td>1</td>
             <td>$2.00</td>
             <td>$2.00</td>
@@ -83,7 +83,7 @@ frappe.ui.form.on("Task", {
             <td>$2.00</td>
             </tr>
             <tr>
-            <td>Consumables</td>
+            <td>PT-76845</td>
             <td></td>
             <td></td>
             <td></td>
@@ -98,7 +98,7 @@ frappe.ui.form.on("Task", {
             <td>$0.00</td>
             </tr>
             <tr>
-            <td>Material #3</td>
+            <td>KT02</td>
             <td></td>
             <td></td>
             <td></td>

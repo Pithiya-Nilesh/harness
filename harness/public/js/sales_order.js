@@ -26,7 +26,7 @@ frappe.ui.form.on("Sales Order", {
                 <th>Amount</th>
                 </tr>
                 <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">Material #1</div></td>
+                <td style="text-align: left;"><div style="margin-left: 5px">KT02</div></td>
                 <td>2</td>
                 <td>$10.00</td>
                 <td>$20.00</td>
@@ -41,7 +41,7 @@ frappe.ui.form.on("Sales Order", {
                 <td>$10.00</td>
                 </tr>
                 <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">Material #2</div></td>
+                <td style="text-align: left;"><div style="margin-left: 5px">KT01</div></td>
                 <td>1</td>
                 <td>$5.00</td>
                 <td>$5.00</td>
@@ -56,7 +56,7 @@ frappe.ui.form.on("Sales Order", {
                 <td>$5.00</td>
                 </tr>
                 <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">Labor #1</div></td>
+                <td style="text-align: left;"><div style="margin-left: 5px">SL01</div></td>
                 <td>1</td>
                 <td>$2.00</td>
                 <td>$2.00</td>
@@ -71,7 +71,7 @@ frappe.ui.form.on("Sales Order", {
                 <td>$2.00</td>
                 </tr>
                 <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">Consumables</div></td>
+                <td style="text-align: left;"><div style="margin-left: 5px">PT-76845</div></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -86,7 +86,7 @@ frappe.ui.form.on("Sales Order", {
                 <td>$0.00</td>
                 </tr>
                 <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">Material #3</div></td>
+                <td style="text-align: left;"><div style="margin-left: 5px">KT02</div></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -126,7 +126,7 @@ frappe.ui.form.on("Sales Order", {
                 <th>Amount</th>
                 </tr>
                 <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">Material #1</div></td>
+                <td style="text-align: left;"><div style="margin-left: 5px">KT02</div></td>
                 <td>2</td>
                 <td>$10.00</td>
                 <td>$20.00</td>
@@ -141,7 +141,7 @@ frappe.ui.form.on("Sales Order", {
                 <td>$10.00</td>
                 </tr>
                 <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">Material #2</div></td>
+                <td style="text-align: left;"><div style="margin-left: 5px">KT01</div></td>
                 <td>1</td>
                 <td>$5.00</td>
                 <td>$5.00</td>
@@ -156,7 +156,7 @@ frappe.ui.form.on("Sales Order", {
                 <td>$5.00</td>
                 </tr>
                 <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">Labor #1</div></td>
+                <td style="text-align: left;"><div style="margin-left: 5px">SL01</div></td>
                 <td>1</td>
                 <td>$2.00</td>
                 <td>$2.00</td>
@@ -171,7 +171,7 @@ frappe.ui.form.on("Sales Order", {
                 <td>$2.00</td>
                 </tr>
                 <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">Consumables</div></td>
+                <td style="text-align: left;"><div style="margin-left: 5px">PT-76845</div></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -186,7 +186,7 @@ frappe.ui.form.on("Sales Order", {
                 <td>$0.00</td>
                 </tr>
                 <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">Material #3</div></td>
+                <td style="text-align: left;"><div style="margin-left: 5px">KT02</div></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -226,7 +226,7 @@ frappe.ui.form.on("Sales Order", {
                 <th>Amount</th>
                 </tr>
                 <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">Material #1</div></td>
+                <td style="text-align: left;"><div style="margin-left: 5px">KT02</div></td>
                 <td>2</td>
                 <td>$10.00</td>
                 <td>$20.00</td>
@@ -241,7 +241,7 @@ frappe.ui.form.on("Sales Order", {
                 <td>$10.00</td>
                 </tr>
                 <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">Material #2</div></td>
+                <td style="text-align: left;"><div style="margin-left: 5px">KT01</div></td>
                 <td>1</td>
                 <td>$5.00</td>
                 <td>$5.00</td>
@@ -256,7 +256,7 @@ frappe.ui.form.on("Sales Order", {
                 <td>$5.00</td>
                 </tr>
                 <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">Labor #1</div></td>
+                <td style="text-align: left;"><div style="margin-left: 5px">SL01</div></td>
                 <td>1</td>
                 <td>$2.00</td>
                 <td>$2.00</td>
@@ -271,7 +271,7 @@ frappe.ui.form.on("Sales Order", {
                 <td>$2.00</td>
                 </tr>
                 <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">Consumables</div></td>
+                <td style="text-align: left;"><div style="margin-left: 5px">PT-76845</div></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -286,7 +286,7 @@ frappe.ui.form.on("Sales Order", {
                 <td>$0.00</td>
                 </tr>
                 <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">Material #3</div></td>
+                <td style="text-align: left;"><div style="margin-left: 5px">KT02</div></td>
                 <td></td>
                 <td></td>
                 <td></td>
