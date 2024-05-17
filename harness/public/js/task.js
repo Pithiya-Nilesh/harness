@@ -25,16 +25,16 @@ frappe.ui.form.on("Task", {
             </tr>
             <tr>
             <th>Qty</th>
-            <th>Rate</th>
+            <th>Unit Price</th>
             <th>Amount</th>
             <th>Qty</th>
-            <th>Rate</th>
+            <th>Unit Cost</th>
             <th>Amount</th>
             <th>Qty</th>
-            <th>Rate</th>
+            <th>Unit Price</th>
             <th>Amount</th>
             <th>Qty</th>
-            <th>Rate</th>
+            <th>Unit Price</th>
             <th>Amount</th>
             </tr>
             <tr>
