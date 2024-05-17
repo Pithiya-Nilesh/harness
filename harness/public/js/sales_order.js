@@ -41,6 +41,51 @@ frappe.ui.form.on("Sales Order", {
                 <td>$10.00</td>
                 </tr>
                 <tr>
+                <td style="text-align: left;"><div style="margin-left: 25px">PT-76845</div></td>
+                <td>1</td>
+                <td>$50.00</td>
+                <td>$50.00</td>
+                <td>1</td>
+                <td>$50.00</td>
+                <td>$50.00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                </tr>
+                <tr>
+                <td style="text-align: left;"><div style="margin-left: 25px">KT005</div></td>
+                <td>1</td>
+                <td>$40.00</td>
+                <td>$40.00</td>
+                <td>1</td>
+                <td>$40.00</td>
+                <td>$40.00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                </tr>
+                <tr>
+                <td style="text-align: left;"><div style="margin-left: 25px">KT03</div></td>
+                <td>1</td>
+                <td>$48.00</td>
+                <td>$48.00</td>
+                <td>1</td>
+                <td>$48.00</td>
+                <td>$48.00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                </tr>
+                <tr>
                 <td style="text-align: left;"><div style="margin-left: 5px">KT01</div></td>
                 <td>1</td>
                 <td>$5.00</td>
@@ -141,6 +186,51 @@ frappe.ui.form.on("Sales Order", {
                 <td>$10.00</td>
                 </tr>
                 <tr>
+                <td style="text-align: left;"><div style="margin-left: 25px">PT-76845</div></td>
+                <td>1</td>
+                <td>$50.00</td>
+                <td>$50.00</td>
+                <td>1</td>
+                <td>$50.00</td>
+                <td>$50.00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                </tr>
+                <tr>
+                <td style="text-align: left;"><div style="margin-left: 25px">KT005</div></td>
+                <td>1</td>
+                <td>$40.00</td>
+                <td>$40.00</td>
+                <td>1</td>
+                <td>$40.00</td>
+                <td>$40.00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                </tr>
+                <tr>
+                <td style="text-align: left;"><div style="margin-left: 25px">KT03</div></td>
+                <td>1</td>
+                <td>$48.00</td>
+                <td>$48.00</td>
+                <td>1</td>
+                <td>$48.00</td>
+                <td>$48.00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                </tr>
+                <tr>
                 <td style="text-align: left;"><div style="margin-left: 5px">KT01</div></td>
                 <td>1</td>
                 <td>$5.00</td>
@@ -239,6 +329,51 @@ frappe.ui.form.on("Sales Order", {
                 <td>1</td>
                 <td>$10.00</td>
                 <td>$10.00</td>
+                </tr>
+                <tr>
+                <td style="text-align: left;"><div style="margin-left: 25px">PT-76845</div></td>
+                <td>1</td>
+                <td>$50.00</td>
+                <td>$50.00</td>
+                <td>1</td>
+                <td>$50.00</td>
+                <td>$50.00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                </tr>
+                <tr>
+                <td style="text-align: left;"><div style="margin-left: 25px">KT005</div></td>
+                <td>1</td>
+                <td>$40.00</td>
+                <td>$40.00</td>
+                <td>1</td>
+                <td>$40.00</td>
+                <td>$40.00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                </tr>
+                <tr>
+                <td style="text-align: left;"><div style="margin-left: 25px">KT03</div></td>
+                <td>1</td>
+                <td>$48.00</td>
+                <td>$48.00</td>
+                <td>1</td>
+                <td>$48.00</td>
+                <td>$48.00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
                 </tr>
                 <tr>
                 <td style="text-align: left;"><div style="margin-left: 5px">KT01</div></td>
