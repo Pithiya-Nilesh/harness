@@ -38,7 +38,7 @@ frappe.ui.form.on("Task", {
             <th>Amount</th>
             </tr>
             <tr>
-            <td>KT02</td>
+            <td style="text-align:left"><div style="margin-left: 5px">KT02</div></td>
             <td>2</td>
             <td>$10.00</td>
             <td>$20.00</td>
@@ -52,8 +52,53 @@ frappe.ui.form.on("Task", {
             <td>$10.00</td>
             <td>$10.00</td>
             </tr>
+            <tr style="background-color: lightgray;">
+                <td style="text-align: left;"><div style="margin-left: 25px">PT-76845</div></td>
+                <td>1</td>
+                <td>$50.00</td>
+                <td>$50.00</td>
+                <td>1</td>
+                <td>$50.00</td>
+                <td>$50.00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                </tr>
+                <tr style="background-color: lightgray;">
+                <td style="text-align: left;"><div style="margin-left: 25px">KT005</div></td>
+                <td>1</td>
+                <td>$40.00</td>
+                <td>$40.00</td>
+                <td>1</td>
+                <td>$40.00</td>
+                <td>$40.00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                </tr>
+                <tr style="background-color: lightgray;">
+                <td style="text-align: left;"><div style="margin-left: 25px">KT03</div></td>
+                <td>1</td>
+                <td>$48.00</td>
+                <td>$48.00</td>
+                <td>1</td>
+                <td>$48.00</td>
+                <td>$48.00</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                </tr>
             <tr>
-            <td>KT01</td>
+            <td style="text-align:left"><div style="margin-left: 5px">KT01</div></td>
             <td>1</td>
             <td>$5.00</td>
             <td>$5.00</td>
@@ -68,7 +113,7 @@ frappe.ui.form.on("Task", {
             <td>$5.00</td>
             </tr>
             <tr>
-            <td>SL01</td>
+            <td style="text-align:left"><div style="margin-left: 5px">SL01</div></td>
             <td>1</td>
             <td>$2.00</td>
             <td>$2.00</td>
@@ -83,7 +128,7 @@ frappe.ui.form.on("Task", {
             <td>$2.00</td>
             </tr>
             <tr>
-            <td>PT-76845</td>
+            <td style="text-align:left"><div style="margin-left: 5px">PT-76845</div></td>
             <td></td>
             <td></td>
             <td></td>
@@ -98,7 +143,7 @@ frappe.ui.form.on("Task", {
             <td>$0.00</td>
             </tr>
             <tr>
-            <td>KT02</td>
+            <td style="text-align:left"><div style="margin-left: 5px">KT02</div></td>
             <td></td>
             <td></td>
             <td></td>
