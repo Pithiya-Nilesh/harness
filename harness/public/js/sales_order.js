@@ -2,7 +2,7 @@ frappe.ui.form.on("Sales Order", {
     refresh: function(frm) {
 
         let html = `
-            <div class="mt-3"><strong>Job 1</strong></div>
+            <div class="mt-3"><strong>Job 1 - 03CS10255 - AHS Hardware Swap</strong></div>
             <table border="1" class="full-width-table mb-3">
                 <tr>
                     <th rowspan="2">Description</th>
@@ -147,7 +147,7 @@ frappe.ui.form.on("Sales Order", {
                 </tr>
             </table>
 
-            <div class="mt-3"><strong>Job 2</strong></div>
+            <div class="mt-3"><strong>Job 2 - 08NS35278 - AHS Hardware Swap</strong></div>
             <table border="1" class="full-width-table mb-3">
                 <tr>
                     <th rowspan="2">Description</th>
@@ -292,7 +292,7 @@ frappe.ui.form.on("Sales Order", {
                 </tr>
             </table>
 
-            <div class="mt-3"><strong>Job 3</strong></div>
+            <div class="mt-3"><strong>Job 3 - 58KS35784 - AHS Hardware Swap</strong></div>
             <table border="1" class="full-width-table mb-3">
                 <tr>
                     <th rowspan="2">Description</th>
