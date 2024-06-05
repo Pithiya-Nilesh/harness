@@ -59,11 +59,12 @@ frappe.ui.form.on('Sales Invoice', {
                                 
                                         console.log("\n\n sdfa", tasks)
                                         // Create the first row outside of the loop
-                                        var child = frappe.model.add_child(cur_frm.doc, 'items'); //var child = frappe.model.add_child(frm.doc, 'items', 'items');
+                                        var child = frappe.model.add_child(cur_frm.doc, "Sales Invoice Item", 'items'); //var child = frappe.model.add_child(frm.doc, 'items', 'items');
                                 
                                         $.each(tasks, function(index, task) {
                                             frappe.model.set_value(child.doctype, child.name, 'item_code', task.item_code);
                                             frappe.model.set_value(child.doctype, child.name, 'qty', task.qty);
+                                            console.log("create type", typeof(task.qty))
                                             frappe.model.set_value(child.doctype, child.name, 'base_rate', task.base_rate);
                                             frappe.model.set_value(child.doctype, child.name, 'base_amount', task.base_amount);
                                 
@@ -85,13 +86,26 @@ frappe.ui.form.on('Sales Invoice', {
                             primary_action_label: __('Get Item'),
                             primary_action: function() {
 
-
                             }
                         });
                     }
                 }
             });
         }, __("Get Items From"));
+
+        // set section value null for repeted
+        const child_table = frm.doc.items || [];
+        let target_section_name = "";
+
+        child_table.forEach(function(row) {
+            if(target_section_name === row.custom_section_name){
+                row.custom_section_name = null; 
+            }
+            else{
+                target_section_name = row.custom_section_name
+            }
+        });
+
     }
 });
 

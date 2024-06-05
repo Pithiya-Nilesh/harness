@@ -1,453 +1,354 @@
 frappe.ui.form.on("Sales Order", {
     refresh: function(frm) {
 
-        let html = `
-            <div class="mt-3"><strong>Job 1 - 03CS10255 - AHS Hardware Swap</strong></div>
-            <table border="1" class="full-width-table mb-3">
-                <tr>
-                    <th rowspan="2">Description</th>
-                <th colspan="3">Planned Costing</th>
-                <th colspan="3">Actual Costing</th>
-                <th colspan="3">Previously Invoiced</th>
-                <th colspan="3">Available to be Invoiced</th>
-                </tr>
-                <tr>
-                <th>Qty</th>
-                <th>Price</th>
-                <th>Amount</th>
-                <th>Qty</th>
-                <th>Cost</th>
-                <th>Amount</th>
-                <th>Qty</th>
-                <th>Price</th>
-                <th>Amount</th>
-                <th>Qty</th>
-                <th>Price</th>
-                <th>Amount</th>
-                </tr>
-                <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">KT02</div></td>
-                <td>2</td>
-                <td>$10.00</td>
-                <td>$20.00</td>
-                <td>2</td>
-                <td>$5.00</td>
-                <td>$10.00</td>
-                <td>1</td>
-                <td>$10.00</td>
-                <td>$10.00</td>
-                <td>1</td>
-                <td>$10.00</td>
-                <td>$10.00</td>
-                </tr>
-                <tr style="background-color: lightgray;">
-                <td style="text-align: left;"><div style="margin-left: 25px">PT-76845</div></td>
-                <td>1</td>
-                <td>$50.00</td>
-                <td>$50.00</td>
-                <td>1</td>
-                <td>$50.00</td>
-                <td>$50.00</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                </tr>
-                <tr style="background-color: lightgray;">
-                <td style="text-align: left;"><div style="margin-left: 25px">KT005</div></td>
-                <td>1</td>
-                <td>$40.00</td>
-                <td>$40.00</td>
-                <td>1</td>
-                <td>$40.00</td>
-                <td>$40.00</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                </tr>
-                <tr style="background-color: lightgray;">
-                <td style="text-align: left;"><div style="margin-left: 25px">KT03</div></td>
-                <td>1</td>
-                <td>$48.00</td>
-                <td>$48.00</td>
-                <td>1</td>
-                <td>$48.00</td>
-                <td>$48.00</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                </tr>
-                <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">KT01</div></td>
-                <td>1</td>
-                <td>$5.00</td>
-                <td>$5.00</td>
-                <td>1</td>
-                <td>$2.00</td>
-                <td>$2.00</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>1</td>
-                <td>$5.00</td>
-                <td>$5.00</td>
-                </tr>
-                <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">SL01</div></td>
-                <td>1</td>
-                <td>$2.00</td>
-                <td>$2.00</td>
-                <td>1</td>
-                <td>$0.50</td>
-                <td>$0.50</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>1</td>
-                <td>$2.00</td>
-                <td>$2.00</td>
-                </tr>
-                <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">PT-76845</div></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>1</td>
-                <td>$1.00</td>
-                <td>$1.00</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>1</td>
-                <td>$0.00</td>
-                <td>$0.00</td>
-                </tr>
-                <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">KT02</div></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>1</td>
-                <td>$1.00</td>
-                <td>$1.00</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>1</td>
-                <td>$0.00</td>
-                <td>$0.00</td>
-                </tr>
-            </table>
+    //     let html = `
+    //         <div class="mt-3"><strong>Job 1</strong></div>
+    //         <table border="1" class="full-width-table mb-3">
+    //             <tr>
+    //                 <th rowspan="2">Description</th>
+    //             <th colspan="3">Planned Costing</th>
+    //             <th colspan="3">Actual Costing</th>
+    //             <th colspan="3">Previously Invoiced</th>
+    //             <th colspan="3">Available to be Invoiced</th>
+    //             </tr>
+    //             <tr>
+    //             <th>Qty</th>
+    //             <th>Price</th>
+    //             <th>Amount</th>
+    //             <th>Qty</th>
+    //             <th>Cost</th>
+    //             <th>Amount</th>
+    //             <th>Qty</th>
+    //             <th>Price</th>
+    //             <th>Amount</th>
+    //             <th>Qty</th>
+    //             <th>Price</th>
+    //             <th>Amount</th>
+    //             </tr>
+    //             <tr>
+    //             <td style="text-align: left;"><div style="margin-left: 5px">Material #1</div></td>
+    //             <td>2</td>
+    //             <td>$10.00</td>
+    //             <td>$20.00</td>
+    //             <td>2</td>
+    //             <td>$5.00</td>
+    //             <td>$10.00</td>
+    //             <td>1</td>
+    //             <td>$10.00</td>
+    //             <td>$10.00</td>
+    //             <td>1</td>
+    //             <td>$10.00</td>
+    //             <td>$10.00</td>
+    //             </tr>
+    //             <tr>
+    //             <td style="text-align: left;"><div style="margin-left: 5px">Material #2</div></td>
+    //             <td>1</td>
+    //             <td>$5.00</td>
+    //             <td>$5.00</td>
+    //             <td>1</td>
+    //             <td>$2.00</td>
+    //             <td>$2.00</td>
+    //             <td></td>
+    //             <td></td>
+    //             <td></td>
+    //             <td>1</td>
+    //             <td>$5.00</td>
+    //             <td>$5.00</td>
+    //             </tr>
+    //             <tr>
+    //             <td style="text-align: left;"><div style="margin-left: 5px">Labor #1</div></td>
+    //             <td>1</td>
+    //             <td>$2.00</td>
+    //             <td>$2.00</td>
+    //             <td>1</td>
+    //             <td>$0.50</td>
+    //             <td>$0.50</td>
+    //             <td></td>
+    //             <td></td>
+    //             <td></td>
+    //             <td>1</td>
+    //             <td>$2.00</td>
+    //             <td>$2.00</td>
+    //             </tr>
+    //             <tr>
+    //             <td style="text-align: left;"><div style="margin-left: 5px">Consumables</div></td>
+    //             <td></td>
+    //             <td></td>
+    //             <td></td>
+    //             <td>1</td>
+    //             <td>$1.00</td>
+    //             <td>$1.00</td>
+    //             <td></td>
+    //             <td></td>
+    //             <td></td>
+    //             <td>1</td>
+    //             <td>$0.00</td>
+    //             <td>$0.00</td>
+    //             </tr>
+    //             <tr>
+    //             <td style="text-align: left;"><div style="margin-left: 5px">Material #3</div></td>
+    //             <td></td>
+    //             <td></td>
+    //             <td></td>
+    //             <td>1</td>
+    //             <td>$1.00</td>
+    //             <td>$1.00</td>
+    //             <td></td>
+    //             <td></td>
+    //             <td></td>
+    //             <td>1</td>
+    //             <td>$0.00</td>
+    //             <td>$0.00</td>
+    //             </tr>
+    //         </table>
 
-            <div class="mt-3"><strong>Job 2 - 08NS35278 - AHS Hardware Swap</strong></div>
-            <table border="1" class="full-width-table mb-3">
-                <tr>
-                    <th rowspan="2">Description</th>
-                <th colspan="3">Planned Costing</th>
-                <th colspan="3">Actual Costing</th>
-                <th colspan="3">Previously Invoiced</th>
-                <th colspan="3">Available to be Invoiced</th>
-                </tr>
-                <tr>
-                <th>Qty</th>
-                <th>Price</th>
-                <th>Amount</th>
-                <th>Qty</th>
-                <th>Cost</th>
-                <th>Amount</th>
-                <th>Qty</th>
-                <th>Price</th>
-                <th>Amount</th>
-                <th>Qty</th>
-                <th>Price</th>
-                <th>Amount</th>
-                </tr>
-                <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">KT02</div></td>
-                <td>2</td>
-                <td>$10.00</td>
-                <td>$20.00</td>
-                <td>2</td>
-                <td>$5.00</td>
-                <td>$10.00</td>
-                <td>1</td>
-                <td>$10.00</td>
-                <td>$10.00</td>
-                <td>1</td>
-                <td>$10.00</td>
-                <td>$10.00</td>
-                </tr>
-                <tr style="background-color: lightgray;">
-                <td style="text-align: left;"><div style="margin-left: 25px">PT-76845</div></td>
-                <td>1</td>
-                <td>$50.00</td>
-                <td>$50.00</td>
-                <td>1</td>
-                <td>$50.00</td>
-                <td>$50.00</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                </tr>
-                <tr style="background-color: lightgray;">
-                <td style="text-align: left;"><div style="margin-left: 25px">KT005</div></td>
-                <td>1</td>
-                <td>$40.00</td>
-                <td>$40.00</td>
-                <td>1</td>
-                <td>$40.00</td>
-                <td>$40.00</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                </tr>
-                <tr style="background-color: lightgray;">
-                <td style="text-align: left;"><div style="margin-left: 25px">KT03</div></td>
-                <td>1</td>
-                <td>$48.00</td>
-                <td>$48.00</td>
-                <td>1</td>
-                <td>$48.00</td>
-                <td>$48.00</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                </tr>
-                <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">KT01</div></td>
-                <td>1</td>
-                <td>$5.00</td>
-                <td>$5.00</td>
-                <td>1</td>
-                <td>$2.00</td>
-                <td>$2.00</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>1</td>
-                <td>$5.00</td>
-                <td>$5.00</td>
-                </tr>
-                <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">SL01</div></td>
-                <td>1</td>
-                <td>$2.00</td>
-                <td>$2.00</td>
-                <td>1</td>
-                <td>$0.50</td>
-                <td>$0.50</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>1</td>
-                <td>$2.00</td>
-                <td>$2.00</td>
-                </tr>
-                <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">PT-76845</div></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>1</td>
-                <td>$1.00</td>
-                <td>$1.00</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>1</td>
-                <td>$0.00</td>
-                <td>$0.00</td>
-                </tr>
-                <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">KT02</div></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>1</td>
-                <td>$1.00</td>
-                <td>$1.00</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>1</td>
-                <td>$0.00</td>
-                <td>$0.00</td>
-                </tr>
-            </table>
+    //         <div class="mt-3"><strong>Job 2</strong></div>
+    //         <table border="1" class="full-width-table mb-3">
+    //             <tr>
+    //                 <th rowspan="2">Description</th>
+    //             <th colspan="3">Planned Costing</th>
+    //             <th colspan="3">Actual Costing</th>
+    //             <th colspan="3">Previously Invoiced</th>
+    //             <th colspan="3">Available to be Invoiced</th>
+    //             </tr>
+    //             <tr>
+    //             <th>Qty</th>
+    //             <th>Price</th>
+    //             <th>Amount</th>
+    //             <th>Qty</th>
+    //             <th>Cost</th>
+    //             <th>Amount</th>
+    //             <th>Qty</th>
+    //             <th>Price</th>
+    //             <th>Amount</th>
+    //             <th>Qty</th>
+    //             <th>Price</th>
+    //             <th>Amount</th>
+    //             </tr>
+    //             <tr>
+    //             <td style="text-align: left;"><div style="margin-left: 5px">Material #1</div></td>
+    //             <td>2</td>
+    //             <td>$10.00</td>
+    //             <td>$20.00</td>
+    //             <td>2</td>
+    //             <td>$5.00</td>
+    //             <td>$10.00</td>
+    //             <td>1</td>
+    //             <td>$10.00</td>
+    //             <td>$10.00</td>
+    //             <td>1</td>
+    //             <td>$10.00</td>
+    //             <td>$10.00</td>
+    //             </tr>
+    //             <tr>
+    //             <td style="text-align: left;"><div style="margin-left: 5px">Material #2</div></td>
+    //             <td>1</td>
+    //             <td>$5.00</td>
+    //             <td>$5.00</td>
+    //             <td>1</td>
+    //             <td>$2.00</td>
+    //             <td>$2.00</td>
+    //             <td></td>
+    //             <td></td>
+    //             <td></td>
+    //             <td>1</td>
+    //             <td>$5.00</td>
+    //             <td>$5.00</td>
+    //             </tr>
+    //             <tr>
+    //             <td style="text-align: left;"><div style="margin-left: 5px">Labor #1</div></td>
+    //             <td>1</td>
+    //             <td>$2.00</td>
+    //             <td>$2.00</td>
+    //             <td>1</td>
+    //             <td>$0.50</td>
+    //             <td>$0.50</td>
+    //             <td></td>
+    //             <td></td>
+    //             <td></td>
+    //             <td>1</td>
+    //             <td>$2.00</td>
+    //             <td>$2.00</td>
+    //             </tr>
+    //             <tr>
+    //             <td style="text-align: left;"><div style="margin-left: 5px">Consumables</div></td>
+    //             <td></td>
+    //             <td></td>
+    //             <td></td>
+    //             <td>1</td>
+    //             <td>$1.00</td>
+    //             <td>$1.00</td>
+    //             <td></td>
+    //             <td></td>
+    //             <td></td>
+    //             <td>1</td>
+    //             <td>$0.00</td>
+    //             <td>$0.00</td>
+    //             </tr>
+    //             <tr>
+    //             <td style="text-align: left;"><div style="margin-left: 5px">Material #3</div></td>
+    //             <td></td>
+    //             <td></td>
+    //             <td></td>
+    //             <td>1</td>
+    //             <td>$1.00</td>
+    //             <td>$1.00</td>
+    //             <td></td>
+    //             <td></td>
+    //             <td></td>
+    //             <td>1</td>
+    //             <td>$0.00</td>
+    //             <td>$0.00</td>
+    //             </tr>
+    //         </table>
 
-            <div class="mt-3"><strong>Job 3 - 58KS35784 - AHS Hardware Swap</strong></div>
-            <table border="1" class="full-width-table mb-3">
-                <tr>
-                    <th rowspan="2">Description</th>
-                <th colspan="3">Planned Costing</th>
-                <th colspan="3">Actual Costing</th>
-                <th colspan="3">Previously Invoiced</th>
-                <th colspan="3">Available to be Invoiced</th>
-                </tr>
-                <tr>
-                <th>Qty</th>
-                <th>Price</th>
-                <th>Amount</th>
-                <th>Qty</th>
-                <th>Cost</th>
-                <th>Amount</th>
-                <th>Qty</th>
-                <th>Price</th>
-                <th>Amount</th>
-                <th>Qty</th>
-                <th>Price</th>
-                <th>Amount</th>
-                </tr>
-                <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">KT02</div></td>
-                <td>2</td>
-                <td>$10.00</td>
-                <td>$20.00</td>
-                <td>2</td>
-                <td>$5.00</td>
-                <td>$10.00</td>
-                <td>1</td>
-                <td>$10.00</td>
-                <td>$10.00</td>
-                <td>1</td>
-                <td>$10.00</td>
-                <td>$10.00</td>
-                </tr>
-                <tr style="background-color: lightgray;">
-                <td style="text-align: left;"><div style="margin-left: 25px">PT-76845</div></td>
-                <td>1</td>
-                <td>$50.00</td>
-                <td>$50.00</td>
-                <td>1</td>
-                <td>$50.00</td>
-                <td>$50.00</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                </tr>
-                <tr style="background-color: lightgray;">
-                <td style="text-align: left;"><div style="margin-left: 25px">KT005</div></td>
-                <td>1</td>
-                <td>$40.00</td>
-                <td>$40.00</td>
-                <td>1</td>
-                <td>$40.00</td>
-                <td>$40.00</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                </tr>
-                <tr style="background-color: lightgray;">
-                <td style="text-align: left;"><div style="margin-left: 25px">KT03</div></td>
-                <td>1</td>
-                <td>$48.00</td>
-                <td>$48.00</td>
-                <td>1</td>
-                <td>$48.00</td>
-                <td>$48.00</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                </tr>
-                <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">KT01</div></td>
-                <td>1</td>
-                <td>$5.00</td>
-                <td>$5.00</td>
-                <td>1</td>
-                <td>$2.00</td>
-                <td>$2.00</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>1</td>
-                <td>$5.00</td>
-                <td>$5.00</td>
-                </tr>
-                <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">SL01</div></td>
-                <td>1</td>
-                <td>$2.00</td>
-                <td>$2.00</td>
-                <td>1</td>
-                <td>$0.50</td>
-                <td>$0.50</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>1</td>
-                <td>$2.00</td>
-                <td>$2.00</td>
-                </tr>
-                <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">PT-76845</div></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>1</td>
-                <td>$1.00</td>
-                <td>$1.00</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>1</td>
-                <td>$0.00</td>
-                <td>$0.00</td>
-                </tr>
-                <tr>
-                <td style="text-align: left;"><div style="margin-left: 5px">KT02</div></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>1</td>
-                <td>$1.00</td>
-                <td>$1.00</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>1</td>
-                <td>$0.00</td>
-                <td>$0.00</td>
-                </tr>
-            </table>
-    <style>
-        .full-width-table {
-            width: 100%;
-            text-align: center; /* Center align all content */
-        }
-    </style>
-        `;
+    //         <div class="mt-3"><strong>Job 3</strong></div>
+    //         <table border="1" class="full-width-table mb-3">
+    //             <tr>
+    //                 <th rowspan="2">Description</th>
+    //             <th colspan="3">Planned Costing</th>
+    //             <th colspan="3">Actual Costing</th>
+    //             <th colspan="3">Previously Invoiced</th>
+    //             <th colspan="3">Available to be Invoiced</th>
+    //             </tr>
+    //             <tr>
+    //             <th>Qty</th>
+    //             <th>Price</th>
+    //             <th>Amount</th>
+    //             <th>Qty</th>
+    //             <th>Cost</th>
+    //             <th>Amount</th>
+    //             <th>Qty</th>
+    //             <th>Price</th>
+    //             <th>Amount</th>
+    //             <th>Qty</th>
+    //             <th>Price</th>
+    //             <th>Amount</th>
+    //             </tr>
+    //             <tr>
+    //             <td style="text-align: left;"><div style="margin-left: 5px">Material #1</div></td>
+    //             <td>2</td>
+    //             <td>$10.00</td>
+    //             <td>$20.00</td>
+    //             <td>2</td>
+    //             <td>$5.00</td>
+    //             <td>$10.00</td>
+    //             <td>1</td>
+    //             <td>$10.00</td>
+    //             <td>$10.00</td>
+    //             <td>1</td>
+    //             <td>$10.00</td>
+    //             <td>$10.00</td>
+    //             </tr>
+    //             <tr>
+    //             <td style="text-align: left;"><div style="margin-left: 5px">Material #2</div></td>
+    //             <td>1</td>
+    //             <td>$5.00</td>
+    //             <td>$5.00</td>
+    //             <td>1</td>
+    //             <td>$2.00</td>
+    //             <td>$2.00</td>
+    //             <td></td>
+    //             <td></td>
+    //             <td></td>
+    //             <td>1</td>
+    //             <td>$5.00</td>
+    //             <td>$5.00</td>
+    //             </tr>
+    //             <tr>
+    //             <td style="text-align: left;"><div style="margin-left: 5px">Labor #1</div></td>
+    //             <td>1</td>
+    //             <td>$2.00</td>
+    //             <td>$2.00</td>
+    //             <td>1</td>
+    //             <td>$0.50</td>
+    //             <td>$0.50</td>
+    //             <td></td>
+    //             <td></td>
+    //             <td></td>
+    //             <td>1</td>
+    //             <td>$2.00</td>
+    //             <td>$2.00</td>
+    //             </tr>
+    //             <tr>
+    //             <td style="text-align: left;"><div style="margin-left: 5px">Consumables</div></td>
+    //             <td></td>
+    //             <td></td>
+    //             <td></td>
+    //             <td>1</td>
+    //             <td>$1.00</td>
+    //             <td>$1.00</td>
+    //             <td></td>
+    //             <td></td>
+    //             <td></td>
+    //             <td>1</td>
+    //             <td>$0.00</td>
+    //             <td>$0.00</td>
+    //             </tr>
+    //             <tr>
+    //             <td style="text-align: left;"><div style="margin-left: 5px">Material #3</div></td>
+    //             <td></td>
+    //             <td></td>
+    //             <td></td>
+    //             <td>1</td>
+    //             <td>$1.00</td>
+    //             <td>$1.00</td>
+    //             <td></td>
+    //             <td></td>
+    //             <td></td>
+    //             <td>1</td>
+    //             <td>$0.00</td>
+    //             <td>$0.00</td>
+    //             </tr>
+    //         </table>
+    // <style>
+    //     .full-width-table {
+    //         width: 100%;
+    //         text-align: center; /* Center align all content */
+    //     }
+    // </style>
+    //     `;
 
     // Set the above `html` as Summary HTML
-    frm.set_df_property("custom_test", "options", html);
+    // frm.set_df_property("custom_test", "options", html);
+        // createDynamicTables(jobsData);
 
-   
+        if(frm.is_dirty()){
+            let message_html = `
+            <div class="mb-5">Please Save From to Get Summary Data.</div>
+            `
+            frm.set_df_property("custom_test", "options", message_html);
+        }
+        
+        if(frm.is_new()){
+            let message_html = `
+            <div class="mb-5">Please Enter Data and Save From to Get Summary Data.</div>
+            `
+            frm.set_df_property("custom_test", "options", message_html);
+        }
+        else{
+            frappe.call({
+                method:"harness.api.sales_order.get_summary_data",
+                args:{
+                    so_name: frm.doc.name
+                },
+                callback: function(r){
+                    frm.set_df_property("custom_test", "options", r.message);
+                }
+            })
+        }
+        
+        frappe.call({
+            method:"harness.api.sales_order.get_stock_summary_data",
+            args:{
+                so_name: frm.doc.name
+            },
+            callback: function(r){
+                frm.set_df_property("custom_stock_data", "options", r.message);
+            }
+        })
+
+
         if (frm.doc.docstatus === 1) {
             // frm.add_custom_button("Create Jobs", function() {
             //     frappe.model.with_doctype("Task", function() {
@@ -515,108 +416,41 @@ frappe.ui.form.on("Sales Order", {
         
             // Creating Jobs(Task) as per 'No. Of Vehicles'
             frm.add_custom_button("Create Jobs", function() {
-                var numberOfVehicles = frm.doc.custom_no_of_vehicles;
-                if (!numberOfVehicles || numberOfVehicles < 1) {
-                    frappe.msgprint("Please specify a valid number of vehicles.");
-                    return;
-                }
             
-                var successfulInsertions = 0; // Counter for successful insertions
-                var errorsEncountered = false; // Flag to track if any errors occurred
-            
-                // Loop through the number of vehicles and create tasks
-                for (var i = 0; i < numberOfVehicles; i++) {
-                    createTask(frm, i, function(success) {
-                        if (!success && !errorsEncountered) {
-                            errorsEncountered = true; // Set flag to true if any error occurs
-                            frappe.msgprint("Error creating one or more Jobss. Please check logs for details.");
-                        }
-            
-                        successfulInsertions++; // Increment counter on successful insertion
-            
-                        // Check if all tasks have been processed
-                        if (successfulInsertions === numberOfVehicles && !errorsEncountered) {
-                            // frappe.msgprint("Jobss successfully created " + numberOfVehicles + " times.");
-                            frappe.msgprint(numberOfVehicles + "  Jobs created successfully.");
-                        }
-                    });
-                }
-            });
-            
-            function createTask(frm, index, callback) {
-                frappe.model.with_doctype("Task", function() {
-                    var task = frappe.model.get_new_doc("Task");
-                    task.subject = frm.doc.name; //+ " - Vehicle " + (index + 1);
-                    task.custom_sales_order = frm.doc.name;
-            
-                    var material_child_table = [];
-                    var resource_child_table = [];
-            
-                    var promises = [];
-            
-                    frm.doc.items.forEach(function(row) {
-                        var promise = new Promise(function(resolve, reject) {
-                            frappe.call({
-                                method: 'frappe.client.get_value',
-                                args: {
-                                    doctype: 'Item',
-                                    filters: {
-                                        name: row.item_code
-                                    },
-                                    fieldname: ['is_stock_item']
-                                },
-                                callback: function(response) {
-                                    if (response.message) {
-                                        var maintain_stock = response.message.is_stock_item;
-                                        if (maintain_stock) {
-                                            var material_child_row = {
-                                                material_item: row.item_code,
-                                                quentity: row.qty,
-                                                rate: row.rate,
-                                                amount: row.amount
-                                            };
-                                            material_child_table.push(material_child_row);
-                                        } else {
-                                            var resource_child_row = {
-                                                service_item: row.item_code,
-                                                spent_hours: row.qty,
-                                                rate: row.rate,
-                                                total_spend_hours: row.amount
-                                            };
-                                            resource_child_table.push(resource_child_row);
-                                        }
-                                    }
-                                    resolve();
-                                }
-                            });
-                        });
-                        promises.push(promise);
-                    });
-            
-                    Promise.all(promises).then(function() {
-                        // task.custom_mterials = material_child_table;
-                        // task.custom_resources = resource_child_table;
-            
-                        frappe.call({
-                            method: 'frappe.client.insert',
-                            args: {
-                                doc: task
-                            },
-                            callback: function(response) {
-                                if (!response.exc) {
-                                    callback(true); // Call the callback function with success status
-                                } else {
-                                    callback(false); // Call the callback function with failure status
-                                }
-                            }
-                        });
-                    });
-                });
-            }
+                frappe.call({
+                    method: "harness.api.sales_order.create_jobs",
+                    args:{
+                        name: frm.doc.name
+                    },
+                    callback: function(res){
+                        let message = `${res.message} Jobs Successfully Created!`
+                        frappe.msgprint(message)
+                        console.log("res", res)
+                    },
+                    freeze: true,
+                    freeze_message: "Please wait we are creating job based on this sales order.",
+                })
+                
+            })
         }
+        
+        // set section value null for repeted
+        const child_table = frm.doc.items || [];
+        let target_section_name = "";
+
+        child_table.forEach(function(row) {
+            if(target_section_name === row.custom_section_name){
+                row.custom_section_name = null; 
+            }
+            else{
+                target_section_name = row.custom_section_name
+            }
+        });
+
     },
 
     custom_create_sales_invoice: function(frm){
-        window.location.href = "/app/sales-order-page"
+        window.location.href = `/app/sales-order-page?sales_order=${frm.doc.name}`
     }
 });
+

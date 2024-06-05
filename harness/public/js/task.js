@@ -14,167 +14,88 @@ frappe.ui.form.on("Task", {
 
         frm.page.set_inner_btn_group_as_primary(__('Create'));
 
-        let html = `
-            <table border="1" class="full-width-table mb-3">
-            <tr>
-                <th rowspan="2">Description</th>
-            <th colspan="3">Planned Costing</th>
-            <th colspan="3">Actual Costing</th>
-            <th colspan="3">Previously Invoiced</th>
-            <th colspan="3">Available to be Invoiced</th>
-            </tr>
-            <tr>
-            <th>Qty</th>
-            <th>Unit Price</th>
-            <th>Amount</th>
-            <th>Qty</th>
-            <th>Unit Cost</th>
-            <th>Amount</th>
-            <th>Qty</th>
-            <th>Unit Price</th>
-            <th>Amount</th>
-            <th>Qty</th>
-            <th>Unit Price</th>
-            <th>Amount</th>
-            </tr>
-            <tr>
-            <td style="text-align:left"><div style="margin-left: 5px">KT02</div></td>
-            <td>2</td>
-            <td>$10.00</td>
-            <td>$20.00</td>
-            <td>2</td>
-            <td>$5.00</td>
-            <td>$10.00</td>
-            <td>1</td>
-            <td>$10.00</td>
-            <td>$10.00</td>
-            <td>1</td>
-            <td>$10.00</td>
-            <td>$10.00</td>
-            </tr>
-            <tr style="background-color: lightgray;">
-                <td style="text-align: left;"><div style="margin-left: 25px">PT-76845</div></td>
-                <td>1</td>
-                <td>$50.00</td>
-                <td>$50.00</td>
-                <td>1</td>
-                <td>$50.00</td>
-                <td>$50.00</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                </tr>
-                <tr style="background-color: lightgray;">
-                <td style="text-align: left;"><div style="margin-left: 25px">KT005</div></td>
-                <td>1</td>
-                <td>$40.00</td>
-                <td>$40.00</td>
-                <td>1</td>
-                <td>$40.00</td>
-                <td>$40.00</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                </tr>
-                <tr style="background-color: lightgray;">
-                <td style="text-align: left;"><div style="margin-left: 25px">KT03</div></td>
-                <td>1</td>
-                <td>$48.00</td>
-                <td>$48.00</td>
-                <td>1</td>
-                <td>$48.00</td>
-                <td>$48.00</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                </tr>
-            <tr>
-            <td style="text-align:left"><div style="margin-left: 5px">KT01</div></td>
-            <td>1</td>
-            <td>$5.00</td>
-            <td>$5.00</td>
-            <td>1</td>
-            <td>$2.00</td>
-            <td>$2.00</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>1</td>
-            <td>$5.00</td>
-            <td>$5.00</td>
-            </tr>
-            <tr>
-            <td style="text-align:left"><div style="margin-left: 5px">SL01</div></td>
-            <td>1</td>
-            <td>$2.00</td>
-            <td>$2.00</td>
-            <td>1</td>
-            <td>$0.50</td>
-            <td>$0.50</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>1</td>
-            <td>$2.00</td>
-            <td>$2.00</td>
-            </tr>
-            <tr>
-            <td style="text-align:left"><div style="margin-left: 5px">PT-76845</div></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>1</td>
-            <td>$1.00</td>
-            <td>$1.00</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>1</td>
-            <td>$0.00</td>
-            <td>$0.00</td>
-            </tr>
-            <tr>
-            <td style="text-align:left"><div style="margin-left: 5px">KT02</div></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>1</td>
-            <td>$1.00</td>
-            <td>$1.00</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>1</td>
-            <td>$0.00</td>
-            <td>$0.00</td>
-            </tr>
-        </table>
-        <style>
-            .full-width-table {
-                width: 100%;
-                text-align: center; /* Center align all content */
-            }
-        </style>
-            `;
-            // Set the above `html` as Summary HTML
-        frm.set_df_property("custom_test", "options", html);
+
+        if(frm.is_dirty()){
+            let message_html = `
+            <div class="mb-5">Please Save From to Get Summary Data.</div>
+            `
+            frm.set_df_property("custom_test", "options", message_html);
+        }
+        
+        if(frm.is_new()){
+            let message_html = `
+            <div class="mb-5">Please Enter Data and Save From to Get Summary Data.</div>
+            `
+            frm.set_df_property("custom_test", "options", message_html);
+        }
+        else{
+            frappe.call({
+                method:"harness.api.task.get_summary",
+                args: {
+                    job: frm.doc.name
+                },
+                callback: function(r){
+                    frm.set_df_property("custom_test", "options", r.message);
+                }
+            })
+        }
+
+        frm.fields_dict['custom_resources1'].grid.get_field('service_item').get_query = function(doc, cdt, cdn) {
+            return {
+                filters: [
+                    ['is_stock_item', '=', 0]
+                ]
+            };
+        };
+        frm.fields_dict['custom_resources'].grid.get_field('service_item').get_query = function(doc, cdt, cdn) {
+            return {
+                filters: [
+                    ['is_stock_item', '=', 0]
+                ]
+            };
+        };
+
+        calculate_and_set_summed_values(frm);    
     },
+
+    onload: function(frm){
+        get_stock_summary_data(frm);
+    },
+   
     custom_button: function(frm){
-	    window.location.href = "/app/job-page"
-	}
+        frappe.db.get_value('Sales Order', {"name": frm.doc.custom_sales_order }, 'customer')
+        .then(value => {
+            // Do something with the value
+            console.log("customer", value.message.customer);
+            window.location.href = `/app/job-page?job=${frm.doc.name}&customer=${value.message.customer}&sales_order=${frm.doc.custom_sales_order}`
+        })
+        .catch(err => {
+            // Handle error
+            console.log(err);
+        });
+	},
+    
+    // Trigger when a row in the child table is changed
+    validate: function(frm) {
+        calculate_and_set_summed_values(frm);
+    }
 
 });
 
 frappe.ui.form.on('Mate', {
+    amount: function(frm) {
+        sum_of_m_amount(frm);
+        sum_of_r_amount(frm);
+    },
+    quentity: function(frm, cdt, cdn) {
+        calculateAmount(frm, cdt, cdn);
+    },
+    rate: function(frm, cdt, cdn) {
+        calculateAmount(frm, cdt, cdn);
+    }
+});
+
+frappe.ui.form.on('Material', {
     amount: function(frm) {
         sum_of_m_amount(frm);
         sum_of_r_amount(frm);
@@ -325,9 +246,6 @@ function create_timesheet(frm){
                 frappe.msgprint("Error creating Timesheets: " + error);
             });
 
-
-
-
     });
 }
 
@@ -453,3 +371,79 @@ function create_sales_invoice(frm){
 //             refresh_field('items');
 //     });
 // }
+
+
+function calculate_and_set_summed_values(frm) {
+    // Initialize a dictionary to store the sums for rate, amount, and qty
+    let summed_values = {};
+
+    if (frm.doc.custom_resources1){
+    // Loop through the first child table
+    frm.doc.custom_resources1.forEach(row => {
+        if (!summed_values[row.service_item]) {
+            summed_values[row.service_item] = {
+                rate: 0,
+                amount: 0,
+                qty: 0
+            };
+        }
+        summed_values[row.service_item].rate += row.rate;
+        summed_values[row.service_item].amount += row.total_spend_hours;
+        summed_values[row.service_item].qty += row.spent_hours;
+    });
+
+    // Loop through the summed values and update or add rows in the second child table
+    for (let service_item in summed_values) {
+        let exists = false;
+
+        // Check if the row already exists in the second child table
+        frm.doc.custom_materials1.forEach(row => {
+            if (row.material_item === service_item && row.type === "Labours") {
+                // Update the existing row
+                row.rate = summed_values[service_item].rate;
+                row.amount = summed_values[service_item].amount;
+                row.quentity = summed_values[service_item].qty;
+                exists = true;
+            }
+        });
+
+        // If the row does not exist, create a new row
+        if (!exists) {
+            let new_row = frm.add_child("custom_materials1");
+            new_row.material_item = service_item;
+            new_row.rate = summed_values[service_item].rate;
+            new_row.amount = summed_values[service_item].amount;
+            new_row.quentity = summed_values[service_item].qty;
+            new_row.type = "Labours";
+        }
+    }
+
+}
+
+    // Refresh the field to show the changes
+    frm.refresh_field("custom_materials1");
+}
+
+function get_stock_summary_data(frm){
+    if (frm.doc.custom_mterials && Array.isArray(frm.doc.custom_mterials)) {
+        frappe.call({
+            method: "harness.api.task.set_stock_summary_data_in_job",
+            args: {
+                job: frm.doc.name
+            },
+            callback: function(res){
+                console.log("res", res)
+                res.message.forEach(function(row){
+                    let row_name = row["row_name"]
+                    frappe.model.set_value("Mate", row_name, "available_quantity", row["available_qty"])
+                    frappe.model.set_value("Mate", row_name, "actual_quantity", row["actual_qty"])
+                    frappe.model.set_value("Mate", row_name, "order_quantity", row["order_qty"])
+                    frappe.model.set_value("Mate", row_name, "reserved_quantity", row["reserved_qty"])
+                    frappe.model.set_value("Mate", row_name, "to_be_order_quantity", row["to_be_order_qty"])
+                })
+                frm.refresh_field("custom_mterials")
+            }
+        })
+        frm.save()
+    }
+}

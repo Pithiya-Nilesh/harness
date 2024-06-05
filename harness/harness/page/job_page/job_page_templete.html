@@ -1,152 +1,115 @@
 <head>
-    <style>
-        #getDataBtn {
-            padding: 8px 16px;
-            background-color:  #2490ef; /* Green */
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
+  <style>
+      #getDataBtn {
+          padding: 8px 16px;
+          background-color:  #2490ef; /* Green */
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 16px;
+      }
 
-        /* Change button color when hovered over */
-        #getDataBtn:hover {
-            background-color:  #2490ef;
-        }
+      /* Change button color when hovered over */
+      #getDataBtn:hover {
+          background-color:  #2490ef;
+      }
 
-        .full-width-table {
-            width: 100%;
-            text-align: center; /* Center align all content */
-        }
-        .table-container {
-            display: flex;
-            flex-direction: column;
-        }
+      .full-width-table {
+          width: 100%;
+          text-align: center; /* Center align all content */
+      }
+      .table-container {
+          display: flex;
+          flex-direction: column;
+      }
 
-        #getDataBtn {
-            align-self: flex-end;
-            margin-top: 10px;
-        }
-    </style>
+      #getDataBtn {
+          align-self: flex-end;
+          margin-top: 10px;
+      }
+  </style>
 </head>
 <div class="table-container">
-<table border="1" class="full-width-table mb-3">
-    <tr>
-      <th rowspan="2">Description</th>
-      <th colspan="3">Planned Costing</th>
-      <th colspan="3">Actual Costing</th>
-      <th colspan="3">Previously Invoiced</th>
-      <th colspan="3">Available to be Invoiced</th>
-      <th colspan="3">To be Invoiced</th>
-    </tr>
-    <tr>
-      <th>Qty</th>
-      <th>Rate</th>
-      <th>Amount</th>
-      <th>Qty</th>
-      <th>Rate</th>
-      <th>Amount</th>
-      <th>Qty</th>
-      <th>Rate</th>
-      <th>Amount</th>
-      <th>Qty</th>
-      <th>Rate</th>
-      <th>Amount</th>
-      <th>Qty</th>
-      <th>Rate</th>
-      <th>Amount</th>
-    </tr>
-    <tr>
-      <td>KT02</td>
-      <td>2</td>
-      <td>$10.00</td>
-      <td>$20.00</td>
-      <td>2</td>
-      <td>$5.00</td>
-      <td>$10.00</td>
-      <td>1</td>
-      <td>$10.00</td>
-      <td>$10.00</td>
-      <td>1</td>
-      <td>$10.00</td>
-      <td>$10.00</td>
-      <td><input type="text" value="" style="width: 50px; text-align: center;"></td>
-      <td>$10.00</td>
-      <td>$10.00</td>
-    </tr>
-    <tr>
-      <td>KT01</td>
-      <td>1</td>
-      <td>$5.00</td>
-      <td>$5.00</td>
-      <td>1</td>
-      <td>$2.00</td>
-      <td>$2.00</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td>1</td>
-      <td>$5.00</td>
-      <td>$5.00</td>
-      <td><input type="text" value="" style="width: 50px; text-align: center;"></td>
-      <td>$5.00</td>
-      <td>$5.00</td>
-    </tr>
-    <tr>
-      <td>SL01</td>
-      <td>1</td>
-      <td>$2.00</td>
-      <td>$2.00</td>
-      <td>1</td>
-      <td>$0.50</td>
-      <td>$0.50</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td>1</td>
-      <td>$2.00</td>
-      <td>$2.00</td>
-      <td><input type="text" value="" style="width: 50px; text-align: center;"></td>
-      <td>$2.00</td>
-      <td>$2.00</td>
-    </tr>
-    <tr>
-      <td>PT-76845</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td>1</td>
-      <td>$1.00</td>
-      <td>$1.00</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td>1</td>
-      <td>$0.00</td>
-      <td>$0.00</td>
-      <td><input type="text" value="" style="width: 50px; text-align: center;"></td>
-      <td>$0.00</td>
-      <td>$0.00</td>
-    </tr>
-    <tr>
-      <td>KT02</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td>1</td>
-      <td>$1.00</td>
-      <td>$1.00</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td>1</td>
-      <td>$0.00</td>
-      <td>$0.00</td>
-      <td><input type="text" value="" style="width: 50px; text-align: center;"></td>
-      <td>$0.00</td>
-      <td>$0.00</td>
-    </tr>
+<table border="1" id="table" class="full-width-table mb-3">
+  <tr>
+    <th rowspan="2">Description</th>
+    <th colspan="3">Planned Costing</th>
+    <th colspan="3">Actual Costing</th>
+    <th colspan="3">Previously Invoiced</th>
+    <th colspan="3">Available to be Invoiced</th>
+    <th colspan="3">To be Invoiced</th>
+  </tr>
+  <tr>
+    <th>Qty</th>
+    <th>Price</th>
+    <th>Amount</th>
+    <th>Qty</th>
+    <th>Cost</th>
+    <th>Amount</th>
+    <th>Qty</th>
+    <th>Price</th>
+    <th>Amount</th>
+    <th>Qty</th>
+    <th>Price</th>
+    <th>Amount</th>
+    <th>Qty</th>
+    <th>Price</th>
+    <th>Amount</th>
+  </tr>
+  
+  {% $.each(data, (idx, row) => { %}
+    {% if row.item %}
+      <tr>
+        <td style="text-align: left;"><div style="margin-left: 5px">{{row.item}}</td>
+
+        <td>{{ row.material_qty || "" }}</td>
+        <td>{{ row.material_price || "" }}</td>
+        <td>{{ row.material_amount || "" }}</td>
+
+        <td>{{ row.actual_qty || "" }}</td>
+        <td>{{ row.actual_cost || "" }}</td>
+        <td>{{ row.actual_amount || "" }}</td>
+
+        <td>{{ row.invoiced_qty || "" }}</td>
+        <td>{{ row.invoiced_price || "" }}</td>
+        <td>{{ row.invoiced_amount || "" }}</td>
+
+        <td>{{ row.available_qty || "" }}</td>
+        <td>{{ row.available_price || "" }}</td>
+        <td>{{ row.available_amount || "" }}</td>
+
+        <td><input type="text" class="{{row.available_qty}} qty_input" id="{{row.available_qty}}" style="width: 50px; text-align: center;"></td>
+        <td><input type="text" class="{{row.item}} {{row.available_price}} price_input" id="{{row.available_price}}" style="width: 50px; text-align: center;"></td>
+        <td></td>
+      </tr>
+    {% else %}
+      <tr style="background-color: #c8c8c8">
+          <td style="text-align: left;"><div style="margin-left: 20px">{{row.bom_item}}</td>
+
+          <td>{{ row.material_qty || "" }}</td>
+          <td>{{ row.material_price || "" }}</td>
+          <td>{{ row.material_amount || "" }}</td>
+
+          <td>{{ row.actual_qty || "" }}</td>
+          <td>{{ row.actual_cost || "" }}</td>
+          <td>{{ row.actual_amount || "" }}</td>
+
+          <td>{{ row.invoiced_qty || "" }}</td>
+          <td>{{ row.invoiced_price || "" }}</td>
+          <td>{{ row.invoiced_amount || "" }}</td>
+
+          <td>{{ row.available_qty || "" }}</td>
+          <td>{{ row.available_price || "" }}</td>
+          <td>{{ row.available_amount || "" }}</td>
+
+          <td><input type="text" class="{{row.available_qty}} qty_input" id="{{row.available_qty}}" style="width: 50px; text-align: center;"></td>
+          <td><input type="text" class="{{row.item}} {{row.available_price}} price_input" id="{{row.available_price}}" style="width: 50px; text-align: center;"></td>
+          <td></td>
+        </tr>
+    {% endif %}
+  {% }) %}
+
 </table>
 
 <button id="getDataBtn">Create Sales Invoice</button>

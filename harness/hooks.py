@@ -31,7 +31,8 @@ doctype_js = {"Sales Order" : "public/js/sales_order.js",
               "Task": "public/js/task.js",
               "Sales Invoice": "public/js/sales_invoice.js",
               "Timesheet": "public/js/timesheet.js",
-              "Stock Entry": "public/js/stock_entry.js"
+              "Stock Entry": "public/js/stock_entry.js",
+              "Quotation": "public/js/quotation.js"
             }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -133,12 +134,27 @@ doc_events = {
 		# "on_cancel": "method",
 		# "on_trash": "method"
 	},
-    "Sales Order": {
-        "on_cancel": "harness.api.task.cancelled_status_in_jobs",
+  "Sales Order": {
+      "on_update": "harness.api.utils.set_section_name_in_db",
+      "on_cancel": "harness.api.task.cancelled_status_in_jobs",
 	},
-    "Task": {
-        "on_update": "harness.api.task.sum_of_all_data",
-	}
+  "Task": {
+    "on_update": "harness.api.task.sum_of_all_data",
+    # "on_update": "harness.api.task.set_labour_total"
+	},
+  "Sales Invoice": {
+    # "on_submit": "harness.api.sales_invoice.set_invoiced_qty",
+    "on_update": "harness.api.sales_invoice.set_invoiced_qty",
+    "on_update": "harness.api.utils.set_section_name_in_db",
+    "on_cancel": "harness.api.sales_invoice.map_canclled_invoice_with_job",
+	},
+  "Quotation": {
+    "on_update": "harness.api.utils.set_section_name_in_db",
+  },
+  "Purchase Invoice": {
+    "on_submit": "harness.api.purchase_invoice.set_data_into_job_actual_costing_from_pi",
+    "on_update": "harness.api.purchase_invoice.set_expense_account"
+  }
 }
 
 # Scheduled Tasks
