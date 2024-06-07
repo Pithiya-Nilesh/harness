@@ -29,45 +29,6 @@ def get_table_data_for_html_for_multiple_jobs(sales_order):
 
 
 @frappe.whitelist()
-def create_jobs(name):
-    """ create jobs based on sections in sales order """
-    so = frappe.get_doc("Sales Order", name)
-    child_table_data = so.get("items")
-    count = 0
-    sections = {}
-    for row in child_table_data:
-        section = row.custom_section_name
-        if section not in sections:
-            sections[section] = []
-        sections[section].append(row)
-
-    for section, rows in sections.items():
-        task = frappe.new_doc("Task")
-        task.custom_sales_order = so.name
-        task.subject = section
-        for row in rows:
-            
-            actual_qty = get_actual_qty(row.item_code, row.warehouse)
-            reserved_qty = row.qty
-            
-            child = task.append('custom_mterials', {})
-            child.type =  row.custom_type
-            child.material_item = row.item_code
-            child.quentity = row.qty
-            child.rate = row.rate
-            child.amount = row.amount
-            child.actual_quantity = actual_qty
-            child.available_quantity = int(actual_qty) - int(reserved_qty)
-            child.reserved_quantity = reserved_qty
-            child.to_be_order_quantity = int(reserved_qty) - int(actual_qty)
-            
-        count += 1
-        task.insert()
-        frappe.db.commit()
-    return count
-
-
-@frappe.whitelist()
 def get_stock_summary_data(so_name):
     html = ""
     related_jobs = frappe.db.get_list("Task", filters={"custom_sales_order": so_name}, fields=["name", "custom_sales_order"])
@@ -76,7 +37,7 @@ def get_stock_summary_data(so_name):
         html += get_stock_summary(job.name)
         
     return html
-    
+
 
 def get_stock_summary(job):
     """ get data for stock summary visible in stock summary tab in sales order doctype """
@@ -119,7 +80,8 @@ def get_stock_summary(job):
     """
 
     return html
-    
+
+
 def get_stock_summary_html_data(job):
     job = frappe.get_doc("Task", job)
     data_list = []
@@ -128,3 +90,220 @@ def get_stock_summary_html_data(job):
 
     return data_list
 
+
+@frappe.whitelist()
+def create_jobs(name, create_without_reserved):
+    """ create jobs based on sections in sales order """
+
+    if int(create_without_reserved) == 0:
+        sql = f"""
+            SELECT sum(qty) as required_qty, warehouse, item_code from `tabSales Order Item` where parent="{name}" and custom_type="Materials" group by warehouse, item_code
+        """
+        
+        required_qty_list = frappe.db.sql(sql, as_dict=True)
+        print("\n\n required qty", required_qty_list)
+        is_item_available, available_qty_and_required_qty_list = check_item_is_available(required_qty_list)
+        
+        if is_item_available:
+            print("\n\n in if")
+            html = get_reserved_item_html(is_item_available, available_qty_and_required_qty_list)
+            return "HTML", html
+        
+        else:
+            print("\n\n in else")
+            so = frappe.get_doc("Sales Order", name)
+            child_table_data = so.get("items")
+            count = 0
+            sections = {}
+            
+            for row in child_table_data:
+                section = row.custom_section_name
+                if section not in sections:
+                    sections[section] = []
+                sections[section].append(row)
+
+            for section, rows in sections.items():
+                task = frappe.new_doc("Task")
+                task.custom_sales_order = so.name
+                task.subject = section
+                for row in rows:
+                    
+                    actual_qty = get_actual_qty(row.item_code, row.warehouse)
+                    reserved_qty = row.qty
+                    
+                    child = task.append('custom_mterials', {})
+                    child.type =  row.custom_type
+                    child.material_item = row.item_code
+                    child.quentity = row.qty
+                    child.rate = row.rate
+                    child.amount = row.amount
+                    child.actual_quantity = actual_qty
+                    child.available_quantity = int(actual_qty) - int(reserved_qty)
+                    child.reserved_quantity = reserved_qty
+                    child.to_be_order_quantity = int(reserved_qty) - int(actual_qty)
+                count += 1
+                task.insert()
+                frappe.db.commit()
+            return "Created", count
+    else:
+        so = frappe.get_doc("Sales Order", name)
+        child_table_data = so.get("items")
+        count = 0
+        sections = {}
+        
+        for row in child_table_data:
+            section = row.custom_section_name
+            if section not in sections:
+                sections[section] = []
+            sections[section].append(row)
+
+        for section, rows in sections.items():
+            task = frappe.new_doc("Task")
+            task.custom_sales_order = so.name
+            task.subject = section
+            for row in rows:
+                
+                actual_qty = get_actual_qty(row.item_code, row.warehouse)
+                reserved_qty = row.qty
+                
+                child = task.append('custom_mterials', {})
+                child.type =  row.custom_type
+                child.material_item = row.item_code
+                child.quentity = row.qty
+                child.rate = row.rate
+                child.amount = row.amount
+                child.actual_quantity = actual_qty
+                child.available_quantity = int(actual_qty) - int(reserved_qty)
+                # child.reserved_quantity = reserved_qty
+                # child.to_be_order_quantity = int(reserved_qty) - int(actual_qty)
+                
+            count += 1
+            task.insert()
+            frappe.db.commit()
+        return "Created", count
+
+def check_item_is_available(required_qty_list):
+    """ in this function check reserved qty for job and also check item and warehouse wise. there job and task is same represent task doctype. """
+    
+    alredy_reserved_qty = 0
+    reserved_job_list = []
+    available_qty_and_required_qty_list = []
+    limit = False
+    
+    open_tasks = frappe.db.get_list("Task", filters={"status": "Open"}, fields=["name"], pluck="name")
+    
+    for i in required_qty_list:
+        actual_qty = get_actual_qty(i.item_code, i.warehouse)
+        for open_task in open_tasks:
+            task = frappe.get_doc("Task", open_task)
+            for row in task.custom_mterials:
+                if row.material_item == i.item_code and row.source_warehouse == i.warehouse and row.type == "Materials":
+                    alredy_reserved_qty += int(row.reserved_quantity) if row.reserved_quantity else 0
+                    if open_task not in reserved_job_list:
+                        reserved_job_list.append({"job": open_task, "priority": task.priority, "item": row.material_item or "", "warehouse": row.source_warehouse or "", "qty": row.reserved_quantity or 0})
+                # else:
+                #     print("\n\n in else")
+             
+                    
+        available_qty = int(actual_qty) - int(alredy_reserved_qty)
+        
+        print("\n\navailable", available_qty)
+        print("\n\n required_qty", i.required_qty)
+        
+        if available_qty < i.required_qty:
+            limit = True
+            need = 0
+            need = int(i.required_qty) - int(available_qty)
+            print("\n\n out of qty", i.item_code)
+            available_qty_and_required_qty_list.append({"item": i.item_code, "warehouse": i.warehouse or "", "available_qty": available_qty or 0, "required_qty": i.required_qty or 0, "need": need or 0})
+            pass
+        else:
+            print("\n\n yes in qty", i.item_code)
+            pass
+        
+    final_list = make_job_items_group(reserved_job_list)
+    
+    print("\n\n asdf", reserved_job_list)
+    print("\n\n final list", final_list)
+    
+    return final_list if limit else [], available_qty_and_required_qty_list
+
+
+def make_job_items_group(reserved_job_list):
+    grouped_data = {}
+    for entry in reserved_job_list:
+        job = entry['job']
+        item_details = {'item': entry['item'], 'warehouse': entry['warehouse'], 'qty': entry['qty']}
+        if job not in grouped_data:
+            grouped_data[job] = {'priority': entry['priority'], 'items': [item_details]}
+        else:
+            grouped_data[job]['items'].append(item_details)
+    result = [{'job': job, 'priority': details['priority'], 'items': details['items']} for job, details in grouped_data.items()]
+    
+    return result
+
+
+def get_reserved_item_html(reserved_job_details, available_qty_and_required_qty_list):
+    print("\n\n asdf", available_qty_and_required_qty_list)
+    html = """ 
+        <div class="job_details"> 
+        <h5>Job Items Summary</h5><hr>
+        <table border="1" class="full-width-table job_table_s" id="{i.get('job')}">
+            <tr>
+                <th>Item</th>
+                <th>Warehouse</th>
+                <th>Available Qty</th>
+                <th>Required Qty</th>
+                <th>Needed to Create Job</th>
+            </tr>
+    """
+    
+    for a in available_qty_and_required_qty_list:
+        html += f"""
+            <tr>
+                <td>{a.get('item')}</td>
+                <td>{a.get('warehouse', "")}</td>
+                <td>{a.get('available_qty', "")}</td>
+                <td>{a.get('required_qty', "")}</td>
+                <td>{a.get('need', "")}</td>
+            </tr>
+        """
+    html += """</table><hr>"""
+    html += """<h5 class="mt-5">Job Wise Reserved Quantity Summary</h5><hr>"""    
+    for i in reserved_job_details:
+        html += f"""
+            <div><strong>Job: <a href="/app/task/{i.get('job')}"><span class="text-primary">{i.get('job')}</span></strong></a></div>
+            <div><strong>Priority: <span class="text-primary">{i.get('priority')}</span></strong></div>
+        """
+    
+        html += f"""
+            <table border="1" class="full-width-table mb-5 job_table" id="{i.get('job')}">
+            <div><input type="checkbox" id="{i.get('job')}" name="{i.get('job')}" value="{i.get('job')}">
+            <label for="{i.get('job')}">Remove reserve qty from {i.get('job')}</label></div>
+                <tr>
+                    <th>Item</th>
+                    <th>Warehouse</th>
+                    <th>Reserved Qty</th>
+                </tr>
+        """
+        
+        for j in i["items"]:
+            html += f"""
+                <tr>
+                    <td>{j.get('item')}</td>
+                    <td>{j.get('warehouse', "")}</td>
+                    <td>{j.get('qty', "")}</td>
+                </tr>
+            """
+    
+        html += """</table></div>"""
+        
+    html += """
+        <style>
+            .full-width-table {
+                width: 100%;
+                text-align: center; /* Center align all content */
+            },
+        </style>
+    """
+    return html

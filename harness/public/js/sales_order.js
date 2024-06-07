@@ -326,6 +326,7 @@ frappe.ui.form.on("Sales Order", {
             `
             frm.set_df_property("custom_test", "options", message_html);
         }
+
         else{
             frappe.call({
                 method:"harness.api.sales_order.get_summary_data",
@@ -333,7 +334,15 @@ frappe.ui.form.on("Sales Order", {
                     so_name: frm.doc.name
                 },
                 callback: function(r){
-                    frm.set_df_property("custom_test", "options", r.message);
+                    if(r.message){
+                        frm.set_df_property("custom_test", "options", r.message);
+                    }
+                    else{
+                        let message_html = `
+                            <div class="mb-5">There are no jobs related to this sales order.</div>
+                            `
+                        frm.set_df_property("custom_test", "options", message_html);
+                    }
                 }
             })
         }
@@ -344,7 +353,15 @@ frappe.ui.form.on("Sales Order", {
                 so_name: frm.doc.name
             },
             callback: function(r){
-                frm.set_df_property("custom_stock_data", "options", r.message);
+                if (r.message){
+                    frm.set_df_property("custom_stock_data", "options", r.message);
+                }
+                else{
+                    let message_html = `
+                        <div class="mb-5">There are no stock summary related to this sales order.</div>
+                    `
+                    frm.set_df_property("custom_test", "options", message_html);
+                }
             }
         })
 
@@ -420,17 +437,22 @@ frappe.ui.form.on("Sales Order", {
                 frappe.call({
                     method: "harness.api.sales_order.create_jobs",
                     args:{
-                        name: frm.doc.name
+                        name: frm.doc.name,
+                        create_without_reserved: 0
                     },
                     callback: function(res){
-                        let message = `${res.message} Jobs Successfully Created!`
-                        frappe.msgprint(message)
-                        console.log("res", res)
+                        if (res.message[0] === "Created"){
+                            let message = `${res.message[1]} Jobs Successfully Created!`
+                            frappe.msgprint(message)
+                            console.log("res", res)
+                        }
+                        else if (res.message[0] === "HTML"){
+                            create_popup(res.message[1])
+                        }
                     },
                     freeze: true,
                     freeze_message: "Please wait we are creating job based on this sales order.",
-                })
-                
+                })                
             })
         }
         
@@ -454,3 +476,144 @@ frappe.ui.form.on("Sales Order", {
     }
 });
 
+function create_popup(reserved_item){
+   console.log("asdf", reserved_item)
+    let d = new frappe.ui.Dialog({
+        title: 'Summary For Reserved And Available Items.',
+        fields: [
+            {
+                fieldtype: 'HTML',
+                fieldname: 'html_content'
+            },
+            {
+                fieldtype: "Check",
+                fieldname: "create_this_jobs_without_reserved_quantity",
+                label: "Create This Jobs Without Reserved Quantity"
+            }
+        ],
+        size: 'large', // small, large, extra-large
+        primary_action_label: 'Create Job',
+
+        primary_action: function(values) {
+            console.log("create_this_jobs_without_reserved_quantity", values.create_this_jobs_without_reserved_quantity)
+            if (values.create_this_jobs_without_reserved_quantity === 1){
+                frappe.call({
+                    method: "harness.api.sales_order.create_jobs",
+                    args:{
+                        name: cur_frm.doc.name,
+                        create_without_reserved: 1
+                    },
+                    callback: function(res){
+                        if (res.message[0] === "Created"){
+                            let message = `${res.message[1]} Jobs Successfully Created!`
+                            frappe.msgprint(message)
+                            d.fields_dict.html_content.$wrapper.html("");
+                            console.log("res", res)
+                        }
+                    },
+                    freeze: true,
+                    freeze_message: "Please wait we are creating job based on this sales order.",
+                })
+            }
+            
+            else{
+                var tableData = getTableData();
+                console.log("tableData", tableData)
+                d.fields_dict.html_content.$wrapper.html("");
+                // call second api to update value in existing job and then create new jobs
+            }
+            d.hide();
+        }
+    });
+   
+        
+    d.fields_dict.html_content.$wrapper.html(reserved_item);
+    d.show();
+
+    function getTableData() {
+        console.log("called");
+
+        // var tables = document.getElementsByClassName('job_table');
+        // var data = [];
+        // for (var k = 0; k < tables.length; k++) {
+        //     var table = tables[k];
+        //     for (var i = 1; i < table.rows.length; i++) {
+        //         var row = table.rows[i];
+        //         var rowData = [];
+        //         for (var j = 0; j < row.cells.length; j++) {
+        //             if (j === row.cells.length - 1 && row.cells[j].querySelector('input')) {
+        //                 rowData.push(row.cells[j].querySelector('input').value);
+        //             } else {
+        //                 rowData.push(row.cells[j].innerHTML);
+        //             }
+        //         }
+        //         data.push(rowData);
+        //     }
+        // }
+        // return data;
+
+
+        // const jobsData = [];
+
+        // const jobContainers = document.querySelectorAll('div.job_details');
+        // jobContainers.forEach(jobContainer => {
+        //     const jobSummaries = jobContainer.querySelectorAll('table.full-width-table.mb-5.job_table');
+        //     jobSummaries.forEach(jobSummary => {
+        //         const jobName = jobSummary.id || 'unknown'; // Use ID or fallback to 'unknown'
+        //         const items = [];
+        //         const rows = jobSummary.getElementsByTagName('tr');
+        //         for (let i = 1; i < rows.length; i++) { // Skip the header row
+        //             const cols = rows[i].getElementsByTagName('td');
+        //             const itemData = {
+        //                 "item": cols[0].textContent,
+        //                 "warehouse": cols[1].textContent,
+        //                 "qty": parseInt(cols[2].textContent)
+        //             };
+        //             items.push(itemData);
+        //         }
+        //         const jobData = {
+        //             "job": jobName,
+        //             "items": items
+        //         };
+        //         jobsData.push(jobData);
+        //     });
+        // });
+
+        // console.log(JSON.stringify(jobsData, null, 2));
+        // return jobsData
+
+
+        // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+        const jobs = [];
+        const jobTables = document.querySelectorAll('.job_table');
+        
+        jobTables.forEach(table => {
+        const job = table.id;
+        const items = [];
+        
+        const checkbox = document.querySelector(`input[type="checkbox"][value="${job}"]:checked`);
+        const isChecked = checkbox ? true : false;
+        
+        const rows = table.querySelectorAll('tr');
+        rows.forEach((row, index) => {
+            if (index > 0) {
+            const cells = row.querySelectorAll('td');
+            const item = cells[0].textContent.trim();
+            const warehouse = cells[1].textContent.trim();
+            const qty = parseFloat(cells[2].textContent.trim());
+            
+            items.push({ item, warehouse, qty });
+            }
+        });
+        
+        jobs.push({ job, items, isChecked });
+        });
+        
+        console.log(JSON.stringify(jobs, null, 2));
+    
+        return jobs
+    }
+
+}

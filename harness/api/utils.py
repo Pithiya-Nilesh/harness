@@ -77,3 +77,12 @@ def get_order_qty(item, warehouse, job):
     qty = frappe.db.sql(sql)
     print("qty", qty)
     return qty if qty else 0
+
+
+def is_service_item(item):
+    is_service_item = frappe.db.get_value("Item", filters={"name": item}, fieldname=["is_stock_item"])
+    return is_service_item
+    
+def get_item_group(item):
+    item_group = frappe.db.get_value("Item", filters={"name": item}, fieldname=["item_group"])
+    return item_group

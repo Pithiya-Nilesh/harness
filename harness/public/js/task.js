@@ -14,6 +14,7 @@ frappe.ui.form.on("Task", {
 
         frm.page.set_inner_btn_group_as_primary(__('Create'));
 
+        jobCheckList(frm)
 
         if(frm.is_dirty()){
             let message_html = `
@@ -28,6 +29,7 @@ frappe.ui.form.on("Task", {
             `
             frm.set_df_property("custom_test", "options", message_html);
         }
+
         else{
             frappe.call({
                 method:"harness.api.task.get_summary",
@@ -47,6 +49,7 @@ frappe.ui.form.on("Task", {
                 ]
             };
         };
+
         frm.fields_dict['custom_resources'].grid.get_field('service_item').get_query = function(doc, cdt, cdn) {
             return {
                 filters: [
@@ -438,12 +441,332 @@ function get_stock_summary_data(frm){
                     frappe.model.set_value("Mate", row_name, "available_quantity", row["available_qty"])
                     frappe.model.set_value("Mate", row_name, "actual_quantity", row["actual_qty"])
                     frappe.model.set_value("Mate", row_name, "order_quantity", row["order_qty"])
-                    frappe.model.set_value("Mate", row_name, "reserved_quantity", row["reserved_qty"])
+                    // frappe.model.set_value("Mate", row_name, "reserved_quantity", row["reserved_qty"])
                     frappe.model.set_value("Mate", row_name, "to_be_order_quantity", row["to_be_order_qty"])
                 })
                 frm.refresh_field("custom_mterials")
             }
         })
-        frm.save()
+        // frm.save()
     }
+}
+
+function jobCheckList(frm){
+    let checklisthtml = ` <table border="1" class="full-width-table mb-3">
+        <thead>
+            <th>Job Status</th>
+            <th></th>
+            <th style="text-align: left;">Job Checklist</th>
+            <th>Employee Name</th>
+            <th>Date and Time</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td rowspan="2">Open</td>
+                <td><input type="checkbox" id="checkbox_row1" onclick="logCheckboxValue(event,'row1')"></td>
+                <td id="job_check_row1" style="text-align: left;"><label for="checkbox_row1">Create Asset in SafetyCulture</label></td>
+                <td id="employee_name_row1"></td>
+                <td id="date_row1"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" id="checkbox_row2" onclick="logCheckboxValue(event,'row2')"></td>
+                <td id="job_check_row2" style="text-align: left;"><label for="checkbox_row2">Create Job</label></td>
+                <td id="employee_name_row2"></td>
+                <td id="date_row2"></td>
+            </tr>
+            <tr>
+                <td id="job_status_row3" rowspan="13">Planning</td>
+                <td><input type="checkbox" id="checkbox_row3" onclick="logCheckboxValue(event,'row3')"></td>
+                <td id="job_check_row3" style="text-align: left;"><label for="checkbox_row3">Parts Ordered Factory</label></td>
+                <td id="employee_name_row3"></td>
+                <td id="date_row3"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" id="checkbox_row4" onclick="logCheckboxValue(event,'row4')"></td>
+                <td id="job_check_row4" style="text-align: left;"><label for="checkbox_row4">Parts Ordered Local</label></td>
+                <td id="employee_name_row4"></td>
+                <td id="date_row4"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" id="checkbox_row5" onclick="logCheckboxValue(event,'row5')"></td>
+                <td id="job_check_row5" style="text-align: left;"><label for="checkbox_row5">Parts Received</label></td>
+                <td id="employee_name_row5"></td>
+                <td id="date_row5"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" id="checkbox_row6" onclick="logCheckboxValue(event,'row6')"></td>
+                <td id="job_check_row6" style="text-align: left;"><label for="checkbox_row6">Parts Ready to Ship</label></td>
+                <td id="employee_name_row6"></td>
+                <td id="date_row6"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" id="checkbox_row7" onclick="logCheckboxValue(event,'row7')"></td>
+                <td id="job_check_row7" style="text-align: left;"><label for="checkbox_row7">Parts Shipped</label></td>
+                <td id="employee_name_row7"></td>
+                <td id="date_row7"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" id="checkbox_row8" onclick="logCheckboxValue(event,'row8')"></td>
+                <td id="job_check_row8" style="text-align: left;"><label for="checkbox_row8">Parts on Site</label></td>
+                <td id="employee_name_row8"></td>
+                <td id="date_row8"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" id="checkbox_row9" onclick="logCheckboxValue(event,'row9')"></td>
+                <td id="job_check_row9" style="text-align: left;"><label for="checkbox_row9">Job Scheduled</label></td>
+                <td id="employee_name_row9"></td>
+                <td id="date_row9"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" id="checkbox_row10" onclick="logCheckboxValue(event,'row10')"></td>
+                <td id="job_check_row10" style="text-align: left;"><label for="checkbox_row10">Employees Allocated</label></td>
+                <td id="employee_name_row10"></td>
+                <td id="date_row10"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" id="checkbox_row11" onclick="logCheckboxValue(event,'row11')"></td>
+                <td id="job_check_row11" style="text-align: left;"><label for="checkbox_row11">Site Inductions</label></td>
+                <td id="employee_name_row11"></td>
+                <td id="date_row11"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" id="checkbox_row12" onclick="logCheckboxValue(event,'row12')"></td>
+                <td id="job_check_row12" style="text-align: left;"><label for="checkbox_row12">Flights arranged</label></td>
+                <td id="employee_name_row12"></td>
+                <td id="date_row12"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" id="checkbox_row13" onclick="logCheckboxValue(event,'row13')"></td>
+                <td id="job_check_row13" style="text-align: left;"><label for="checkbox_row13">Accomodation arranged</label></td>
+                <td id="employee_name_row13"></td>
+                <td id="date_row13"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" id="checkbox_row14" onclick="logCheckboxValue(event,'row14')"></td>
+                <td id="job_check_row14" style="text-align: left;"><label for="checkbox_row14">PO 3rd Party</label></td>
+                <td id="employee_name_row14"></td>
+                <td id="date_row14"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" id="checkbox_row15" onclick="logCheckboxValue(event,'row15')"></td>
+                <td id="job_check_row15" style="text-align: left;"><label for="checkbox_row15">Work Completed</label></td>
+                <td id="employee_name_row15"></td>
+                <td id="date_row15"></td>
+            </tr>
+            <tr>
+                <td rowspan="2">Ready to Start</td>
+                <td><input type="checkbox" id="checkbox_row16" onclick="logCheckboxValue(event,'row16')"></td>
+                <td id="job_check_row16" style="text-align: left;"><label for="checkbox_row16">Push Job to Safety Culture</label></td>
+                <td id="employee_name_row16"></td>
+                <td id="date_row16"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" id="checkbox_row17" onclick="logCheckboxValue(event,'row17')"></td>
+                <td id="job_check_row17" style="text-align: left;"><label for="checkbox_row17">Push Job to ADP</label></td>
+                <td id="employee_name_row17"></td>
+                <td id="date_row17"></td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <script>
+
+
+
+    function logCheckboxValue(event, rowId) {
+        try {
+            var checkbox = event.target;
+    
+            var row = checkbox.closest('tr');
+    
+            var employeeNameCell = row.querySelector('#employee_name_' + rowId);
+            var dateCell = row.querySelector('#date_' + rowId);
+            var jobChecklistCell = row.querySelector('#job_check_' + rowId).textContent.trim();
+    
+        
+            var jobStatusCell = '';
+            if (row.querySelector('td[rowspan]')) {
+                jobStatusCell = row.querySelector('td[rowspan]').textContent.trim();
+            } else {
+                var prevRow = row.previousElementSibling;
+                while (prevRow) {
+                    if (prevRow.querySelector('td[rowspan]')) {
+                        jobStatusCell = prevRow.querySelector('td[rowspan]').textContent.trim();
+                        break;
+                    }
+                    prevRow = prevRow.previousElementSibling;
+                }
+            }
+    
+            var employeeName = '';
+            var formattedDate = '';
+    
+            if (checkbox.checked) {
+                employeeName = frappe.session.user_fullname || 'Unknown User';
+    
+                
+                var currentDate = new Date();
+                formattedDate = currentDate.toLocaleString('en-GB', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+    
+                employeeNameCell.innerHTML = employeeName;
+                dateCell.innerHTML = formattedDate;
+            } else {
+                
+                employeeNameCell.innerHTML = '';
+                dateCell.innerHTML = '';
+            }
+    
+            
+            var frm = cur_frm; // Assuming 'cur_frm' is accessible here
+            frm.clear_table('custom_job_checklist');
+    
+            
+            var checkboxes = document.querySelectorAll('input[type="checkbox"][id^="checkbox_"]');
+            var hasCheckedCheckboxes = false; 
+    
+            checkboxes.forEach(function (cb) {
+                if (cb.checked) {
+                    hasCheckedCheckboxes = true;
+                    var row = cb.closest('tr');
+                    var rowId = cb.id.split('_')[1];
+                    var employeeNameCell = row.querySelector('#employee_name_' + rowId);
+                    var dateCell = row.querySelector('#date_' + rowId);
+                    var jobChecklistCell = row.querySelector('#job_check_' + rowId).textContent.trim();
+    
+                    var jobStatusCell = '';
+                    if (row.querySelector('td[rowspan]')) {
+                        jobStatusCell = row.querySelector('td[rowspan]').textContent.trim();
+                    } else {
+                        var prevRow = row.previousElementSibling;
+                        while (prevRow) {
+                            if (prevRow.querySelector('td[rowspan]')) {
+                                jobStatusCell = prevRow.querySelector('td[rowspan]').textContent.trim();
+                                break;
+                            }
+                            prevRow = prevRow.previousElementSibling;
+                        }
+                    }
+    
+                    var employeeName = employeeNameCell ? employeeNameCell.innerHTML : '';
+                    var formattedDate = dateCell ? dateCell.innerHTML : '';
+    
+                    
+                    var logData = {
+                        jobstatus: jobStatusCell,
+                        check: cb.checked,
+                        jobchecklist: jobChecklistCell,
+                        employeename: employeeName,
+                        date: formattedDate
+                    };
+    
+                    console.log(logData);
+    
+                    
+                    var childTable = frm.fields_dict['custom_job_checklist'].grid;
+                    var newRow = childTable.add_new_row();
+    
+                    newRow.job_status = logData.jobstatus;
+                    newRow.check = logData.check;
+                    newRow.job_checklist = logData.jobchecklist;
+                    newRow.employee_name = logData.employeename;
+                    newRow.date = logData.date;
+    
+                    frm.refresh_field('custom_job_checklist');
+                }
+            });
+    
+            if (!hasCheckedCheckboxes) {
+                frm.refresh_field('custom_job_checklist');
+            }
+    
+        } catch (error) {
+            console.error('Error updating the row:', error);
+        }
+    }
+
+
+    function printChildTableData() {
+        var frm = cur_frm; 
+        var childTableData = frm.doc.custom_job_checklist || [];
+        
+        childTableData.forEach(function(row) {
+            var rowData = {
+                jobstatus: row.job_status,
+                check: row.check,
+                jobchecklist: row.job_checklist,
+                employeename: row.employee_name,
+                date: row.date
+            };
+
+            console.log("Child Table Row Data:", rowData);
+
+            // Find the matching checklist item in the HTML
+            var checkboxId = null;
+            document.querySelectorAll('td[id^="job_check_row"]').forEach(function(cell) {
+                if (cell.textContent.trim() === rowData.jobchecklist) {
+                    checkboxId = cell.querySelector('label').getAttribute('for');
+                }
+            });
+
+            if (checkboxId) {
+                var checkbox = document.getElementById(checkboxId);
+                if (checkbox && !checkbox.checked) {
+                    // Simulate a click event on the checkbox
+                    checkbox.checked = true;
+                    var clickEvent = new Event('click');
+                    checkbox.dispatchEvent(clickEvent);
+                }
+
+                // Fill Employee Name and Date manually in case they are not filled correctly by the event.
+                var rowId = checkboxId.replace('checkbox_row', '');
+                var employeeNameCell = document.getElementById('employee_name_' + rowId);
+                var dateCell = document.getElementById('date_' + rowId);
+
+                if (employeeNameCell && !employeeNameCell.innerHTML) {
+                    employeeNameCell.innerHTML = rowData.employeename || 'Unknown User';
+                }
+
+                if (dateCell && !dateCell.innerHTML) {
+                    dateCell.innerHTML = rowData.date || new Date().toLocaleString('en-GB', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true
+                    });
+                }
+            }
+        });
+    }
+
+    printChildTableData();
+    
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('input[type="checkbox"]').forEach(function(checkbox) {
+                checkbox.addEventListener('click', function(event) {
+                    logCheckboxValue(event, this.id.replace('checkbox_row', ''));
+                });
+            });
+        });
+    </script> 
+        
+        
+
+
+            <style>
+                .full-width-table {
+                    width: 100%;
+                    text-align: center; / Center align all content /
+                }
+            </style>`
+
+    frm.set_df_property("custom_checklist_html", "options", checklisthtml);
 }
