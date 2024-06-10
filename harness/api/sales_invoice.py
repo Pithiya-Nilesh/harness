@@ -63,23 +63,26 @@ def set_invoiced_qty(doc, method):
                     if j.material_item == i.item_code:
                         print("\n\n if second loop first if")
                         invoiced_qty = j.invoiced_qty + i.qty
-                        frappe.db.set_value("Mate", j.name, "invoiced_qty", invoiced_qty)
-                        frappe.db.set_value("Mate", j.name, "invoiced_rate", i.rate)
-                        frappe.db.set_value("Mate", j.name, "invoiced_amount", (i.rate * invoiced_qty))
-                        frappe.db.commit()
+                        
+                        j.invoiced_qty = invoiced_qty
+                        j.invoiced_rate = i.rate
+                        j.invoiced_amount = (i.rate * invoiced_qty)
                         
                         print("\n\n j.asdfasdf", j.available_for_invoice_qty)
+                        print("\n\n j.asdfasdf type", type(j.available_for_invoice_qty))
 
-                        if j.available_for_invoice_qty == 0.0:
+                        if j.available_for_invoice_qty == 0.0 or j.available_for_invoice_qty == '0':
                             print("\n\n if second loop second if")
-                            available_qty = j.quentity - i.qty
+                            available_qty = float(j.quentity) - float(i.qty)
                         else:
-                            available_qty = j.available_for_invoice_qty - i.qty
+                            available_qty = float(j.available_for_invoice_qty) - float(i.qty)
                         print("\n\n available_qty", available_qty)
-                        frappe.db.set_value("Mate", j.name, "available_for_invoice_qty", available_qty)
-                        frappe.db.set_value("Mate", j.name, "available_for_invoice_rate", j.rate)
-                        frappe.db.set_value("Mate", j.name, "available_for_invoice_amount", (j.rate * available_qty))
-                        frappe.db.commit()
+
+                        j.available_for_invoice_qty = available_qty
+                        j.available_for_invoice_rate = j.rate
+                        j.available_for_invoice_amount = (j.rate * available_qty)
+                job.save()
+                frappe.db.commit()
                         
                 # for k in job.custom_resources1:
                 #         if k.service_item == i.item_code:
@@ -174,14 +177,12 @@ def map_sales_invoice_from_job(dummy=""):
     customer = frappe.flags.args.customer
     job = frappe.flags.args.job
     sales_order = frappe.flags.args.sales_order
-    
     section = frappe.db.get_value("Task", job, ["subject"])
     
     si = frappe.new_doc("Sales Invoice")
     si.customer = customer
     si.selling_price_list = ""
     si.ignore_pricing_rule = 1
-    
     
     for i in data:
              

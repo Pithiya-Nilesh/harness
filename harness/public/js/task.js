@@ -8,9 +8,9 @@ frappe.ui.form.on("Task", {
             create_stock_entry(frm)
         }, __("Create"));
 
-        frm.add_custom_button("Sales Invoice", function() {
-            create_sales_invoice(frm)
-        }, __("Create")); 
+        // frm.add_custom_button("Sales Invoice", function() {
+        //     create_sales_invoice(frm)
+        // }, __("Create")); 
 
         frm.page.set_inner_btn_group_as_primary(__('Create'));
 

@@ -141,6 +141,11 @@ def create_jobs(name, create_without_reserved):
                     child.available_quantity = int(actual_qty) - int(reserved_qty)
                     child.reserved_quantity = reserved_qty
                     child.to_be_order_quantity = int(reserved_qty) - int(actual_qty)
+                    
+                    child.available_for_invoice_qty = row.qty
+                    child.available_for_invoice_rate = row.rate
+                    child.available_for_invoice_amount = row.amount
+                    
                 count += 1
                 task.insert()
                 frappe.db.commit()
@@ -162,7 +167,6 @@ def create_jobs(name, create_without_reserved):
             task.custom_sales_order = so.name
             task.subject = section
             for row in rows:
-                
                 actual_qty = get_actual_qty(row.item_code, row.warehouse)
                 reserved_qty = row.qty
                 
@@ -177,6 +181,10 @@ def create_jobs(name, create_without_reserved):
                 # child.reserved_quantity = reserved_qty
                 # child.to_be_order_quantity = int(reserved_qty) - int(actual_qty)
                 
+                child.available_for_invoice_qty = row.qty
+                child.available_for_invoice_rate = row.rate
+                child.available_for_invoice_amount = row.amount
+        
             count += 1
             task.insert()
             frappe.db.commit()
@@ -203,8 +211,7 @@ def check_item_is_available(required_qty_list):
                         reserved_job_list.append({"job": open_task, "priority": task.priority, "item": row.material_item or "", "warehouse": row.source_warehouse or "", "qty": row.reserved_quantity or 0})
                 # else:
                 #     print("\n\n in else")
-             
-                    
+                        
         available_qty = int(actual_qty) - int(alredy_reserved_qty)
         
         print("\n\navailable", available_qty)
