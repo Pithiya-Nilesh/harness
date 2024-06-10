@@ -21,7 +21,6 @@ def get_currency_formated_list(data):
     return formated_list
         
 def set_section_name_in_db(doc, method):
-    print("\n\n called")
     section_name = ""
     if doc.doctype == "Sales Order":
         for item in doc.items:
@@ -81,8 +80,9 @@ def get_order_qty(item, warehouse, job):
 
 def is_service_item(item):
     is_service_item = frappe.db.get_value("Item", filters={"name": item}, fieldname=["is_stock_item"])
-    return is_service_item
-    
+    return True if is_service_item == 0 else False
+
+       
 def get_item_group(item):
     item_group = frappe.db.get_value("Item", filters={"name": item}, fieldname=["item_group"])
     return item_group

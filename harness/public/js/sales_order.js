@@ -328,23 +328,7 @@ frappe.ui.form.on("Sales Order", {
         }
 
         else{
-            frappe.call({
-                method:"harness.api.sales_order.get_summary_data",
-                args:{
-                    so_name: frm.doc.name
-                },
-                callback: function(r){
-                    if(r.message){
-                        frm.set_df_property("custom_test", "options", r.message);
-                    }
-                    else{
-                        let message_html = `
-                            <div class="mb-5">There are no jobs related to this sales order.</div>
-                            `
-                        frm.set_df_property("custom_test", "options", message_html);
-                    }
-                }
-            })
+           get_summary_data(frm)
         }
         
         frappe.call({
@@ -469,6 +453,10 @@ frappe.ui.form.on("Sales Order", {
             }
         });
 
+    },
+
+    after_save: function(frm) {
+        get_summary_data(frm)
     },
 
     custom_create_sales_invoice: function(frm){
@@ -616,4 +604,56 @@ function create_popup(reserved_item){
         return jobs
     }
 
+}
+
+
+frappe.ui.form.on('Sales Order Item', {
+    custom_markup_: function(frm, cdt, cdn) {
+        sum_calculate_rate(frm, cdt, cdn);
+    },
+    // rate: function(frm, cdt, cdn){
+    //     sum_calculate_markup(frm, cdt, cdn);
+    // },
+});
+
+function sum_calculate_rate(frm, cdt, cdn){
+    var child = locals[cdt][cdn];
+    var markup = child.custom_markup_;
+    var rate = child.rate;
+    var unit_cost = child.custom_unit_cost;
+    var final_rate = parseFloat(((markup * unit_cost) / 100)) + parseFloat(unit_cost)
+
+    frappe.model.set_value(cdt, cdn, 'rate', final_rate);
+}
+
+// function sum_calculate_markup(frm, cdt, cdn){
+//     var child = locals[cdt][cdn];
+//     var markup = child.custom_markup_;
+//     var rate = child.rate;
+//     var unit_cost = child.custom_unit_cost;
+
+//     var final_rate = (unit_cost - rate)
+
+//     frappe.model.set_value(cdt, cdn, 'custom_markup_', final_rate);
+// }
+
+
+function get_summary_data(frm){
+    frappe.call({
+        method:"harness.api.sales_order.get_summary_data",
+        args:{
+            so_name: frm.doc.name
+        },
+        callback: function(r){
+            if(r.message){
+                frm.set_df_property("custom_test", "options", r.message);
+            }
+            else{
+                let message_html = `
+                    <div class="mb-5">There are no jobs related to this sales order.</div>
+                    `
+                frm.set_df_property("custom_test", "options", message_html);
+            }
+        }
+    })
 }

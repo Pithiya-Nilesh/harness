@@ -109,3 +109,33 @@ frappe.ui.form.on('Sales Invoice', {
     }
 });
 
+
+frappe.ui.form.on('Sales Invoice Item', {
+    custom_markup_: function(frm, cdt, cdn) {
+        sum_calculate_rate(frm, cdt, cdn);
+    },
+    // rate: function(frm, cdt, cdn){
+    //     sum_calculate_markup(frm, cdt, cdn);
+    // },
+});
+
+function sum_calculate_rate(frm, cdt, cdn){
+    var child = locals[cdt][cdn];
+    var markup = child.custom_markup_;
+    var rate = child.rate;
+    var unit_cost = child.custom_unit_cost;
+    var final_rate = parseFloat(((markup * unit_cost) / 100)) + parseFloat(unit_cost)
+
+    frappe.model.set_value(cdt, cdn, 'rate', final_rate);
+}
+
+// function sum_calculate_markup(frm, cdt, cdn){
+//     var child = locals[cdt][cdn];
+//     var markup = child.custom_markup_;
+//     var rate = child.rate;
+//     var unit_cost = child.custom_unit_cost;
+
+//     var final_rate = (unit_cost - rate)
+
+//     frappe.model.set_value(cdt, cdn, 'custom_markup_', final_rate);
+// }

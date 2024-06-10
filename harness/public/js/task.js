@@ -31,15 +31,7 @@ frappe.ui.form.on("Task", {
         }
 
         else{
-            frappe.call({
-                method:"harness.api.task.get_summary",
-                args: {
-                    job: frm.doc.name
-                },
-                callback: function(r){
-                    frm.set_df_property("custom_test", "options", r.message);
-                }
-            })
+           get_summary_data(frm)
         }
 
         frm.fields_dict['custom_resources1'].grid.get_field('service_item').get_query = function(doc, cdt, cdn) {
@@ -59,6 +51,10 @@ frappe.ui.form.on("Task", {
         };
 
         calculate_and_set_summed_values(frm);    
+    },
+
+    after_save: function(frm){
+        get_summary_data(frm)
     },
 
     onload: function(frm){
@@ -770,3 +766,16 @@ function jobCheckList(frm){
 
     frm.set_df_property("custom_checklist_html", "options", checklisthtml);
 }
+
+function get_summary_data(frm){
+    frappe.call({
+        method:"harness.api.task.get_summary",
+        args: {
+            job: frm.doc.name
+        },
+        callback: function(r){
+            frm.set_df_property("custom_test", "options", r.message);
+        }
+    })
+}
+

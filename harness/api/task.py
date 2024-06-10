@@ -27,23 +27,53 @@ def get_task_for_sales_invoice(tasks):
     print("\n\n invoice data", invoice_data)
     return invoice_data
 
+# def update_status_and_set_actual_in_jobs(doc, method):
+#     """ update status when stock entry doctype submited and also get all items and store in jb atual material table """
+#     for i in doc.items:
+#         if i.custom_job_order:
+#             frappe.db.set_value('Task', i.custom_job_order, 'custom_internal_status', 'Material Transferred')
+#             frappe.db.commit()
+#             task = frappe.get_doc("Task", i.custom_job_order)
+#             new_row = task.append("custom_materials1", {})
+#             new_row.material_item = i.item_code
+#             new_row.quentity = i.qty
+#             new_row.rate = i.basic_rate
+#             new_row.amount = i.basic_amount
+#             new_row.source_warehouse = i.s_warehouse
+#             new_row.target_warehouse = i.t_warehouse
+#             task.save()
+#         else:
+#             pass
+
 def update_status_and_set_actual_in_jobs(doc, method):
-    """ update status when stock entry doctype submited and also get all items and store in jb atual material table """
-    for i in doc.items:
-        if i.custom_job_order:
-            frappe.db.set_value('Task', i.custom_job_order, 'custom_internal_status', 'Material Transferred')
-            frappe.db.commit()
-            task = frappe.get_doc("Task", i.custom_job_order)
-            new_row = task.append("custom_materials1", {})
-            new_row.material_item = i.item_code
-            new_row.quentity = i.qty
-            new_row.rate = i.basic_rate
-            new_row.amount = i.basic_amount
-            new_row.source_warehouse = i.s_warehouse
-            new_row.target_warehouse = i.t_warehouse
-            task.save()
-        else:
-            pass
+    """Update status when stock entry doctype submitted and also store all items in jb actual material table"""
+    if method == "on_submit":
+        for i in doc.items:
+            if i.custom_job_order:
+                # Update status of associated Task
+                frappe.db.set_value('Task', i.custom_job_order, 'custom_internal_status', 'Material Transferred')
+
+                # Create or update rows in Task's custom_materials1 table
+                task = frappe.get_doc("Task", i.custom_job_order)
+                existing_row = next((row for row in task.custom_materials1 if row.material_item == i.item_code and row.source_warehouse == i.s_warehouse and row.target_warehouse == i.t_warehouse), None)
+                if existing_row:
+                    # If material exists, update its quantity, rate, and amount
+                    existing_row.quantity += i.qty
+                    existing_row.rate = i.basic_rate
+                    existing_row.amount = i.basic_amount
+                else:
+                    # If material doesn't exist, add a new row
+                    new_row = task.append("custom_materials1", {})
+                    new_row.material_item = i.item_code
+                    new_row.quantity = i.qty
+                    new_row.rate = i.basic_rate
+                    new_row.amount = i.basic_amount
+                    new_row.source_warehouse = i.s_warehouse
+                    new_row.target_warehouse = i.t_warehouse
+                task.save()
+            else:
+                pass
+
 
 @frappe.whitelist()
 def create_stock_entry(docname):
@@ -362,13 +392,13 @@ def get_table_data_for_html(job):
     # for actual_resource in job.custom_resources1:
     #     temp_list.append({ "job": job.name, "type": "actual", "is_bom_item": False, "item": actual_resource.service_item, "actual_qty": actual_resource.spent_hours, "actual_cost": actual_resource.rate, "actual_amount": actual_resource.total_spend_hours})
 
-    for invoiced in job.custom_materials1:
+    for invoiced in job.custom_mterials:
         temp_list.append({ "job": job.name, "type": "invoiced", "is_bom_item": False, "item": invoiced.material_item, "invoiced_qty": invoiced.invoiced_qty, "invoiced_price": invoiced.invoiced_rate, "invoiced_amount": invoiced.invoiced_amount})
         
     # for r_invoiced in job.custom_resources1:
     #     temp_list.append({ "job": job.name, "type": "invoiced", "is_bom_item": False, "item": r_invoiced.service_item, "invoiced_qty": r_invoiced.invoiced_qty, "invoiced_price": r_invoiced.invoiced_rate, "invoiced_amount": r_invoiced.invoiced_amount})
            
-    for available in job.custom_materials1:
+    for available in job.custom_mterials:
         temp_list.append({ "job": job.name, "type": "available", "is_bom_item": False, "item": available.material_item, "available_qty": available.available_for_invoice_qty, "available_price": available.available_for_invoice_rate, "available_amount": available.available_for_invoice_amount})
     
     # for r_available in job.custom_resources1:

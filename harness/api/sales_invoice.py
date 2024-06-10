@@ -1,18 +1,67 @@
 import frappe
 
+# def set_invoiced_qty(doc, method):
+#     """ if sales invoice submited we need to make change in actual table related to this sales invoice in job doctype. """
+#     print("\n\n set_invoiced_qty ")
+#     if doc.is_return:
+#         doc = frappe.get_doc("Sales Invoice", doc.return_against)
+#         map_canclled_invoice_with_job(doc, method)
+#     else:   
+#         for i in doc.items:
+#             if i.custom_job:
+#                 print("\n\n if first loop first if")
+#                 job = frappe.get_doc("Task", i.custom_job)
+#                 for j in job.custom_materials1:
+#                     if j.material_item == i.item_code:
+#                         print("\n\n if second loop first if")
+#                         invoiced_qty = j.invoiced_qty + i.qty
+#                         frappe.db.set_value("Mate", j.name, "invoiced_qty", invoiced_qty)
+#                         frappe.db.set_value("Mate", j.name, "invoiced_rate", i.rate)
+#                         frappe.db.set_value("Mate", j.name, "invoiced_amount", (i.rate * invoiced_qty))
+#                         frappe.db.commit()
+                        
+#                         print("\n\n j.asdfasdf", j.available_for_invoice_qty)
+
+#                         if j.available_for_invoice_qty == 0.0:
+#                             print("\n\n if second loop second if")
+#                             available_qty = j.quentity - i.qty
+#                         else:
+#                             available_qty = j.available_for_invoice_qty - i.qty
+#                         print("\n\n available_qty", available_qty)
+#                         frappe.db.set_value("Mate", j.name, "available_for_invoice_qty", available_qty)
+#                         frappe.db.set_value("Mate", j.name, "available_for_invoice_rate", j.rate)
+#                         frappe.db.set_value("Mate", j.name, "available_for_invoice_amount", (j.rate * available_qty))
+#                         frappe.db.commit()
+                        
+#                 for k in job.custom_resources1:
+#                         if k.service_item == i.item_code:
+#                             invoiced_qty = k.invoiced_qty + i.qty
+#                             frappe.db.set_value("Mate", k.name, "invoiced_qty", invoiced_qty)
+#                             frappe.db.set_value("Mate", k.name, "invoiced_rate", i.rate)
+#                             frappe.db.set_value("Mate", k.name, "invoiced_amount", (i.rate * invoiced_qty))
+#                             frappe.db.commit()
+
+#                             available_qty = k.available_for_invoice_qty - i.qty
+#                             frappe.db.set_value("Mate", k.name, "available_for_invoice_qty", available_qty)
+#                             frappe.db.set_value("Mate", k.name, "available_for_invoice_rate", k.rate)
+#                             frappe.db.set_value("Mate", k.name, "available_for_invoice_amount", (k.rate * available_qty))
+#                             frappe.db.commit()     
+
+
 def set_invoiced_qty(doc, method):
     """ if sales invoice submited we need to make change in actual table related to this sales invoice in job doctype. """
-
-    return
+    print("\n\n set_invoiced_qty ")
     if doc.is_return:
         doc = frappe.get_doc("Sales Invoice", doc.return_against)
         map_canclled_invoice_with_job(doc, method)
     else:   
         for i in doc.items:
             if i.custom_job:
+                print("\n\n if first loop first if")
                 job = frappe.get_doc("Task", i.custom_job)
-                for j in job.custom_materials1:
+                for j in job.custom_mterials:
                     if j.material_item == i.item_code:
+                        print("\n\n if second loop first if")
                         invoiced_qty = j.invoiced_qty + i.qty
                         frappe.db.set_value("Mate", j.name, "invoiced_qty", invoiced_qty)
                         frappe.db.set_value("Mate", j.name, "invoiced_rate", i.rate)
@@ -22,28 +71,65 @@ def set_invoiced_qty(doc, method):
                         print("\n\n j.asdfasdf", j.available_for_invoice_qty)
 
                         if j.available_for_invoice_qty == 0.0:
+                            print("\n\n if second loop second if")
                             available_qty = j.quentity - i.qty
                         else:
                             available_qty = j.available_for_invoice_qty - i.qty
+                        print("\n\n available_qty", available_qty)
                         frappe.db.set_value("Mate", j.name, "available_for_invoice_qty", available_qty)
                         frappe.db.set_value("Mate", j.name, "available_for_invoice_rate", j.rate)
                         frappe.db.set_value("Mate", j.name, "available_for_invoice_amount", (j.rate * available_qty))
                         frappe.db.commit()
                         
-                for k in job.custom_resources1:
-                        if k.service_item == i.item_code:
-                            invoiced_qty = k.invoiced_qty + i.qty
-                            frappe.db.set_value("Mate", k.name, "invoiced_qty", invoiced_qty)
-                            frappe.db.set_value("Mate", k.name, "invoiced_rate", i.rate)
-                            frappe.db.set_value("Mate", k.name, "invoiced_amount", (i.rate * invoiced_qty))
-                            frappe.db.commit()
+                # for k in job.custom_resources1:
+                #         if k.service_item == i.item_code:
+                #             invoiced_qty = k.invoiced_qty + i.qty
+                #             frappe.db.set_value("Mate", k.name, "invoiced_qty", invoiced_qty)
+                #             frappe.db.set_value("Mate", k.name, "invoiced_rate", i.rate)
+                #             frappe.db.set_value("Mate", k.name, "invoiced_amount", (i.rate * invoiced_qty))
+                #             frappe.db.commit()
 
-                            available_qty = k.available_for_invoice_qty - i.qty
-                            frappe.db.set_value("Mate", k.name, "available_for_invoice_qty", available_qty)
-                            frappe.db.set_value("Mate", k.name, "available_for_invoice_rate", k.rate)
-                            frappe.db.set_value("Mate", k.name, "available_for_invoice_amount", (k.rate * available_qty))
-                            frappe.db.commit()       
+                #             available_qty = k.available_for_invoice_qty - i.qty
+                #             frappe.db.set_value("Mate", k.name, "available_for_invoice_qty", available_qty)
+                #             frappe.db.set_value("Mate", k.name, "available_for_invoice_rate", k.rate)
+                #             frappe.db.set_value("Mate", k.name, "available_for_invoice_amount", (k.rate * available_qty))
+                #             frappe.db.commit()  
 
+
+# def map_canclled_invoice_with_job(doc, method):
+#     """ if sales invoice cancelled we need to make change in actual table related to this sales invoice in job doctype. """
+    
+#     for i in doc.items:
+#         if i.custom_job:
+#             job = frappe.get_doc("Task", i.custom_job)
+#             for j in job.custom_materials1:
+#                 if j.material_item == i.item_code:
+#                     invoiced_qty = j.invoiced_qty + i.qty
+#                     frappe.db.set_value("Mate", j.name, "invoiced_qty", invoiced_qty)
+#                     frappe.db.set_value("Mate", j.name, "invoiced_rate", j.rate)
+#                     frappe.db.set_value("Mate", j.name, "amount", j.rate * invoiced_qty)
+#                     frappe.db.commit()
+
+#                     available_qty = j.available_for_invoice_qty - i.qty
+#                     frappe.db.set_value("Mate", j.name, "available_for_invoice_qty", available_qty)
+#                     frappe.db.set_value("Mate", j.name, "available_for_invoice_rate", j.rate)
+#                     frappe.db.set_value("Mate", j.name, "available_for_invoice_amount", (j.rate * available_qty))
+#                     frappe.db.commit()   
+                    
+#             for k in job.custom_resources1:
+#                 if k.service_item == i.item_code:
+#                     invoiced_qty = k.invoiced_qty + i.qty
+#                     frappe.db.set_value("Mate", k.name, "invoiced_qty", invoiced_qty)
+#                     frappe.db.set_value("Mate", k.name, "invoiced_rate", k.rate)
+#                     frappe.db.set_value("Mate", k.name, "amount", k.rate * invoiced_qty)
+#                     frappe.db.commit()
+
+#                     available_qty = k.available_for_invoice_qty - i.qty
+#                     frappe.db.set_value("Mate", k.name, "available_for_invoice_qty", available_qty)
+#                     frappe.db.set_value("Mate", k.name, "available_for_invoice_rate", k.rate)
+#                     frappe.db.set_value("Mate", k.name, "available_for_invoice_amount", (k.rate * available_qty))
+#                     frappe.db.commit()  
+                     
 
 def map_canclled_invoice_with_job(doc, method):
     """ if sales invoice cancelled we need to make change in actual table related to this sales invoice in job doctype. """
@@ -51,7 +137,7 @@ def map_canclled_invoice_with_job(doc, method):
     for i in doc.items:
         if i.custom_job:
             job = frappe.get_doc("Task", i.custom_job)
-            for j in job.custom_materials1:
+            for j in job.custom_mterials:
                 if j.material_item == i.item_code:
                     invoiced_qty = j.invoiced_qty + i.qty
                     frappe.db.set_value("Mate", j.name, "invoiced_qty", invoiced_qty)
@@ -65,19 +151,19 @@ def map_canclled_invoice_with_job(doc, method):
                     frappe.db.set_value("Mate", j.name, "available_for_invoice_amount", (j.rate * available_qty))
                     frappe.db.commit()   
                     
-            for k in job.custom_resources1:
-                if k.service_item == i.item_code:
-                    invoiced_qty = k.invoiced_qty + i.qty
-                    frappe.db.set_value("Mate", k.name, "invoiced_qty", invoiced_qty)
-                    frappe.db.set_value("Mate", k.name, "invoiced_rate", k.rate)
-                    frappe.db.set_value("Mate", k.name, "amount", k.rate * invoiced_qty)
-                    frappe.db.commit()
+            # for k in job.custom_resources1:
+            #     if k.service_item == i.item_code:
+            #         invoiced_qty = k.invoiced_qty + i.qty
+            #         frappe.db.set_value("Mate", k.name, "invoiced_qty", invoiced_qty)
+            #         frappe.db.set_value("Mate", k.name, "invoiced_rate", k.rate)
+            #         frappe.db.set_value("Mate", k.name, "amount", k.rate * invoiced_qty)
+            #         frappe.db.commit()
 
-                    available_qty = k.available_for_invoice_qty - i.qty
-                    frappe.db.set_value("Mate", k.name, "available_for_invoice_qty", available_qty)
-                    frappe.db.set_value("Mate", k.name, "available_for_invoice_rate", k.rate)
-                    frappe.db.set_value("Mate", k.name, "available_for_invoice_amount", (k.rate * available_qty))
-                    frappe.db.commit()   
+            #         available_qty = k.available_for_invoice_qty - i.qty
+            #         frappe.db.set_value("Mate", k.name, "available_for_invoice_qty", available_qty)
+            #         frappe.db.set_value("Mate", k.name, "available_for_invoice_rate", k.rate)
+            #         frappe.db.set_value("Mate", k.name, "available_for_invoice_amount", (k.rate * available_qty))
+            #         frappe.db.commit()   
 
 
 @frappe.whitelist()
@@ -145,8 +231,7 @@ def map_sales_invoice_from_job(dummy=""):
     # si.insert(ignore_mandatory=True)
     return si
 
-    
-    
+
 @frappe.whitelist()
 def map_sales_invoice_from_sales_order(dummy=""):
     """ when we click on create sales invoice button in sales order summary page this method map data for sales invocie. """
@@ -211,6 +296,7 @@ def get_types(item, job):
     for i in job.custom_materials1:
         if i.material_item == item:
             return i.type
+
 
 def get_section_name(job):
     section = frappe.db.get_value("Task", job, ["subject"])
