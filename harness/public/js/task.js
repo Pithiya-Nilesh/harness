@@ -371,7 +371,6 @@ function create_sales_invoice(frm){
 //     });
 // }
 
-
 function calculate_and_set_summed_values(frm) {
     // Initialize a dictionary to store the sums for rate, amount, and qty
     let summed_values = {};
@@ -779,3 +778,67 @@ function get_summary_data(frm){
     })
 }
 
+
+frappe.ui.form.on("Resource", {
+    service_item: function(frm, cdt, cdn){
+        var child_doc = locals[cdt][cdn]
+        checkThisItemInLabours(frm, child_doc.service_item)
+    },
+    spent_hours: function(frm, cdt, cdn){
+        var child_doc = locals[cdt][cdn]
+        checkTotalHours(frm)
+    }
+})
+
+
+function checkThisItemInLabours(frm, item) {
+    var found = false;
+    frm.doc.custom_mterials.forEach(function(row) {
+        if (row.type === "Labours" && row.material_item === item) {
+            found = true;
+        }
+    });
+
+    if (!found) {
+        frappe.msgprint(`This item ${item} is not in the table for type Labours.`);
+    }
+}
+
+
+function checkTotalHours(frm){
+    let items_with_total_hours = []
+    let material_labour_items = frm.doc.custom_mterials
+
+    frm.doc.custom_resources.forEach(function(row){
+        let existingItem = items_with_total_hours.find(item => item.item === row.service_item);
+            
+        // If the item exists, update its total hours
+        if(existingItem) {
+            existingItem.total_hours += row.spent_hours;
+        } else {
+            // Otherwise, add the item to the array
+            items_with_total_hours.push({
+                item: row.service_item,
+                total_hours: row.spent_hours
+            });
+        }
+    });
+
+    // Now compare the items_with_total_hours with material_labour_item
+    items_with_total_hours.forEach(function(item) {
+
+        let material_labour_item = material_labour_items.find(labour_item => labour_item.material_item === item.item && labour_item.type == "Labours");
+        if(material_labour_item) {
+            if(parseFloat(item.total_hours) > parseFloat(material_labour_item.quentity)) {
+                console.log("in last item")
+                frappe.msgprint(`Hours exceeded for ${item.item}`);
+            }
+            else{
+                console.log("in else")
+            }
+        }
+        else{
+            console.log("elseee")
+        }
+    });
+}

@@ -311,6 +311,7 @@ function sum_calculate_rate(frm, cdt, cdn){
     var final_rate = parseFloat(((markup * unit_cost) / 100)) + parseFloat(unit_cost)
 
     frappe.model.set_value(cdt, cdn, 'rate', final_rate);
+    frappe.model.set_value(cdt, cdn, 'custom_suggested_unit_price', final_rate);
 }
 
 // function sum_calculate_markup(frm, cdt, cdn){
@@ -344,3 +345,41 @@ function get_summary_data(frm){
         }
     })
 }
+
+
+// duplicate row data
+frappe.ui.form.on('Sales Order', {
+    refresh: function(frm) {
+        // frm.fields_dict['items'].grid.add_button('Copy Selected Rows', function() {
+          
+            // var selected_rows = frm.fields_dict['items'].grid.get_selected_children();
+            // selected_rows.forEach(function(row) {
+            //     var new_row = frm.add_child('items');
+            //     for (var field in row) {
+            //         if (row.hasOwnProperty(field)) {
+            //             new_row[field] = row[field];
+            //         }
+            //     }
+            // });
+            // frm.refresh_field('items');
+        // });
+        // frm.refresh_field('items');
+    },
+
+    custom_duplicate_row: function(frm){
+        console.log("clicked")
+        var selected_rows = frm.fields_dict['items'].grid.get_selected_children();
+        selected_rows.forEach(function(row) {
+            var new_row = frm.add_child('items');
+            for (var field in row) {
+                if (row.hasOwnProperty(field)) {
+                    new_row[field] = row[field];
+                }
+            }
+        });
+        frm.refresh_field('items');
+
+    }
+});
+
+

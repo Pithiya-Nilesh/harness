@@ -54,6 +54,7 @@ function sum_calculate_rate(frm, cdt, cdn){
     var final_rate = parseFloat(((markup * unit_cost) / 100)) + parseFloat(unit_cost)
 
     frappe.model.set_value(cdt, cdn, 'rate', final_rate);
+    frappe.model.set_value(cdt, cdn, 'custom_suggested_unit_price', final_rate);
 }
 
 // function sum_calculate_markup(frm, cdt, cdn){

@@ -226,13 +226,13 @@ def map_sales_invoice_from_job(dummy=""):
             item_row.custom_job = job
             item_row.description = item_data[0]['description']
             item_row.custom_section_name = section
-            item_row.custom_type = get_types(i["Description"], job)
-            
-    print("\n\n", si.as_dict())
+            # item_row.custom_type = get_types(i["Description"], job)
+            get_extra_custom_fields_value(item_row, sales_order, i["Description"])
+        
     # si.insert(ignore_mandatory=True)
     return si
-
-
+      
+    
 @frappe.whitelist()
 def map_sales_invoice_from_sales_order(dummy=""):
     """ when we click on create sales invoice button in sales order summary page this method map data for sales invocie. """
@@ -286,11 +286,22 @@ def map_sales_invoice_from_sales_order(dummy=""):
             item_row.custom_job = i['Job']
             item_row.description = item_data[0]['description']
             item_row.custom_section_name = get_section_name(i['Job'])
-            item_row.custom_type = get_types(i["Description"], i['Job'])
-            
-    print("\n\n", si.as_dict())
+            # item_row.custom_type = get_types(i["Description"], i['Job'])
+            get_extra_custom_fields_value(item_row, sales_order, i["Description"])
+
     return si
 
+
+def get_extra_custom_fields_value(item_row, sales_order, item):
+    sql = f""" SELECT custom_unit_cost, custom_suggested_unit_price, custom_type, custom_markup_ FROM `tabSales Order Item` where parent='{sales_order}' and item_code='{item}' """
+    item_data = frappe.db.sql(sql, as_dict=True)
+    print("\n\n items a", item_data)
+    for i in item_data:
+        item_row.custom_unit_cost = i.custom_unit_cost
+        item_row.custom_suggested_unit_price = i.custom_suggested_unit_price
+        item_row.custom_type = i.custom_type
+        item_row.custom_markup_ = i.custom_markup_
+        
 
 def get_types(item, job):
     job = frappe.get_doc("Task", job)

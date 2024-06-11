@@ -55,17 +55,17 @@ def update_status_and_set_actual_in_jobs(doc, method):
 
                 # Create or update rows in Task's custom_materials1 table
                 task = frappe.get_doc("Task", i.custom_job_order)
-                existing_row = next((row for row in task.custom_materials1 if row.material_item == i.item_code and row.source_warehouse == i.s_warehouse and row.target_warehouse == i.t_warehouse), None)
+                existing_row = next((row for row in task.custom_materials1 if row.material_item == i.item_code and row.source_warehouse == i.s_warehouse and row.target_warehouse == i.t_warehouse and row.type == "Materials"), None)
                 if existing_row:
                     # If material exists, update its quantity, rate, and amount
-                    existing_row.quantity += i.qty
+                    existing_row.quentity += i.qty
                     existing_row.rate = i.basic_rate
                     existing_row.amount = i.basic_amount
                 else:
                     # If material doesn't exist, add a new row
                     new_row = task.append("custom_materials1", {})
                     new_row.material_item = i.item_code
-                    new_row.quantity = i.qty
+                    new_row.quentity = i.qty
                     new_row.rate = i.basic_rate
                     new_row.amount = i.basic_amount
                     new_row.source_warehouse = i.s_warehouse
@@ -199,6 +199,7 @@ def sum_of_r_amount(doc, method):
     frappe.db.set_value(doc.doctype, doc.name, 'custom_resource_total_actual_cost', r_a_total)
     frappe.db.commit()
 
+
 @frappe.whitelist()
 def create_sales_invoice(task):
     """ when we create sales invoice from job this function map data for this job and sales invoice. """
@@ -225,7 +226,7 @@ def create_sales_invoice(task):
                             i.name = %s
                     """, (row.material_item), as_dict=True)
             
-            debtor_account =  frappe.db.sql(" select default_receivable_account from `tabCompany` where name=%s ", (item_data[0]['company']), as_dict=True)
+            debtor_account =  frappe.db.sql("select default_receivable_account from `tabCompany` where name=%s ", (item_data[0]['company']), as_dict=True)
 
             item_row = sales_invoice.append("items", {})
             item_row.item_code = row.material_item
@@ -233,7 +234,7 @@ def create_sales_invoice(task):
             item_row.uom = item_data[0]['stock_uom']
             item_row.income_account = item_data[0]['income_account']
             # item_row.cost_center = item_data[0]['selling_cost_center']
-            item_row.warehouse = item_data[0]['default_warehouse']
+            # item_row.warehouse = item_data[0]['default_warehouse']
             item_row.qty = row.quentity
             item_row.rate = row.rate
             item_row.amount = row.amount
@@ -243,6 +244,9 @@ def create_sales_invoice(task):
             item_row.description = item_data[0]['description']
             item_row.custom_section_name = task.subject
             item_row.custom_type = row.type
+
+
+
 
     # if task.custom_resources1:
     #     for row in task.custom_resources1:
