@@ -42,14 +42,6 @@ frappe.ui.form.on("Task", {
             };
         };
 
-        frm.fields_dict['custom_resources'].grid.get_field('service_item').get_query = function(doc, cdt, cdn) {
-            return {
-                filters: [
-                    ['is_stock_item', '=', 0]
-                ]
-            };
-        };
-
         calculate_and_set_summed_values(frm);    
     },
 
@@ -77,6 +69,7 @@ frappe.ui.form.on("Task", {
     // Trigger when a row in the child table is changed
     validate: function(frm) {
         calculate_and_set_summed_values(frm);
+        checkTotalHours(frm)
     }
 
 });
@@ -133,7 +126,7 @@ function sum_of_m_amount(frm) {
             m_e_total += row.amount || 0;
         });
         frm.set_value('custom_material_total_estimated_amount', m_e_total);
-        
+        frm.save()
     }
 
     if (frm.doc.custom_materials1 && Array.isArray(frm.doc.custom_materials1)) {
@@ -141,6 +134,7 @@ function sum_of_m_amount(frm) {
             m_a_total += row.amount || 0;
         });
         frm.set_value('custom_material_total_actual_costing1', m_a_total);
+        frm.save()
     }
 }
 
@@ -158,6 +152,7 @@ function sum_of_r_amount(frm) {
         });
         frm.set_value('custom_resource_total_estimated_hours', r_e_hour);
         frm.set_value('custom_estimated_total_resource_cost', r_e_total);
+        frm.save
     }
 
     if (frm.doc.custom_resources1 && Array.isArray(frm.doc.custom_resources1)) {
@@ -167,6 +162,7 @@ function sum_of_r_amount(frm) {
         });
         frm.set_value('custom_resource_total_actual_hours1', r_a_hour);
         frm.set_value('custom_resource_total_actual_cost', r_a_total);
+        frm.save()
     }
 }
 
@@ -176,6 +172,7 @@ function calculateAmount(frm, cdt, cdn) {
     var rate = child.rate;
     var amount = qty * rate;
     frappe.model.set_value(cdt, cdn, 'amount', amount);
+    frm.save()
 }
 
 function calculateHour(frm, cdt, cdn) {
@@ -184,6 +181,7 @@ function calculateHour(frm, cdt, cdn) {
     var rate = child.rate;
     var total_spend_hours = spent_hours * rate;
     frappe.model.set_value(cdt, cdn, 'total_spend_hours', total_spend_hours);
+    frm.save()
 }
 
 // Create Timesheet
@@ -570,6 +568,8 @@ function jobCheckList(frm){
 
     function logCheckboxValue(event, rowId) {
         try {
+            var selectedCheckboxes = []
+
             var checkbox = event.target;
     
             var row = checkbox.closest('tr');
@@ -618,14 +618,12 @@ function jobCheckList(frm){
                 dateCell.innerHTML = '';
             }
     
-            
             var frm = cur_frm; // Assuming 'cur_frm' is accessible here
-            frm.clear_table('custom_job_checklist');
+            // frm.clear_table('custom_job_checklist');
     
-            
             var checkboxes = document.querySelectorAll('input[type="checkbox"][id^="checkbox_"]');
             var hasCheckedCheckboxes = false; 
-    
+
             checkboxes.forEach(function (cb) {
                 if (cb.checked) {
                     hasCheckedCheckboxes = true;
@@ -661,25 +659,50 @@ function jobCheckList(frm){
                         date: formattedDate
                     };
     
-                    console.log(logData);
+                    // console.log(logData);
     
                     
-                    var childTable = frm.fields_dict['custom_job_checklist'].grid;
-                    var newRow = childTable.add_new_row();
+                    // var childTable = frm.fields_dict['custom_job_checklist'].grid;
+                    // var newRow = childTable.add_new_row();
     
-                    newRow.job_status = logData.jobstatus;
-                    newRow.check = logData.check;
-                    newRow.job_checklist = logData.jobchecklist;
-                    newRow.employee_name = logData.employeename;
-                    newRow.date = logData.date;
+                    // newRow.job_status = logData.jobstatus;
+                    // newRow.check = logData.check;
+                    // newRow.job_checklist = logData.jobchecklist;
+                    // newRow.employee_name = logData.employeename;
+                    // newRow.date = logData.date;
     
-                    frm.refresh_field('custom_job_checklist');
+                    // frm.refresh_field('custom_job_checklist');
+                    
+                    // ============================================
+                        selectedCheckboxes.push({
+                                parent_docname: cur_frm.doc.name,
+                                jobstatus: logData.jobstatus,
+                                check: logData.check,
+                                jobchecklist: logData.jobchecklist,
+                                employeename: logData.employeename,
+                                date: logData.date
+                            })
+                    // ============================================
+
                 }
             });
-    
-            if (!hasCheckedCheckboxes) {
-                frm.refresh_field('custom_job_checklist');
-            }
+            // console.log("selected checkbox", selectedCheckboxes)
+
+            frappe.call({
+                method: "harness.api.task.set_checklist_status",
+                args: {
+                    parent_docname: cur_frm.doc.name,
+                    selected_checkboxes: selectedCheckboxes
+                },
+                callback: function(response) {
+                    // frm.refresh_field('custom_job_checklist');
+                }
+            });
+
+
+            // if (!hasCheckedCheckboxes) {
+            //     frm.refresh_field('custom_job_checklist');
+            // }
     
         } catch (error) {
             console.error('Error updating the row:', error);
@@ -689,57 +712,67 @@ function jobCheckList(frm){
 
     function printChildTableData() {
         var frm = cur_frm; 
-        var childTableData = frm.doc.custom_job_checklist || [];
+        // var childTableData = frm.doc.custom_job_checklist;
         
-        childTableData.forEach(function(row) {
-            var rowData = {
-                jobstatus: row.job_status,
-                check: row.check,
-                jobchecklist: row.job_checklist,
-                employeename: row.employee_name,
-                date: row.date
-            };
+        frappe.call({
+            method: "harness.api.task.get_checklist_status",
+            args:{
+                parent_docname: cur_frm.doc.name,
+            },
+            callback: function(res){
+                var childTableData = res.message
+            
+                childTableData.forEach(function(row) {
+                    var rowData = {
+                        jobstatus: row.job_status,
+                        check: row.check,
+                        jobchecklist: row.job_checklist,
+                        employeename: row.employee_name,
+                        date: row.date
+                    };
 
-            console.log("Child Table Row Data:", rowData);
+                    // console.log("Child Table Row Data:", rowData);
 
-            // Find the matching checklist item in the HTML
-            var checkboxId = null;
-            document.querySelectorAll('td[id^="job_check_row"]').forEach(function(cell) {
-                if (cell.textContent.trim() === rowData.jobchecklist) {
-                    checkboxId = cell.querySelector('label').getAttribute('for');
-                }
-            });
-
-            if (checkboxId) {
-                var checkbox = document.getElementById(checkboxId);
-                if (checkbox && !checkbox.checked) {
-                    // Simulate a click event on the checkbox
-                    checkbox.checked = true;
-                    var clickEvent = new Event('click');
-                    checkbox.dispatchEvent(clickEvent);
-                }
-
-                // Fill Employee Name and Date manually in case they are not filled correctly by the event.
-                var rowId = checkboxId.replace('checkbox_row', '');
-                var employeeNameCell = document.getElementById('employee_name_' + rowId);
-                var dateCell = document.getElementById('date_' + rowId);
-
-                if (employeeNameCell && !employeeNameCell.innerHTML) {
-                    employeeNameCell.innerHTML = rowData.employeename || 'Unknown User';
-                }
-
-                if (dateCell && !dateCell.innerHTML) {
-                    dateCell.innerHTML = rowData.date || new Date().toLocaleString('en-GB', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: true
+                    // Find the matching checklist item in the HTML
+                    var checkboxId = null;
+                    document.querySelectorAll('td[id^="job_check_row"]').forEach(function(cell) {
+                        if (cell.textContent.trim() === rowData.jobchecklist) {
+                            checkboxId = cell.querySelector('label').getAttribute('for');
+                        }
                     });
-                }
+
+                    if (checkboxId) {
+                        var checkbox = document.getElementById(checkboxId);
+                        if (checkbox && !checkbox.checked) {
+                            // Simulate a click event on the checkbox
+                            checkbox.checked = true;
+                            var clickEvent = new Event('click');
+                            checkbox.dispatchEvent(clickEvent);
+                        }
+
+                        // Fill Employee Name and Date manually in case they are not filled correctly by the event.
+                        var rowId = checkboxId.replace('checkbox_row', '');
+                        var employeeNameCell = document.getElementById('employee_name_' + rowId);
+                        var dateCell = document.getElementById('date_' + rowId);
+
+                        if (employeeNameCell && !employeeNameCell.innerHTML) {
+                            employeeNameCell.innerHTML = rowData.employeename || 'Unknown User';
+                        }
+
+                        if (dateCell && !dateCell.innerHTML) {
+                            dateCell.innerHTML = rowData.date || new Date().toLocaleString('en-GB', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: true
+                            });
+                        }
+                    }
+                });
             }
-        });
+        })
     }
 
     printChildTableData();
@@ -842,3 +875,24 @@ function checkTotalHours(frm){
         }
     });
 }
+
+var labour_items_list = []
+frappe.ui.form.on("Task", {
+    refresh: function(frm){
+        frm.doc.custom_mterials.forEach(function(row){
+            if (row["type"] === "Labours"){
+                labour_items_list.push(row["material_item"])
+            }
+        })
+
+        frm.fields_dict['custom_resources'].grid.get_field('service_item').get_query = function(doc, cdt, cdn) {
+            return {
+                filters: [
+                    ['is_stock_item', '=', 0], ['item_code', "in", labour_items_list]
+                ]
+            };
+        };
+
+    }
+})
+

@@ -133,13 +133,12 @@ frappe.ui.form.on("Sales Order", {
 
         child_table.forEach(function(row) {
             if(target_section_name === row.custom_section_name){
-                row.custom_section_name = null; 
+                row.custom_section_name = null;
             }
             else{
                 target_section_name = row.custom_section_name
             }
         });
-
     },
 
     after_save: function(frm) {
@@ -195,7 +194,18 @@ function create_popup(reserved_item){
                 var tableData = getTableData();
                 console.log("tableData", tableData)
                 d.fields_dict.html_content.$wrapper.html("");
-                // call second api to update value in existing job and then create new jobs
+                
+                frappe.call({
+                    method:"harness.api.sales_order.create_job_and_unreserved_items_in_selected_jobs",
+                    args:{
+                        name: cur_frm.doc.name,
+                        data: tableData
+                    },
+                    callback: function(res){
+                        console.log("res", res)
+                    }
+                })
+
             }
             d.hide();
         }
@@ -283,7 +293,7 @@ function create_popup(reserved_item){
             }
         });
         
-        jobs.push({ job, items, isChecked });
+        jobs.push({ job, isChecked, items});
         });
         
         console.log(JSON.stringify(jobs, null, 2));
@@ -292,7 +302,6 @@ function create_popup(reserved_item){
     }
 
 }
-
 
 frappe.ui.form.on('Sales Order Item', {
     custom_markup_: function(frm, cdt, cdn) {
@@ -312,6 +321,7 @@ function sum_calculate_rate(frm, cdt, cdn){
 
     frappe.model.set_value(cdt, cdn, 'rate', final_rate);
     frappe.model.set_value(cdt, cdn, 'custom_suggested_unit_price', final_rate);
+    frm.save()
 }
 
 // function sum_calculate_markup(frm, cdt, cdn){
@@ -324,7 +334,6 @@ function sum_calculate_rate(frm, cdt, cdn){
 
 //     frappe.model.set_value(cdt, cdn, 'custom_markup_', final_rate);
 // }
-
 
 function get_summary_data(frm){
     frappe.call({
@@ -345,7 +354,6 @@ function get_summary_data(frm){
         }
     })
 }
-
 
 // duplicate row data
 frappe.ui.form.on('Sales Order', {
@@ -381,5 +389,4 @@ frappe.ui.form.on('Sales Order', {
 
     }
 });
-
 
