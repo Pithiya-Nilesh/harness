@@ -142,9 +142,9 @@ def create_jobs(name, create_without_reserved):
                         child.rate = row.rate
                         child.amount = row.amount
                         child.actual_quantity = actual_qty
-                        child.available_quantity = int(actual_qty) - int(reserved_qty)
+                        child.available_quantity = 0 if (int(actual_qty) - int(reserved_qty)) < 0 else int(actual_qty) - int(reserved_qty)
                         child.reserved_quantity = reserved_qty
-                        child.to_be_order_quantity = int(reserved_qty) - int(actual_qty)
+                        child.to_be_order_quantity = 0 if (int(reserved_qty) - int(actual_qty)) < 0 else int(reserved_qty) - int(actual_qty)
                         
                         child.available_for_invoice_qty = row.qty
                         child.available_for_invoice_rate = row.rate
@@ -184,7 +184,7 @@ def create_jobs(name, create_without_reserved):
                     child.rate = row.rate
                     child.amount = row.amount
                     child.actual_quantity = actual_qty
-                    child.available_quantity = int(actual_qty) - int(reserved_qty)
+                    child.available_quantity = 0 if (int(actual_qty) - int(reserved_qty)) < 0 else int(actual_qty) - int(reserved_qty)
                     # child.reserved_quantity = reserved_qty
                     # child.to_be_order_quantity = int(reserved_qty) - int(actual_qty)
                     
@@ -220,6 +220,7 @@ def check_item_is_available(required_qty_list):
                         if open_task not in reserved_job_list:
                             reserved_job_list.append({"job": open_task, "priority": task.priority, "item": row.material_item or "", "warehouse": row.source_warehouse or "", "qty": row.reserved_quantity or 0})
                             
+            print("\n\n already reserved", alredy_reserved_qty, i.item_code)
             if int(actual_qty) > 0:                
                 available_qty = int(actual_qty) - int(alredy_reserved_qty)
             else:
@@ -332,8 +333,8 @@ def create_job_and_unreserved_items_in_selected_jobs(name, data):
         for data in table_data:
             if data["isChecked"]:
                 remove_reserved_qty_from_job(data['job'])
-                create_jobs(name=name, create_without_reserved=0)
-        return
+                response = create_jobs(name=name, create_without_reserved=0)
+        return response
     except Exception as e:
         frappe.log_error("Error: While create job and unreserved item in job", f"Error: {e}\nsales order: {name}\ndata: {data}")
             
@@ -343,5 +344,6 @@ def remove_reserved_qty_from_job(job):
         for i in job.custom_mterials:
             i.reserved_quantity = 0
         job.save()
+        return
     except Exception as e:
         frappe.log_error("Error: While remove reserved qty from job", f"Error:{e}\njob: {job}")

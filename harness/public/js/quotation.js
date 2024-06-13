@@ -44,6 +44,9 @@ frappe.ui.form.on('Quotation Item', {
     // rate: function(frm, cdt, cdn){
     //     sum_calculate_markup(frm, cdt, cdn);
     // },
+    custom_suggested_unit_price: function(frm, cdt, cdn){
+        sum_calculate_markup(frm, cdt, cdn);
+    },
 });
 
 function sum_calculate_rate(frm, cdt, cdn){
@@ -54,16 +57,18 @@ function sum_calculate_rate(frm, cdt, cdn){
     var final_rate = parseFloat(((markup * unit_cost) / 100)) + parseFloat(unit_cost)
 
     frappe.model.set_value(cdt, cdn, 'rate', final_rate);
-    frappe.model.set_value(cdt, cdn, 'custom_suggested_unit_price', final_rate);
+    // frappe.model.set_value(cdt, cdn, 'custom_suggested_unit_price', final_rate);
 }
 
-// function sum_calculate_markup(frm, cdt, cdn){
-//     var child = locals[cdt][cdn];
-//     var markup = child.custom_markup_;
-//     var rate = child.rate;
-//     var unit_cost = child.custom_unit_cost;
+function sum_calculate_markup(frm, cdt, cdn){
+    var child = locals[cdt][cdn];
+    var markup = child.custom_markup_;
+    var rate = child.rate;
+    var unit_cost = child.custom_unit_cost;
+    
+    var custom_suggested_unit_price = child.custom_suggested_unit_price;
 
-//     var final_rate = (unit_cost - rate)
+    var final_rate = ((custom_suggested_unit_price - unit_cost) * unit_cost) / 100
 
-//     frappe.model.set_value(cdt, cdn, 'custom_markup_', final_rate);
-// }
+    frappe.model.set_value(cdt, cdn, 'custom_markup_', final_rate);
+}

@@ -126,7 +126,6 @@ function sum_of_m_amount(frm) {
             m_e_total += row.amount || 0;
         });
         frm.set_value('custom_material_total_estimated_amount', m_e_total);
-        frm.save()
     }
 
     if (frm.doc.custom_materials1 && Array.isArray(frm.doc.custom_materials1)) {
@@ -134,8 +133,9 @@ function sum_of_m_amount(frm) {
             m_a_total += row.amount || 0;
         });
         frm.set_value('custom_material_total_actual_costing1', m_a_total);
-        frm.save()
     }
+    frm.save()
+    frm.refresh()
 }
 
 function sum_of_r_amount(frm) {
@@ -152,7 +152,6 @@ function sum_of_r_amount(frm) {
         });
         frm.set_value('custom_resource_total_estimated_hours', r_e_hour);
         frm.set_value('custom_estimated_total_resource_cost', r_e_total);
-        frm.save
     }
 
     if (frm.doc.custom_resources1 && Array.isArray(frm.doc.custom_resources1)) {
@@ -162,8 +161,9 @@ function sum_of_r_amount(frm) {
         });
         frm.set_value('custom_resource_total_actual_hours1', r_a_hour);
         frm.set_value('custom_resource_total_actual_cost', r_a_total);
-        frm.save()
     }
+    frm.save()
+    frm.refresh()
 }
 
 function calculateAmount(frm, cdt, cdn) {

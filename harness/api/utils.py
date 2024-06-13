@@ -62,7 +62,7 @@ def set_section_name_in_db(doc, method):
 
 def get_actual_qty(item_code, warehouse):
     try:
-        if not item_code or not warehouse:
+        if not item_code or not warehouse and not is_service_item(item_code):
             frappe.throw("Item code and warehouse are required to get actual qty")
             
         qty = frappe.db.get_value('Bin', {'item_code': item_code, 'warehouse': warehouse}, 'actual_qty')

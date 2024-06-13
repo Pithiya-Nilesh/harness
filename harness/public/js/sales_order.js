@@ -202,8 +202,17 @@ function create_popup(reserved_item){
                         data: tableData
                     },
                     callback: function(res){
-                        console.log("res", res)
-                    }
+                        if (res.message[0] === "Created"){
+                            let message = `${res.message[1]} Jobs Successfully Created!`
+                            frappe.msgprint(message)
+                            console.log("res", res)
+                        }
+                        else if (res.message[0] === "HTML"){
+                            create_popup(res.message[1])
+                        }
+                    },
+                    freeze: true,
+                    freeze_message: "Please wait we are remove reserved qty and creating job based on this sales order.",
                 })
 
             }
@@ -310,9 +319,13 @@ frappe.ui.form.on('Sales Order Item', {
     // rate: function(frm, cdt, cdn){
     //     sum_calculate_markup(frm, cdt, cdn);
     // },
+    custom_suggested_unit_price: function(frm, cdt, cdn){
+        sum_calculate_markup(frm, cdt, cdn);
+    },
 });
 
 function sum_calculate_rate(frm, cdt, cdn){
+    console.log("suum calulate rate")
     var child = locals[cdt][cdn];
     var markup = child.custom_markup_;
     var rate = child.rate;
@@ -320,11 +333,12 @@ function sum_calculate_rate(frm, cdt, cdn){
     var final_rate = parseFloat(((markup * unit_cost) / 100)) + parseFloat(unit_cost)
 
     frappe.model.set_value(cdt, cdn, 'rate', final_rate);
-    frappe.model.set_value(cdt, cdn, 'custom_suggested_unit_price', final_rate);
-    frm.save()
+    // frappe.model.set_value(cdt, cdn, 'custom_suggested_unit_price', final_rate);
+    // frm.save()
 }
 
 // function sum_calculate_markup(frm, cdt, cdn){
+//     console.log("suum calulate markup")
 //     var child = locals[cdt][cdn];
 //     var markup = child.custom_markup_;
 //     var rate = child.rate;
@@ -334,6 +348,19 @@ function sum_calculate_rate(frm, cdt, cdn){
 
 //     frappe.model.set_value(cdt, cdn, 'custom_markup_', final_rate);
 // }
+
+function sum_calculate_markup(frm, cdt, cdn){
+    console.log("suum calulate markup")
+    var child = locals[cdt][cdn];
+    var markup = child.custom_markup_;
+    var rate = child.rate;
+    var unit_cost = child.custom_unit_cost;
+    var custom_suggested_unit_price = child.custom_suggested_unit_price;
+
+    var final_rate = ((custom_suggested_unit_price - unit_cost) * unit_cost) / 100
+
+    frappe.model.set_value(cdt, cdn, 'custom_markup_', final_rate);
+}
 
 function get_summary_data(frm){
     frappe.call({
