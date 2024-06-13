@@ -134,8 +134,8 @@ function sum_of_m_amount(frm) {
         });
         frm.set_value('custom_material_total_actual_costing1', m_a_total);
     }
-    frm.save()
-    frm.refresh()
+    // frm.save()
+    // frm.refresh()
 }
 
 function sum_of_r_amount(frm) {
@@ -162,8 +162,8 @@ function sum_of_r_amount(frm) {
         frm.set_value('custom_resource_total_actual_hours1', r_a_hour);
         frm.set_value('custom_resource_total_actual_cost', r_a_total);
     }
-    frm.save()
-    frm.refresh()
+    // frm.save()
+    // frm.refresh()
 }
 
 function calculateAmount(frm, cdt, cdn) {
@@ -172,7 +172,7 @@ function calculateAmount(frm, cdt, cdn) {
     var rate = child.rate;
     var amount = qty * rate;
     frappe.model.set_value(cdt, cdn, 'amount', amount);
-    frm.save()
+    // frm.save()
 }
 
 function calculateHour(frm, cdt, cdn) {
@@ -181,7 +181,7 @@ function calculateHour(frm, cdt, cdn) {
     var rate = child.rate;
     var total_spend_hours = spent_hours * rate;
     frappe.model.set_value(cdt, cdn, 'total_spend_hours', total_spend_hours);
-    frm.save()
+    // frm.save()
 }
 
 // Create Timesheet
