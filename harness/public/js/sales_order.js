@@ -402,13 +402,15 @@ frappe.ui.form.on('Sales Order', {
     },
 
     custom_duplicate_row: function(frm){
-        console.log("clicked")
         var selected_rows = frm.fields_dict['items'].grid.get_selected_children();
         selected_rows.forEach(function(row) {
             var new_row = frm.add_child('items');
             for (var field in row) {
+                console.log("", field)
                 if (row.hasOwnProperty(field)) {
-                    new_row[field] = row[field];
+                    if (field !== "name" && field !== "__islocal" && field !== "__unsaved" && field !== "idx" && field !== "__checked") {
+                        new_row[field] = row[field];
+                    }
                 }
             }
         });

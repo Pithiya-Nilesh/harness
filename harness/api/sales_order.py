@@ -1,7 +1,7 @@
 import json
 import frappe
 from harness.api.task import get_summary, get_table_data_for_html
-from harness.api.utils import get_actual_qty
+from harness.api.utils import get_actual_qty, is_service_item
 
 
 @frappe.whitelist()
@@ -226,12 +226,12 @@ def check_item_is_available(required_qty_list):
             else:
                 available_qty = 0
             
-            if available_qty < i.required_qty:
+            if available_qty < i.required_qty and not is_service_item(i.item_code):
                 limit = True
                 need = 0
                 need = int(i.required_qty) - int(available_qty)
                 available_qty_and_required_qty_list.append({"item": i.item_code, "warehouse": i.warehouse or "", "available_qty": available_qty or 0, "required_qty": i.required_qty or 0, "need": need or 0})
-                pass
+                # pass
             else:
                 pass
             
