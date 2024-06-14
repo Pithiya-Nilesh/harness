@@ -896,3 +896,60 @@ frappe.ui.form.on("Task", {
     }
 })
 
+
+
+cur_frm.cscript.onload = function(frm) {
+    cur_frm.set_query("material_item", "custom_mterials", function(doc, cdt, cdn) {
+        var child = locals[cdt][cdn];
+        var type = child.type;
+        var filters = {}
+        if (type === "Materials"){
+            filters = {"is_stock_item": 1}
+            return {
+                "filters": filters
+            };
+        }
+        else if (type === "Labours" || type === "Freight"){
+            filters = {"is_stock_item": 0}
+            return {
+                "filters": filters
+            };
+        }
+        else if (type === "Vehicle Hire" || type === "Engineering"){
+            filters = {"item_group": type}
+            return {
+                "filters": filters
+            };
+        }
+        
+    });
+    
+};
+
+cur_frm.cscript.onload = function(frm) {
+    cur_frm.set_query("material_item", "custom_materials1", function(doc, cdt, cdn) {
+        var child = locals[cdt][cdn];
+        var type = child.type;
+        var filters = {}
+        if (type === "Materials"){
+            filters = {"is_stock_item": 1}
+            return {
+                "filters": filters
+            };
+        }
+        else if (type === "Labours" || type === "Freight"){
+            filters = {"is_stock_item": 0}
+            return {
+                "filters": filters
+            };
+        }
+        else if (type === "Vehicle Hire" || type === "Engineering"){
+            filters = {"item_group": type}
+            return {
+                "filters": filters
+            };
+        }
+        
+    });
+    
+};

@@ -16,6 +16,10 @@ frappe.ui.form.on("Quotation", {
         if (!frm.is_new()) {
             fetch_and_set_custom_html(frm);
         }
+
+        // $("[data-fieldname='rate']").on("blur", function() {
+        //     alert("You clicked outside the div!");
+        // });
     },
 
     after_save: function(frm) {
@@ -35,6 +39,17 @@ function fetch_and_set_custom_html(frm) {
         }
     });
 }
+
+
+// cur_frm.cscript.onload = function(frm) {
+//     cur_frm.fields_dict['items'].grid.get_field('custom_type').get_query = function(doc, cdt, cdn) {
+//         return {
+//             filters: {
+//                 'item_group': 'Products'
+//             }
+//         };
+//     };
+// };
 
 
 frappe.ui.form.on('Quotation Item', {
@@ -72,3 +87,151 @@ function sum_calculate_markup(frm, cdt, cdn){
 
     frappe.model.set_value(cdt, cdn, 'custom_markup_', final_rate);
 }
+
+
+cur_frm.cscript.onload = function(frm) {
+    cur_frm.set_query("item_code", "items", function(doc, cdt, cdn) {
+        var child = locals[cdt][cdn]; 
+        var type = child.custom_type;
+        var filters = {}
+        if (type === "Materials"){
+            filters = {"is_stock_item": 1}
+            return {
+                "filters": filters
+            };
+        }
+        else if (type === "Labours" || type === "Freight"){
+            filters = {"is_stock_item": 0}
+            return {
+                "filters": filters
+            };
+        }
+        else if (type === "Vehicle Hire" || type === "Engineering"){
+            filters = {"item_group": type}
+            return {
+                "filters": filters
+            };
+        }
+        
+    });
+    
+};
+
+
+
+//  testing code ================================================
+// function set_value(final_rate, cdt, cdn){
+
+//     // console.log("set value")
+//     // // Assuming you have references to the element
+
+//     // // Construct the ID of the element representing the 'rate' field
+//     // var rateFieldID = cdt + "-" + cdn + "-rate";
+
+//     // // Get the element by its ID
+//     // var rateField = document.getElementById(rateFieldID);
+
+//     // // Set the value
+//     // if (rateField) {
+//     //     console.log("rate value found")
+//     //     rateField.value = final_rate; // Assuming rateField is an input element
+//     //     // If rateField is a div or span, you would set its innerHTML or innerText property.
+//     // }
+//     // else{
+//     //     console.log("rate field not found")
+//     // }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// // frappe.ui.form.on('Quotation Item', {
+// //     // Replace 'YourChildTableDoctype' with the name of your child table's doctype
+// //     custom_markup_: function(frm){
+// //         newfunction(frm)
+// //     }
+// // });
+
+
+
+// function newfunction(frm){
+//     console.log("function call")
+//     // var elements = document.querySelectorAll('[data-fieldname="custom_markup_"]');
+//     // console.log("ele", elements)
+//     // elements.forEach(function(element) {
+//     //     console.log("element adsf", element)
+//     //     var inputBox = element.querySelector('input[type="text"]');
+//     //     console.log("input box", inputBox)
+
+//     //     inputBox.addEventListener('onblur', function() {
+//     //         console.log('Input box focused!');
+//     //     });
+//     // });
+//     // Find the input element
+// var inputElement = document.querySelector('input[type="text"][data-fieldname="custom_markup_"]');
+
+// // Check if the input element exists
+// if (inputElement) {
+//     // Attach the onblur event listener
+//     inputElement.addEventListener('blur', function() {
+//         // Your event handling code here
+//         console.log('Input blurred');
+//         // You can add more actions or functions to be executed when the input is blurred
+//     });
+// } else {
+//     console.log('Input element not found');
+// }
+
+// }
+
+
+// frappe.ui.form.on('Quotation Item', {
+//     custom_type: function(frm, cdt, cdn) {
+//         console.log("called")
+//         var child = locals[cdt][cdn];
+//         var type = child.type;
+        
+//         // Clear previous items
+//         frappe.model.set_value(cdt, cdn, 'item_code', '');
+        
+//         frm.fields_dict['items'].grid.get_field('item_code').get_query = function(doc, cdt, cdn) {
+//             return {
+//                 filters: [
+//                     ['item_group', '=', "Products"]
+//                 ]
+//             };
+//         };
+
+
+//         // // Set a custom query for the item_code field
+//         // frappe.meta.get_docfield(cdt, 'item_code', frm.doc.name).get_query = function(doc, cdt, cdn) {
+//         //     var filters = {};
+//         //     if (type === 'Material') {
+//         //         // Filter items for Material type
+//         //         filters['item_group'] = 'Products'; // Adjust as per your item structure
+//         //     }
+//         //     return {
+//         //         filters: filters
+//         //     };
+//         // };
+
+
+
+//     }
+// });
+
+
+
