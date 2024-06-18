@@ -370,8 +370,8 @@ function sum_calculate_markup(frm, cdt, cdn){
 
     var final_rate = ((custom_suggested_unit_price - unit_cost) / unit_cost) * 100
 
-    // frappe.model.set_value(cdt, cdn, 'custom_markup_', final_rate);
-    child.custom_markup_ = final_rate
+    frappe.model.set_value(cdt, cdn, 'custom_markup_', final_rate);
+    // child.custom_markup_ = final_rate
     frm.refresh_field('items')
 }
 

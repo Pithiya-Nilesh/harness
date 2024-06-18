@@ -44,6 +44,32 @@ frappe.ui.form.on("Quotation", {
             }
         });
         frm.refresh_field('items');
+    },
+
+    before_save: function(frm) {
+        // Get all rows in the table field
+        var rows = frm.doc.your_table_field || [];
+
+        // Create an object to store custom_section_name values and their row indexes
+        var sectionNames = {};
+
+        // Iterate through each row
+        for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
+            var sectionName = row.custom_section_name;
+
+            // Check if sectionName already exists in sectionNames object
+            if (sectionNames[sectionName]) {
+                // Duplicate found
+                var existingIndex = sectionNames[sectionName];
+                frappe.msgprint(__("Duplicate custom_section_name '{0}' found in rows {1} and {2}. Save aborted.", [sectionName, existingIndex + 1, i + 1]));
+                frappe.validated = false;  // Prevent saving
+                return;
+            } else {
+                // Store the index of the sectionName
+                sectionNames[sectionName] = i;
+            }
+        }
     }
 })
 
@@ -87,8 +113,6 @@ frappe.ui.form.on('Quotation Item', {
     }
 });
 
-
-
 function sum_calculate_markup_from_rate(frm, cdt, cdn){
     console.log("markup based on rate")
     var child = locals[cdt][cdn];
@@ -129,8 +153,8 @@ function sum_calculate_markup(frm, cdt, cdn){
 
     var final_rate = ((custom_suggested_unit_price - unit_cost) / unit_cost) * 100
 
-    // frappe.model.set_value(cdt, cdn, 'custom_markup_', final_rate);
-    child.custom_markup_ = final_rate
+    frappe.model.set_value(cdt, cdn, 'custom_markup_', final_rate);
+    // child.custom_markup_ = final_rate
     frm.refresh_field('items')
 }
 
@@ -223,12 +247,11 @@ function set_suggested_price_list_frm(frm){
         }
 }
 
-
 function check_duplicate_section_in_other_row(frm, cdt, cdn){
     var child = locals[cdt][cdn]
     frm.doc.items.forEach(function(row) {
         if (row.name !== child.name && row.custom_section_name === child.custom_section_name) {
-            frappe.msgprint(`Duplicate section name found in row: ${row.idx}`)
+            frappe.msgprint(`Duplicate section name ${row.custom_section_name} found in row: ${row.idx}`)
         }
     });
 }
