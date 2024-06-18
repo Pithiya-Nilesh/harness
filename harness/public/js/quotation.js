@@ -46,31 +46,31 @@ frappe.ui.form.on("Quotation", {
         frm.refresh_field('items');
     },
 
-    before_save: function(frm) {
-        // Get all rows in the table field
-        var rows = frm.doc.your_table_field || [];
+    // before_save: function(frm) {
+    //     // Get all rows in the table field
+    //     var rows = frm.doc.your_table_field || [];
 
-        // Create an object to store custom_section_name values and their row indexes
-        var sectionNames = {};
+    //     // Create an object to store custom_section_name values and their row indexes
+    //     var sectionNames = {};
 
-        // Iterate through each row
-        for (var i = 0; i < rows.length; i++) {
-            var row = rows[i];
-            var sectionName = row.custom_section_name;
+    //     // Iterate through each row
+    //     for (var i = 0; i < rows.length; i++) {
+    //         var row = rows[i];
+    //         var sectionName = row.custom_section_name;
 
-            // Check if sectionName already exists in sectionNames object
-            if (sectionNames[sectionName]) {
-                // Duplicate found
-                var existingIndex = sectionNames[sectionName];
-                frappe.msgprint(__("Duplicate custom_section_name '{0}' found in rows {1} and {2}. Save aborted.", [sectionName, existingIndex + 1, i + 1]));
-                frappe.validated = false;  // Prevent saving
-                return;
-            } else {
-                // Store the index of the sectionName
-                sectionNames[sectionName] = i;
-            }
-        }
-    }
+    //         // Check if sectionName already exists in sectionNames object
+    //         if (sectionNames[sectionName]) {
+    //             // Duplicate found
+    //             var existingIndex = sectionNames[sectionName];
+    //             frappe.msgprint(__("Duplicate custom_section_name '{0}' found in rows {1} and {2}. Save aborted.", [sectionName, existingIndex + 1, i + 1]));
+    //             frappe.validated = false;  // Prevent saving
+    //             return;
+    //         } else {
+    //             // Store the index of the sectionName
+    //             sectionNames[sectionName] = i;
+    //         }
+    //     }
+    // }
 })
 
 function fetch_and_set_custom_html(frm) {
