@@ -316,50 +316,63 @@ frappe.ui.form.on('Sales Order Item', {
     custom_markup_: function(frm, cdt, cdn) {
         sum_calculate_rate(frm, cdt, cdn);
     },
-    // rate: function(frm, cdt, cdn){
-    //     sum_calculate_markup(frm, cdt, cdn);
-    // },
+    rate: function(frm, cdt, cdn){
+        sum_calculate_markup_from_rate(frm, cdt, cdn);
+    },
     custom_suggested_unit_price: function(frm, cdt, cdn){
         sum_calculate_markup(frm, cdt, cdn);
     },
+
+    custom_section_name: function(frm, cdt, cdn){
+        check_duplicate_section_in_other_row(frm, cdt, cdn)
+    }
 });
 
+
+
+function sum_calculate_markup_from_rate(frm, cdt, cdn){
+    console.log("markup based on rate")
+    var child = locals[cdt][cdn];
+    var markup = child.custom_markup_;
+    var rate = child.rate;
+    var unit_cost = child.custom_unit_cost;
+    
+    var final_rate = ((rate - unit_cost) / unit_cost) * 100
+
+    // frappe.model.set_value(cdt, cdn, 'custom_markup_', final_rate);
+    child.custom_markup_ = final_rate
+    frm.refresh_field('items')
+}
+
 function sum_calculate_rate(frm, cdt, cdn){
-    console.log("suum calulate rate")
+    console.log("markup rate")
+
     var child = locals[cdt][cdn];
     var markup = child.custom_markup_;
     var rate = child.rate;
     var unit_cost = child.custom_unit_cost;
     var final_rate = parseFloat(((markup * unit_cost) / 100)) + parseFloat(unit_cost)
 
-    frappe.model.set_value(cdt, cdn, 'rate', final_rate);
+    // frappe.model.set_value(cdt, cdn, 'rate', final_rate);
+    child.rate = final_rate
+    frm.refresh_field('items')
     // frappe.model.set_value(cdt, cdn, 'custom_suggested_unit_price', final_rate);
-    // frm.save()
 }
 
-// function sum_calculate_markup(frm, cdt, cdn){
-//     console.log("suum calulate markup")
-//     var child = locals[cdt][cdn];
-//     var markup = child.custom_markup_;
-//     var rate = child.rate;
-//     var unit_cost = child.custom_unit_cost;
-
-//     var final_rate = (unit_cost - rate)
-
-//     frappe.model.set_value(cdt, cdn, 'custom_markup_', final_rate);
-// }
-
 function sum_calculate_markup(frm, cdt, cdn){
-    console.log("suum calulate markup")
+    console.log("markup called")
     var child = locals[cdt][cdn];
     var markup = child.custom_markup_;
     var rate = child.rate;
     var unit_cost = child.custom_unit_cost;
+    
     var custom_suggested_unit_price = child.custom_suggested_unit_price;
 
     var final_rate = ((custom_suggested_unit_price - unit_cost) / unit_cost) * 100
 
-    frappe.model.set_value(cdt, cdn, 'custom_markup_', final_rate);
+    // frappe.model.set_value(cdt, cdn, 'custom_markup_', final_rate);
+    child.custom_markup_ = final_rate
+    frm.refresh_field('items')
 }
 
 function get_summary_data(frm){
@@ -406,7 +419,6 @@ frappe.ui.form.on('Sales Order', {
         selected_rows.forEach(function(row) {
             var new_row = frm.add_child('items');
             for (var field in row) {
-                console.log("", field)
                 if (row.hasOwnProperty(field)) {
                     if (field !== "name" && field !== "__islocal" && field !== "__unsaved" && field !== "idx" && field !== "__checked") {
                         new_row[field] = row[field];
@@ -448,3 +460,12 @@ cur_frm.cscript.onload = function(frm) {
     });
     
 };
+
+function check_duplicate_section_in_other_row(frm, cdt, cdn){
+    var child = locals[cdt][cdn]
+    frm.doc.items.forEach(function(row) {
+        if (row.name !== child.name && row.custom_section_name === child.custom_section_name) {
+            frappe.msgprint(`Duplicate section name found in row: ${row.idx}`)
+        }
+    });
+}

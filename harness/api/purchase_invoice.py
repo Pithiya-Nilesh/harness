@@ -44,7 +44,7 @@ def set_expense_account(doc, method):
     try:
         for i in doc.items:
             if i.custom_job and is_service_item(i.item_code):
-                i.expense_account = "15530 - WIP Overhead - HMWS"
+                i.expense_account = "55990 - WIP Labour Outsource Recovery - HMWS"
             elif i.custom_job:
                 i.expense_account = "70330 - Consultant & Professional - Other - HMWS"
         doc.save()

@@ -120,3 +120,40 @@ def get_custom_html_data(quotations):
         return data_list
     except Exception as e:
         frappe.log_error("Error: While get html data for quotation summary.", e, "Quotation", quotations)
+        
+        
+@frappe.whitelist()
+def qty_wise_selling_price( item_code="", quantity="", customer="", selling_price_list="", date=""):
+    if item_code and quantity and customer and selling_price_list:
+        
+        predefined_qtys = [1, 2, 3, 4, 5, 6, 7, 10, 15, 20, 30, 50, 100]
+        if int(quantity) not in predefined_qtys:
+            nearest_lower_value = max(filter(lambda x: x < int(quantity), predefined_qtys))
+            quantity = str(nearest_lower_value)
+
+        query = """
+            SELECT QWR.rate
+            FROM `tabItem Price` AS IP
+            LEFT JOIN `tabQuantity Wise Rate` AS QWR ON IP.name = QWR.parent
+            LEFT JOIN `tabCustomer` AS C ON IP.custom_customer_group = C.customer_group
+            WHERE %s = IP.item_code AND QWR.quantity = %s AND C.name = %s AND IP.selling = 1
+        """
+        rate = frappe.db.sql(query, (item_code, quantity, customer), as_dict=True)
+        query_cost = """
+            SELECT QWR.rate
+            FROM `tabItem Price` AS IP
+            LEFT JOIN `tabQuantity Wise Rate` AS QWR ON IP.name = QWR.parent
+            WHERE %s = IP.item_code AND QWR.quantity = %s AND IP.price_list = %s AND (%s >= IP.valid_from OR IP.valid_from IS NULL OR '' = IP.valid_upto) AND (%s <= IP.valid_upto OR IP.valid_upto IS NULL OR '' = IP.valid_upto)
+        """
+        suggested = frappe.db.sql(query_cost, (item_code, quantity, selling_price_list, date, date), as_dict=True)
+        if not rate:
+            query = """
+                SELECT QWR.rate
+                FROM `tabItem Price` AS IP
+                LEFT JOIN `tabQuantity Wise Rate` AS QWR ON IP.name = QWR.parent
+                WHERE %s = IP.item_code AND QWR.quantity = %s AND (IP.custom_customer_group = '' OR IP.custom_customer_group IS NULL) AND IP.selling = 1;
+            """
+            rate = frappe.db.sql(query, (item_code, quantity), as_dict=True)
+
+        frappe.response.rate = rate[0].get("rate") if rate else 0
+        frappe.response.suggested_price = suggested[0].get("rate") if suggested else 0

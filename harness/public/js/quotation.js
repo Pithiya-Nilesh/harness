@@ -24,8 +24,27 @@ frappe.ui.form.on("Quotation", {
 
     after_save: function(frm) {
         fetch_and_set_custom_html(frm);
-    }
+    },
 
+    // change suggested price based on selected selling price list
+    selling_price_list: function(frm){
+        set_suggested_price_list_frm(frm)
+    },
+
+    custom_duplicate_row: function(frm){
+        var selected_rows = frm.fields_dict['items'].grid.get_selected_children();
+        selected_rows.forEach(function(row) {
+            var new_row = frm.add_child('items');
+            for (var field in row) {
+                if (row.hasOwnProperty(field)) {
+                    if (field !== "name" && field !== "__islocal" && field !== "__unsaved" && field !== "idx" && field !== "__checked") {
+                        new_row[field] = row[field];
+                    }
+                }
+            }
+        });
+        frm.refresh_field('items');
+    }
 })
 
 function fetch_and_set_custom_html(frm) {
@@ -40,42 +59,67 @@ function fetch_and_set_custom_html(frm) {
     });
 }
 
-
-// cur_frm.cscript.onload = function(frm) {
-//     cur_frm.fields_dict['items'].grid.get_field('custom_type').get_query = function(doc, cdt, cdn) {
-//         return {
-//             filters: {
-//                 'item_group': 'Products'
-//             }
-//         };
-//     };
-// };
-
-
 frappe.ui.form.on('Quotation Item', {
+	item_code: function(frm, cdt, cdn) {
+        frappe.model.set_value(cdt, cdn, "qty", 1);
+        if (frm.doc.selling_price_list !== ""){
+            set_suggested_price_list(frm, cdt, cdn);
+        }
+	},
+	qty: function(frm, cdt, cdn) {
+        if (frm.doc.selling_price_list !== ""){
+            set_suggested_price_list(frm, cdt, cdn);
+        }
+	},
+
     custom_markup_: function(frm, cdt, cdn) {
         sum_calculate_rate(frm, cdt, cdn);
     },
-    // rate: function(frm, cdt, cdn){
-    //     sum_calculate_markup(frm, cdt, cdn);
-    // },
+    rate: function(frm, cdt, cdn){
+        sum_calculate_markup_from_rate(frm, cdt, cdn);
+    },
     custom_suggested_unit_price: function(frm, cdt, cdn){
         sum_calculate_markup(frm, cdt, cdn);
     },
+
+    custom_section_name: function(frm, cdt, cdn){
+        check_duplicate_section_in_other_row(frm, cdt, cdn)
+    }
 });
 
+
+
+function sum_calculate_markup_from_rate(frm, cdt, cdn){
+    console.log("markup based on rate")
+    var child = locals[cdt][cdn];
+    var markup = child.custom_markup_;
+    var rate = child.rate;
+    var unit_cost = child.custom_unit_cost;
+    
+    var final_rate = ((rate - unit_cost) / unit_cost) * 100
+
+    // frappe.model.set_value(cdt, cdn, 'custom_markup_', final_rate);
+    child.custom_markup_ = final_rate
+    frm.refresh_field('items')
+}
+
 function sum_calculate_rate(frm, cdt, cdn){
+    console.log("markup rate")
+
     var child = locals[cdt][cdn];
     var markup = child.custom_markup_;
     var rate = child.rate;
     var unit_cost = child.custom_unit_cost;
     var final_rate = parseFloat(((markup * unit_cost) / 100)) + parseFloat(unit_cost)
 
-    frappe.model.set_value(cdt, cdn, 'rate', final_rate);
+    // frappe.model.set_value(cdt, cdn, 'rate', final_rate);
+    child.rate = final_rate
+    frm.refresh_field('items')
     // frappe.model.set_value(cdt, cdn, 'custom_suggested_unit_price', final_rate);
 }
 
 function sum_calculate_markup(frm, cdt, cdn){
+    console.log("markup called")
     var child = locals[cdt][cdn];
     var markup = child.custom_markup_;
     var rate = child.rate;
@@ -85,9 +129,10 @@ function sum_calculate_markup(frm, cdt, cdn){
 
     var final_rate = ((custom_suggested_unit_price - unit_cost) / unit_cost) * 100
 
-    frappe.model.set_value(cdt, cdn, 'custom_markup_', final_rate);
+    // frappe.model.set_value(cdt, cdn, 'custom_markup_', final_rate);
+    child.custom_markup_ = final_rate
+    frm.refresh_field('items')
 }
-
 
 cur_frm.cscript.onload = function(frm) {
     cur_frm.set_query("item_code", "items", function(doc, cdt, cdn) {
@@ -117,121 +162,73 @@ cur_frm.cscript.onload = function(frm) {
     
 };
 
+// change suggested price based on selected selling price list
+function set_suggested_price_list(frm, cdt, cdn){
+    console.log("suggesed item wise")
+    var row = locals[cdt][cdn];
+    frappe.call({
+        method: "harness.api.quotation.qty_wise_selling_price",
+        args: {
+            item_code: row.item_code,
+            quantity: row.qty,
+            customer: frm.doc.party_name || frm.doc.customer || "",
+            selling_price_list: frm.doc.selling_price_list,
+            date: frm.doc.transaction_date
+        },
+        callback: function (response) {
+            if (response.suggested_price) {
+                setTimeout(function() {
+                    // if (frm.doc.selling_price_list === ""){
+                    frappe.model.set_value(row.doctype, row.name, "rate", response.suggested_price);
+                    frappe.model.set_value(row.doctype, row.name, "custom_suggested_unit_price", response.suggested_price);
+                    // frappe.model.set_value(row.doctype, row.name, "custom_unit_cost", response.unit_cost);
+                    // }
+                }, 100);
+            }
+        }
+    });
+}
+
+function set_suggested_price_list_frm(frm){
+    console.log("suggested frm")
+    var child_table = frm.doc.items;
+        if (child_table) {
+            for (var i = 0; i < child_table.length; i++) {
+                var row = child_table[i];
+                if(row.item_code !== ""){
+                    frappe.call({
+                        method: "harness.api.quotation.qty_wise_selling_price",
+                        args: {
+                            item_code: row.item_code,
+                            quantity: row.qty,
+                            customer: frm.doc.party_name || frm.doc.customer || "",
+                            selling_price_list: frm.doc.selling_price_list,
+                            date: frm.doc.transaction_date
+                        },
+                        callback: function (response) {
+                            if (response.suggested_price) {
+                                setTimeout(function() {
+                                    // if (frm.doc.selling_price_list === ""){
+                                    frappe.model.set_value(row.doctype, row.name, "rate", response.suggested_price);
+                                    frappe.model.set_value(row.doctype, row.name, "custom_suggested_unit_price", response.suggested_price);
+                                    // frappe.model.set_value(row.doctype, row.name, "custom_unit_cost", response.unit_cost);
+                                    // }
+                                }, 100);
+                            }
+                        }
+                    });
+                }
+            }
+            // frm.save();
+        }
+}
 
 
-//  testing code ================================================
-// function set_value(final_rate, cdt, cdn){
-
-//     // console.log("set value")
-//     // // Assuming you have references to the element
-
-//     // // Construct the ID of the element representing the 'rate' field
-//     // var rateFieldID = cdt + "-" + cdn + "-rate";
-
-//     // // Get the element by its ID
-//     // var rateField = document.getElementById(rateFieldID);
-
-//     // // Set the value
-//     // if (rateField) {
-//     //     console.log("rate value found")
-//     //     rateField.value = final_rate; // Assuming rateField is an input element
-//     //     // If rateField is a div or span, you would set its innerHTML or innerText property.
-//     // }
-//     // else{
-//     //     console.log("rate field not found")
-//     // }
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// // frappe.ui.form.on('Quotation Item', {
-// //     // Replace 'YourChildTableDoctype' with the name of your child table's doctype
-// //     custom_markup_: function(frm){
-// //         newfunction(frm)
-// //     }
-// // });
-
-
-
-// function newfunction(frm){
-//     console.log("function call")
-//     // var elements = document.querySelectorAll('[data-fieldname="custom_markup_"]');
-//     // console.log("ele", elements)
-//     // elements.forEach(function(element) {
-//     //     console.log("element adsf", element)
-//     //     var inputBox = element.querySelector('input[type="text"]');
-//     //     console.log("input box", inputBox)
-
-//     //     inputBox.addEventListener('onblur', function() {
-//     //         console.log('Input box focused!');
-//     //     });
-//     // });
-//     // Find the input element
-// var inputElement = document.querySelector('input[type="text"][data-fieldname="custom_markup_"]');
-
-// // Check if the input element exists
-// if (inputElement) {
-//     // Attach the onblur event listener
-//     inputElement.addEventListener('blur', function() {
-//         // Your event handling code here
-//         console.log('Input blurred');
-//         // You can add more actions or functions to be executed when the input is blurred
-//     });
-// } else {
-//     console.log('Input element not found');
-// }
-
-// }
-
-
-// frappe.ui.form.on('Quotation Item', {
-//     custom_type: function(frm, cdt, cdn) {
-//         console.log("called")
-//         var child = locals[cdt][cdn];
-//         var type = child.type;
-        
-//         // Clear previous items
-//         frappe.model.set_value(cdt, cdn, 'item_code', '');
-        
-//         frm.fields_dict['items'].grid.get_field('item_code').get_query = function(doc, cdt, cdn) {
-//             return {
-//                 filters: [
-//                     ['item_group', '=', "Products"]
-//                 ]
-//             };
-//         };
-
-
-//         // // Set a custom query for the item_code field
-//         // frappe.meta.get_docfield(cdt, 'item_code', frm.doc.name).get_query = function(doc, cdt, cdn) {
-//         //     var filters = {};
-//         //     if (type === 'Material') {
-//         //         // Filter items for Material type
-//         //         filters['item_group'] = 'Products'; // Adjust as per your item structure
-//         //     }
-//         //     return {
-//         //         filters: filters
-//         //     };
-//         // };
-
-
-
-//     }
-// });
-
-
-
+function check_duplicate_section_in_other_row(frm, cdt, cdn){
+    var child = locals[cdt][cdn]
+    frm.doc.items.forEach(function(row) {
+        if (row.name !== child.name && row.custom_section_name === child.custom_section_name) {
+            frappe.msgprint(`Duplicate section name found in row: ${row.idx}`)
+        }
+    });
+}
