@@ -258,3 +258,11 @@ function check_duplicate_section_in_other_row(frm, cdt, cdn){
         }
     });
 }
+
+ cur_frm.set_query("custom_buying_price_list", function(frm) {
+    return {
+        filters: {
+            "buying": 1
+        }
+    }
+});
