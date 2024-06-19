@@ -45,6 +45,10 @@ frappe.ui.form.on("Quotation", {
         });
         frm.refresh_field('items');
     },
+    
+    party_name: function(frm){
+        set_suggested_price_list_frm(frm)
+    }
 
     // before_save: function(frm) {
     //     // Get all rows in the table field
@@ -200,11 +204,15 @@ function set_suggested_price_list(frm, cdt, cdn){
             date: frm.doc.transaction_date
         },
         callback: function (response) {
+            console.log("suggested price", response)
             if (response.suggested_price) {
                 setTimeout(function() {
                     // if (frm.doc.selling_price_list === ""){
                     frappe.model.set_value(row.doctype, row.name, "rate", response.suggested_price);
+                    // row.rate = response.suggested_price
+
                     frappe.model.set_value(row.doctype, row.name, "custom_suggested_unit_price", response.suggested_price);
+
                     // frappe.model.set_value(row.doctype, row.name, "custom_unit_cost", response.unit_cost);
                     // }
                 }, 100);
@@ -213,39 +221,34 @@ function set_suggested_price_list(frm, cdt, cdn){
     });
 }
 
-function set_suggested_price_list_frm(frm){
-    console.log("suggested frm")
+function set_suggested_price_list_frm(frm) {
+    console.log("suggested price frm");
     var child_table = frm.doc.items;
-        if (child_table) {
-            for (var i = 0; i < child_table.length; i++) {
-                var row = child_table[i];
-                if(row.item_code !== ""){
-                    frappe.call({
-                        method: "harness.api.quotation.qty_wise_selling_price",
-                        args: {
-                            item_code: row.item_code,
-                            quantity: row.qty,
-                            customer: frm.doc.party_name || frm.doc.customer || "",
-                            selling_price_list: frm.doc.selling_price_list,
-                            date: frm.doc.transaction_date
-                        },
-                        callback: function (response) {
-                            if (response.suggested_price) {
-                                setTimeout(function() {
-                                    // if (frm.doc.selling_price_list === ""){
-                                    frappe.model.set_value(row.doctype, row.name, "rate", response.suggested_price);
-                                    frappe.model.set_value(row.doctype, row.name, "custom_suggested_unit_price", response.suggested_price);
-                                    // frappe.model.set_value(row.doctype, row.name, "custom_unit_cost", response.unit_cost);
-                                    // }
-                                }, 100);
-                            }
+    if (child_table) {
+        for (let i = 0; i < child_table.length; i++) {  // Use let instead of var
+            let row = child_table[i];  // Use let to declare row
+            if (row.item_code !== "") {
+                frappe.call({
+                    method: "harness.api.quotation.qty_wise_selling_price",
+                    args: {
+                        item_code: row.item_code,
+                        quantity: row.qty,
+                        customer: frm.doc.party_name || frm.doc.customer || "",
+                        selling_price_list: frm.doc.selling_price_list,
+                        date: frm.doc.transaction_date
+                    },
+                    callback: function (response) {
+                        if (response.suggested_price) {
+                            frappe.model.set_value(row.doctype, row.name, "rate", response.suggested_price);
+                            frappe.model.set_value(row.doctype, row.name, "custom_suggested_unit_price", response.suggested_price);
                         }
-                    });
-                }
+                    }
+                });
             }
-            // frm.save();
         }
+    }
 }
+
 
 function check_duplicate_section_in_other_row(frm, cdt, cdn){
     var child = locals[cdt][cdn]
