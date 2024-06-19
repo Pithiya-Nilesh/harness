@@ -1,6 +1,6 @@
 import frappe, json, ast
 
-from harness.api.utils import get_actual_qty, get_currency_formated_list, get_order_qty
+from harness.api.utils import get_actual_qty, get_bom_sub_item, get_currency_formated_list, get_order_qty
 
 @frappe.whitelist()
 def get_task_for_stock_entry(tasks):
@@ -71,6 +71,7 @@ def update_status_and_set_actual_in_jobs(doc, method):
                         new_row.amount = i.basic_amount
                         new_row.source_warehouse = i.s_warehouse
                         new_row.target_warehouse = i.t_warehouse
+                        new_row.bom_no = i.bom_no
                     task.save()
                 else:
                     pass
@@ -85,7 +86,7 @@ def create_stock_entry(docname):
         if task.custom_mterials:
             items_table = []
             for row in task.custom_mterials:
-                if row.type == "Materials":
+                if row.type == "Materials" and not get_bom_sub_item(row.material_item):
                     items_row = {
                         "item_code": row.material_item,
                         "qty": row.quentity,
@@ -100,6 +101,35 @@ def create_stock_entry(docname):
                         "conversion_factor": get_conversion_factor(row.material_item)
                     }
                     items_table.append(items_row)
+                elif row.type == "Materials":
+                    bom_sub_items = get_bom_sub_item(row.material_item)
+                    for bom_item in bom_sub_items:
+                        item_found = False
+                        for item in items_table:
+                            if item['item_code'] == bom_item.item_code:
+                                # Update qty if item already exists in items_table
+                                item['qty'] += bom_item.qty
+                                item_found = True
+                                break
+                        
+                        if not item_found:
+                            # If item is not found in items_table, append a new entry
+                            items_row = {
+                                "item_code": bom_item.item_code,
+                                "qty": bom_item.qty,
+                                "transfer_qty": bom_item.qty,
+                                "basic_rate": bom_item.rate,
+                                "basic_amount": bom_item.amount,
+                                # "s_warehouse": row.source_warehouse,
+                                # "t_warehouse": row.target_warehouse,
+                                "custom_job_order": docname,
+                                "uom": get_uom(bom_item.item_code),
+                                "stock_uom": get_uom(bom_item.item_code),
+                                "conversion_factor": get_conversion_factor(bom_item.item_code),
+                                "bom_no": bom_item.bom_no
+                            }
+                            items_table.append(items_row)
+                            print("\n\n item table", items_table)
         return items_table
     except Exception as e:
         frappe.log_error("Error: While create stock entry from job", e, "Task", docname)

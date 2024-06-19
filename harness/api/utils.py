@@ -108,3 +108,25 @@ def get_item_group(item):
         return item_group
     except Exception as e:
         frappe.log_error("Error: While get item group", f"Error: {e}\nitem: {item}")
+
+
+def get_bom_sub_item(item_code):
+    try:
+        boms = frappe.get_all('BOM', filters={"item": item_code}, fields=['name'])
+        if boms:
+            matching_items = []
+            
+            for bom in boms:
+                bom_items = frappe.get_all('BOM Item',
+                    filters={'parent': bom.name},
+                    fields=['item_code', 'qty', 'rate', 'amount'])
+                
+                for item in bom_items:
+                    item["bom_no"] = bom.name
+                    matching_items.append(item)
+            
+            return matching_items
+        else:
+            False
+    except Exception as e:
+        frappe.log_error("Error: while getting bom items from BOM", f"Error:{e}\nitem: {item_code}")
