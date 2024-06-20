@@ -206,7 +206,7 @@ function set_suggested_price_list(frm, cdt, cdn){
         callback: function (response) {
             console.log("suggested price", response)
             if (response.suggested_price) {
-                setTimeout(function() {
+                // setTimeout(function() {
                     // if (frm.doc.selling_price_list === ""){
                     frappe.model.set_value(row.doctype, row.name, "rate", response.suggested_price);
                     // row.rate = response.suggested_price
@@ -215,7 +215,7 @@ function set_suggested_price_list(frm, cdt, cdn){
 
                     // frappe.model.set_value(row.doctype, row.name, "custom_unit_cost", response.unit_cost);
                     // }
-                }, 100);
+                // }, 100);
             }
         }
     });
@@ -239,10 +239,10 @@ function set_suggested_price_list_frm(frm) {
                     },
                     callback: function (response) {
                         if (response.suggested_price) {
-                            setTimeout(function() {
+                            // setTimeout(function() {
                                 frappe.model.set_value(row.doctype, row.name, "rate", response.suggested_price);
                                 frappe.model.set_value(row.doctype, row.name, "custom_suggested_unit_price", response.suggested_price);
-                            }, 100)
+                            // }, 100)
                         }
                     }
                 });
