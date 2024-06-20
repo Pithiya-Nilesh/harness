@@ -239,8 +239,10 @@ function set_suggested_price_list_frm(frm) {
                     },
                     callback: function (response) {
                         if (response.suggested_price) {
-                            frappe.model.set_value(row.doctype, row.name, "rate", response.suggested_price);
-                            frappe.model.set_value(row.doctype, row.name, "custom_suggested_unit_price", response.suggested_price);
+                            setTimeout(function() {
+                                frappe.model.set_value(row.doctype, row.name, "rate", response.suggested_price);
+                                frappe.model.set_value(row.doctype, row.name, "custom_suggested_unit_price", response.suggested_price);
+                            }, 100)
                         }
                     }
                 });
