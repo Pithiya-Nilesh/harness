@@ -195,9 +195,9 @@ doc_events = {
 # Overriding Methods
 # ------------------------------
 #
-# override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "harness.event.get_events"
-# }
+override_whitelisted_methods = {
+	"erpnext.stock.get_item_details.apply_price_list": "harness.whitelist_override.apply_price_list"
+}
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
