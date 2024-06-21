@@ -432,7 +432,7 @@ def get_summary(job):
                 
         return html
     except Exception as e:
-        frappe.log_error("Error: White get summary", e, "Task", job)
+        frappe.log_error("Error: While get summary", e, "Task", job)
 
 
 @frappe.whitelist()

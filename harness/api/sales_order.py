@@ -150,6 +150,9 @@ def create_jobs(name, create_without_reserved):
                         child.available_for_invoice_rate = row.rate
                         child.available_for_invoice_amount = row.amount
                         
+                        child.source_warehouse = row.warehouse
+                        child.target_warehouse = row.target_warehouse
+                        
                     count += 1
                     task.insert()
                     frappe.db.commit()
@@ -191,6 +194,9 @@ def create_jobs(name, create_without_reserved):
                     child.available_for_invoice_qty = row.qty
                     child.available_for_invoice_rate = row.rate
                     child.available_for_invoice_amount = row.amount
+                    
+                    child.source_warehouse = row.warehouse
+                    child.target_warehouse = row.target_warehouse
             
                 count += 1
                 task.insert()
