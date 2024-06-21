@@ -340,8 +340,6 @@ frappe.ui.form.on('Sales Order Item', {
     }
 });
 
-
-
 function sum_calculate_markup_from_rate(frm, cdt, cdn){
     console.log("markup based on rate")
     var child = locals[cdt][cdn];
@@ -424,6 +422,25 @@ frappe.ui.form.on('Sales Order', {
             // frm.refresh_field('items');
         // });
         // frm.refresh_field('items');
+
+        frappe.call({
+            method: "frappe.client.get_list",
+            args: {
+                doctype: "Task",
+                filters: {
+                    sales_order: frm.doc.name
+                },
+                fields: ["name"]
+            },
+            callback: function(r) {
+                if (r.message && r.message.length > 0) {
+                    frm.remove_custom_button('Create Jobs');
+                }
+                else{
+                    console.log("job already created", r.message)
+                }
+            }
+        });
     },
 
     custom_duplicate_row: function(frm){
