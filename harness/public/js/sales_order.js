@@ -428,7 +428,7 @@ frappe.ui.form.on('Sales Order', {
             args: {
                 doctype: "Task",
                 filters: {
-                    sales_order: frm.doc.name
+                    custom_sales_order: frm.doc.name
                 },
                 fields: ["name"]
             },
