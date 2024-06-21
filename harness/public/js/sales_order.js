@@ -313,6 +313,18 @@ function create_popup(reserved_item){
 }
 
 frappe.ui.form.on('Sales Order Item', {
+    item_code: function(frm, cdt, cdn) {
+        frappe.model.set_value(cdt, cdn, "qty", 1);
+        if (frm.doc.selling_price_list !== "" && frm.doc.custom_fetch_price_from_price_list === 1){
+            set_suggested_price_list(frm, cdt, cdn);
+        }
+	},
+	qty: function(frm, cdt, cdn) {
+        if (frm.doc.selling_price_list !== "" && frm.doc.custom_fetch_price_from_price_list === 1){
+            set_suggested_price_list(frm, cdt, cdn);
+        }
+	},
+
     custom_markup_: function(frm, cdt, cdn) {
         sum_calculate_rate(frm, cdt, cdn);
     },
@@ -468,4 +480,67 @@ function check_duplicate_section_in_other_row(frm, cdt, cdn){
             frappe.msgprint(`Duplicate section name found in row: ${row.idx}`)
         }
     });
+}
+
+
+
+// change suggested price based on selected selling price list
+function set_suggested_price_list(frm, cdt, cdn){
+    console.log("suggesed item wise")
+    var row = locals[cdt][cdn];
+    frappe.call({
+        method: "harness.api.quotation.qty_wise_selling_price",
+        args: {
+            item_code: row.item_code,
+            quantity: row.qty,
+            customer: frm.doc.party_name || frm.doc.customer || "",
+            selling_price_list: frm.doc.selling_price_list,
+            date: frm.doc.transaction_date
+        },
+        callback: function (response) {
+            console.log("suggested price", response)
+            if (response.suggested_price) {
+                // setTimeout(function() {
+                    // if (frm.doc.selling_price_list === ""){
+                    frappe.model.set_value(row.doctype, row.name, "rate", response.suggested_price);
+                    // row.rate = response.suggested_price
+
+                    frappe.model.set_value(row.doctype, row.name, "custom_suggested_unit_price", response.suggested_price);
+
+                    // frappe.model.set_value(row.doctype, row.name, "custom_unit_cost", response.unit_cost);
+                    // }
+                // }, 100);
+            }
+        }
+    });
+}
+
+function set_suggested_price_list_frm(frm) {
+    console.log("suggested price frm");
+    var child_table = frm.doc.items;
+    if (child_table) {
+        for (let i = 0; i < child_table.length; i++) {  // Use let instead of var
+            let row = child_table[i];  // Use let to declare row
+            if (row.item_code !== "") {
+                frappe.call({
+                    method: "harness.api.quotation.qty_wise_selling_price",
+                    args: {
+                        item_code: row.item_code,
+                        quantity: row.qty,
+                        customer: frm.doc.party_name || frm.doc.customer || "",
+                        selling_price_list: frm.doc.selling_price_list,
+                        date: frm.doc.transaction_date
+                    },
+                    callback: function (response) {
+                        if (response.suggested_price) {
+                            // setTimeout(function() {
+                                frappe.model.set_value(row.doctype, row.name, "rate", response.suggested_price);
+                                frappe.model.set_value(row.doctype, row.name, "custom_suggested_unit_price", response.suggested_price);
+                            // }, 100)
+                        }
+                    }
+                });
+            }
+        }
+    }
 }

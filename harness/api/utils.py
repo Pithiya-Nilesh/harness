@@ -112,7 +112,7 @@ def get_item_group(item):
 
 def get_bom_sub_item(item_code):
     try:
-        boms = frappe.get_all('BOM', filters={"item": item_code}, fields=['name'])
+        boms = frappe.get_all('BOM', filters={"item": item_code, "docstatus": 1}, fields=['name'])
         if boms:
             matching_items = []
             

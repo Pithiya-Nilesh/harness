@@ -56,7 +56,7 @@ def update_status_and_set_actual_in_jobs(doc, method):
 
                     # Create or update rows in Task's custom_materials1 table
                     task = frappe.get_doc("Task", i.custom_job_order)
-                    existing_row = next((row for row in task.custom_materials1 if row.material_item == i.item_code and row.source_warehouse == i.s_warehouse and row.target_warehouse == i.t_warehouse and row.type == "Materials"), None)
+                    existing_row = next((row for row in task.custom_materials1 if row.material_item == i.item_code and row.source_warehouse == i.s_warehouse and row.target_warehouse == i.t_warehouse and row.type == "Materials" and row.bom_no == i.custom_bom_no), None)
                     if existing_row:
                         # If material exists, update its quantity, rate, and amount
                         existing_row.quentity += i.qty
@@ -71,7 +71,7 @@ def update_status_and_set_actual_in_jobs(doc, method):
                         new_row.amount = i.basic_amount
                         new_row.source_warehouse = i.s_warehouse
                         new_row.target_warehouse = i.t_warehouse
-                        new_row.bom_no = i.bom_no
+                        new_row.bom_no = i.custom_bom_no
                     task.save()
                 else:
                     pass
@@ -98,26 +98,34 @@ def create_stock_entry(docname):
                         "custom_job_order": docname,
                         "uom": get_uom(row.material_item),
                         "stock_uom": get_uom(row.material_item),
-                        "conversion_factor": get_conversion_factor(row.material_item)
+                        "conversion_factor": get_conversion_factor(row.material_item),
+                        'custom_bom_no': ""
                     }
                     items_table.append(items_row)
+                    
                 elif row.type == "Materials":
                     bom_sub_items = get_bom_sub_item(row.material_item)
                     for bom_item in bom_sub_items:
                         item_found = False
                         for item in items_table:
-                            if item['item_code'] == bom_item.item_code:
+                            if item['item_code'] == bom_item.item_code and item["custom_bom_no"] == bom_item.bom_no:
                                 # Update qty if item already exists in items_table
-                                item['qty'] += bom_item.qty
+                                item['qty'] += (bom_item.qty * row.quentity)
+                                item['transfer_qty'] += (bom_item.qty * row.quentity)
                                 item_found = True
                                 break
+                            # if item['item_code'] == bom_item.item_code:
+                            #     # Update qty if item already exists in items_table
+                            #     item['qty'] += bom_item.qty
+                            #     item_found = True
+                            #     break
                         
                         if not item_found:
                             # If item is not found in items_table, append a new entry
                             items_row = {
                                 "item_code": bom_item.item_code,
-                                "qty": bom_item.qty,
-                                "transfer_qty": bom_item.qty,
+                                "qty": (bom_item.qty * row.quentity),
+                                "transfer_qty": (bom_item.qty * row.quentity),
                                 "basic_rate": bom_item.rate,
                                 "basic_amount": bom_item.amount,
                                 # "s_warehouse": row.source_warehouse,
@@ -126,10 +134,9 @@ def create_stock_entry(docname):
                                 "uom": get_uom(bom_item.item_code),
                                 "stock_uom": get_uom(bom_item.item_code),
                                 "conversion_factor": get_conversion_factor(bom_item.item_code),
-                                "bom_no": bom_item.bom_no
+                                "custom_bom_no": bom_item.bom_no
                             }
                             items_table.append(items_row)
-                            print("\n\n item table", items_table)
         return items_table
     except Exception as e:
         frappe.log_error("Error: While create stock entry from job", e, "Task", docname)
@@ -376,10 +383,10 @@ def get_summary(job):
         final_list = get_table_data_for_html(job)
         
         for i in final_list:
-            if "bom_item" in i:
+            if "bom_item" in i and i["bom_item"]:
                 html += f"""
                     <tr style="background-color: #c8c8c8;">
-                        <td style="text-align: left;"><div style="margin-left: 20px">{i.get('bom_item')}</td>
+                        <td style="text-align: left;"><div style="margin-left: 20px">{i.get('item')}</td>
                         <td>{i.get('material_qty', "")}</td>
                         <td>{i.get('material_price', "")}</td>
                         <td>{i.get('material_amount', "")}</td>
@@ -437,43 +444,44 @@ def get_table_data_for_html(job):
         temp_list = []
         
         for material in job.custom_mterials:
-            temp_list.append({ "job": job.name, "type": "planned", "is_bom_item": False, "item": material.material_item, "material_qty": material.quentity or "", "material_price": material.rate or "", "material_amount": material.amount or ""})
+            temp_list.append({ "job": job.name, "type": "planned", "bom_item": material.bom_no or '', "item": material.material_item, "material_qty": material.quentity or "", "material_price": material.rate or "", "material_amount": material.amount or ""})
         
         # for resource in job.custom_resources:
         #     temp_list.append({ "job": job.name, "type": "planned", "is_bom_item": False, "item": resource.service_item, "material_qty": resource.spent_hours, "material_price": resource.rate, "material_amount": resource.total_spend_hours})
 
         for actual in job.custom_materials1:
-            temp_list.append({ "job": job.name, "type": "actual", "is_bom_item": False, "item": actual.material_item, "actual_qty": actual.quentity or "", "actual_cost": actual.rate or "", "actual_amount": actual.amount or ""})
+            temp_list.append({ "job": job.name, "type": "actual", "bom_item": actual.bom_no or '', "item": actual.material_item, "actual_qty": actual.quentity or "", "actual_cost": actual.rate or "", "actual_amount": actual.amount or ""})
         
         # for actual_resource in job.custom_resources1:
         #     temp_list.append({ "job": job.name, "type": "actual", "is_bom_item": False, "item": actual_resource.service_item, "actual_qty": actual_resource.spent_hours, "actual_cost": actual_resource.rate, "actual_amount": actual_resource.total_spend_hours})
 
         for invoiced in job.custom_mterials:
-            temp_list.append({ "job": job.name, "type": "invoiced", "is_bom_item": False, "item": invoiced.material_item, "invoiced_qty": invoiced.invoiced_qty or "", "invoiced_price": invoiced.invoiced_rate or "", "invoiced_amount": invoiced.invoiced_amount or ""})
+            temp_list.append({ "job": job.name, "type": "invoiced", "bom_item": invoiced.bom_no or '', "item": invoiced.material_item, "invoiced_qty": invoiced.invoiced_qty or "", "invoiced_price": invoiced.invoiced_rate or "", "invoiced_amount": invoiced.invoiced_amount or ""})
             
         # for r_invoiced in job.custom_resources1:
         #     temp_list.append({ "job": job.name, "type": "invoiced", "is_bom_item": False, "item": r_invoiced.service_item, "invoiced_qty": r_invoiced.invoiced_qty, "invoiced_price": r_invoiced.invoiced_rate, "invoiced_amount": r_invoiced.invoiced_amount})
             
         for available in job.custom_mterials:
-            temp_list.append({ "job": job.name, "type": "available", "is_bom_item": False, "item": available.material_item, "available_qty": available.available_for_invoice_qty or "", "available_price": available.available_for_invoice_rate or "", "available_amount": available.available_for_invoice_amount or ""})
+            temp_list.append({ "job": job.name, "type": "available", "bom_item": available.bom_no or '', "item": available.material_item, "available_qty": available.available_for_invoice_qty or "", "available_price": available.available_for_invoice_rate or "", "available_amount": available.available_for_invoice_amount or ""})
         
         # for r_available in job.custom_resources1:
         #     temp_list.append({ "job": job.name, "type": "available", "is_bom_item": False, "item": r_available.service_item, "available_qty": r_available.available_for_invoice_qty, "available_price": r_available.available_for_invoice_rate, "available_amount": r_available.available_for_invoice_amount})
 
         summary_data = map_summary_data(temp_list)
+        print("\n\n summary data\n", summary_data)
 
-        # Get BOM Items
-        semi_final_list = []
-        for i in summary_data:
-            matched_items = get_matching_child_items(i["item"], i["job"])
-            if matched_items:
-                semi_final_list.append(i)
-                for j in matched_items:
-                    semi_final_list.append(j)
-            else:
-                semi_final_list.append(i)
+        # # Get BOM Items
+        # semi_final_list = []
+        # for i in summary_data:
+        #     matched_items = get_matching_child_items(i["item"], i["job"])
+        #     if matched_items:
+        #         semi_final_list.append(i)
+        #         for j in matched_items:
+        #             semi_final_list.append(j)
+        #     else:
+        #         semi_final_list.append(i)
 
-        final_list = get_currency_formated_list(semi_final_list)
+        final_list = get_currency_formated_list(summary_data)
         
         for i in final_list:
             for key in i:
@@ -488,11 +496,51 @@ def get_table_data_for_html(job):
             for key, value in entry.items():
                 if value == 0 or value == "$0.00":
                     entry[key] = ""
+        # print("\n\n final list", final_list)
+        
+        result = rearrange_items(final_list)
+        print("\n\n final list result", result)
 
-        return final_list
+        return result
+    
     except Exception as e:
         frappe.log_error("Error: While get table data for html", e, "Task", job)
+
+
+def rearrange_items(data):
+    """ rearrange item and set as per BOM first show parent item and then bom item related to this item. """
+    # Create a dictionary to hold items by their 'a' values
+    print("\n\n asdf")
     
+    item_dict = {item['item']: item for item in data}
+    
+    # Create a set to keep track of processed items
+    processed = set()
+    output_list = []
+
+    def process_item(a_value):
+        if a_value not in processed:
+            item = item_dict[a_value]
+            processed.add(a_value)
+            output_list.append(item)
+            # Process any items that depend on the current item
+            for dep_item in data:
+                # if dep_item.get('bom_item') != '':
+                #     print("\n\n in if", dep_item.get('bom_item'))
+                    bom_item = frappe.db.get_value("BOM", filters={"name": dep_item.get('bom_item')}, fieldname=["item"])
+                    if bom_item == a_value:
+                        process_item(dep_item['item'])
+
+    # Iterate through the input list and process each item
+    print("\n\n processed", processed)
+    for item in data:
+        if item['item'] not in processed:
+            process_item(item['item'])
+            
+            
+    print("\n\n output ", output_list)
+    return output_list
+
 
 def map_summary_data(data):
     try:
@@ -509,7 +557,7 @@ def map_summary_data(data):
                     # if "bom_item" in out_dict:
                     #     final_list.append(out_dict)
                     # else:
-                        if out_dict["item"] == item_dict["item"]:
+                        if out_dict["item"] == item_dict["item"] and out_dict["bom_item"] == item_dict["bom_item"]:
                             # Merge the dictionaries
                             out_dict.update(item_dict)
                             found = True
@@ -523,26 +571,26 @@ def map_summary_data(data):
         frappe.log_error("Error: While map summary data", f"Error: {e}\ndata: {data}")
 
 
-def get_matching_child_items(item_name, job_id):
-    try:
-        boms = frappe.get_all('BOM', filters={"item": item_name, "custom_job": job_id}, fields=['name'])
+# def get_matching_child_items(item_name, job_id):
+#     try:
+#         boms = frappe.get_all('BOM', filters={"item": item_name, "custom_job": job_id}, fields=['name'])
         
-        matching_items = []
+#         matching_items = []
         
-        for bom in boms:
-            bom_items = frappe.get_all('BOM Item',
-                filters={'parent': bom.name},
-                fields=['item_name as bom_item', 'qty as material_qty', 'rate as material_price', 'amount as material_amount'])
+#         for bom in boms:
+#             bom_items = frappe.get_all('BOM Item',
+#                 filters={'parent': bom.name},
+#                 fields=['item_name as bom_item', 'qty as material_qty', 'rate as material_price', 'amount as material_amount'])
             
-            for item in bom_items:
-                item["job"] = job_id
-                item["type"] = "planned"
-                item["is_bom_item"] = True
-                matching_items.append(item)
+#             for item in bom_items:
+#                 item["job"] = job_id
+#                 item["type"] = "planned"
+#                 item["is_bom_item"] = True
+#                 matching_items.append(item)
         
-        return matching_items
-    except Exception as e:
-        frappe.log_error("Error: while getting matching item from BOM", f"Error:{e}\nitem: {item_name}\njob: {job_id}")
+#         return matching_items
+#     except Exception as e:
+#         frappe.log_error("Error: while getting matching item from BOM", f"Error:{e}\nitem: {item_name}\njob: {job_id}")
 
 
 @frappe.whitelist()

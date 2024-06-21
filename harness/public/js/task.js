@@ -273,6 +273,7 @@ function create_stock_entry(frm){
                     frappe.model.set_value(item_row.doctype, item_row.name, 'uom', task.uom);
                     frappe.model.set_value(item_row.doctype, item_row.name, 'stock_uom', task.stock_uom);
                     frappe.model.set_value(item_row.doctype, item_row.name, 'conversion_factor', task.conversion_factor);
+                    frappe.model.set_value(item_row.doctype, item_row.name, 'custom_bom_no', task.custom_bom_no);
 
                     // Refresh the child table field
                     refresh_field("items");

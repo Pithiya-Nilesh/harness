@@ -416,7 +416,32 @@
   </tr>
   
   {% $.each(data, (idx, row) => { %}
-    {% if row.item %}
+    {% if row.bom_item %}
+    <tr style="background-color: #c8c8c8">
+        <td style="text-align: left;"><div style="margin-left: 20px">{{row.job}}</div></td>
+        <td style="text-align: left;"><div style="margin-left: 20px">{{row.item}}</div></td>
+
+        <td>{{ row.material_qty || "" }}</td>
+        <td>{{ row.material_price || "" }}</td>
+        <td>{{ row.material_amount || "" }}</td>
+
+        <td>{{ row.actual_qty || "" }}</td>
+        <td>{{ row.actual_cost || "" }}</td>
+        <td>{{ row.actual_amount || "" }}</td>
+
+        <td>{{ row.invoiced_qty || "" }}</td>
+        <td>{{ row.invoiced_price || "" }}</td>
+        <td>{{ row.invoiced_amount || "" }}</td>
+
+        <td>{{ row.available_qty || "" }}</td>
+        <td>{{ row.available_price || "" }}</td>
+        <td>{{ row.available_amount || "" }}</td>
+
+        <td><input type="text" class="{{row.available_qty}} qty_input" id="{{row.available_qty}}" value="" style="width: 50px; text-align: center;"></td>
+        <td><input type="text" class="{{row.available_price}} price_input" id="{{row.available_price}}" value="" style="width: 50px; text-align: center;"></td>
+        <td></td>
+      </tr>
+  {% else %}
     <tr>
       <td style="text-align: left;"><div style="margin-left: 5px">{{row.job}}</div></td>
       <td style="text-align: left;"><div style="margin-left: 5px">{{row.item}}</div></td>
@@ -441,31 +466,6 @@
       <td><input type="text" class="{{row.available_price}} price_input" id="{{row.available_price}}" value="" style="width: 50px; text-align: center;"></td>
       <td></td>
     </tr>
-  {% else %}
-    <tr style="background-color: #c8c8c8">
-        <td style="text-align: left;"><div style="margin-left: 20px">{{row.job}}</div></td>
-        <td style="text-align: left;"><div style="margin-left: 20px">{{row.bom_item}}</div></td>
-
-        <td>{{ row.material_qty || "" }}</td>
-        <td>{{ row.material_price || "" }}</td>
-        <td>{{ row.material_amount || "" }}</td>
-
-        <td>{{ row.actual_qty || "" }}</td>
-        <td>{{ row.actual_cost || "" }}</td>
-        <td>{{ row.actual_amount || "" }}</td>
-
-        <td>{{ row.invoiced_qty || "" }}</td>
-        <td>{{ row.invoiced_price || "" }}</td>
-        <td>{{ row.invoiced_amount || "" }}</td>
-
-        <td>{{ row.available_qty || "" }}</td>
-        <td>{{ row.available_price || "" }}</td>
-        <td>{{ row.available_amount || "" }}</td>
-
-        <td><input type="text" class="{{row.available_qty}} qty_input" id="{{row.available_qty}}" value="" style="width: 50px; text-align: center;"></td>
-        <td><input type="text" class="{{row.available_price}} price_input" id="{{row.available_price}}" value="" style="width: 50px; text-align: center;"></td>
-        <td></td>
-      </tr>
   {% endif %}
   {% }) %}
 
