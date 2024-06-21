@@ -220,7 +220,7 @@ def check_item_is_available(required_qty_list):
                         if open_task not in reserved_job_list:
                             reserved_job_list.append({"job": open_task, "priority": task.priority, "item": row.material_item or "", "warehouse": row.source_warehouse or "", "qty": row.reserved_quantity or 0})
                             
-            print("\n\n already reserved", alredy_reserved_qty, i.item_code)
+            # print("\n\n already reserved", alredy_reserved_qty, i.item_code)
             if int(actual_qty) > 0:                
                 available_qty = int(actual_qty) - int(alredy_reserved_qty)
             else:

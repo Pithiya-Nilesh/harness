@@ -24,7 +24,7 @@ def get_task_for_sales_invoice(tasks):
             invoice_data.append({"item_code": i.material_item , "qty": i.quentity, "base_rate": i.rate, "base_amount": i.amount})
         # for i in t.custom_resources1:
         #     invoice_data.append({"item_code": i.service_item , "qty": i.spent_hours, "base_rate":i.rate, "base_amount":i.total_spend_hours})
-    print("\n\n invoice data", invoice_data)
+    # print("\n\n invoice data", invoice_data)
     return invoice_data
 
 # def update_status_and_set_actual_in_jobs(doc, method):
@@ -468,7 +468,7 @@ def get_table_data_for_html(job):
         #     temp_list.append({ "job": job.name, "type": "available", "is_bom_item": False, "item": r_available.service_item, "available_qty": r_available.available_for_invoice_qty, "available_price": r_available.available_for_invoice_rate, "available_amount": r_available.available_for_invoice_amount})
 
         summary_data = map_summary_data(temp_list)
-        print("\n\n summary data\n", summary_data)
+        # print("\n\n summary data\n", summary_data)
 
         # # Get BOM Items
         # semi_final_list = []
@@ -499,7 +499,7 @@ def get_table_data_for_html(job):
         # print("\n\n final list", final_list)
         
         result = rearrange_items(final_list)
-        print("\n\n final list result", result)
+        # print("\n\n final list result", result)
 
         return result
     
@@ -510,7 +510,7 @@ def get_table_data_for_html(job):
 def rearrange_items(data):
     """ rearrange item and set as per BOM first show parent item and then bom item related to this item. """
     # Create a dictionary to hold items by their 'a' values
-    print("\n\n asdf")
+    # print("\n\n asdf")
     
     item_dict = {item['item']: item for item in data}
     
@@ -532,13 +532,13 @@ def rearrange_items(data):
                         process_item(dep_item['item'])
 
     # Iterate through the input list and process each item
-    print("\n\n processed", processed)
+    # print("\n\n processed", processed)
     for item in data:
         if item['item'] not in processed:
             process_item(item['item'])
             
             
-    print("\n\n output ", output_list)
+    # print("\n\n output ", output_list)
     return output_list
 
 
