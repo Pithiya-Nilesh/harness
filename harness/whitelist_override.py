@@ -26,5 +26,4 @@ def apply_price_list(args, as_doc=False):
                     "ignore_pricing_rule": 0/1
             }
     """
-    print("\n\n override whitelist method")
     pass
