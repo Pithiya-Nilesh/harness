@@ -76,7 +76,7 @@ def update_status_and_set_actual_in_jobs(doc, method):
                 else:
                     pass
     except Exception as e:
-        frappe.log_error("Error: While update status and set actual in job after stick entry submit", e, "Stock Entry", doc.name)
+        frappe.log_error("Error: While update status and set actual in job after stock entry submit", e, "Stock Entry", doc.name)
 
 @frappe.whitelist()
 def create_stock_entry(docname):
