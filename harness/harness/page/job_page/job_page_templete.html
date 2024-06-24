@@ -78,10 +78,15 @@
           <td>{{ row.available_qty || "" }}</td>
           <td>{{ row.available_price || "" }}</td>
           <td>{{ row.available_amount || "" }}</td>
+          {% if row.is_billable %}
+            <td><input type="text" class="{{row.available_qty}} qty_input" id="{{row.available_qty}}" style="width: 50px; text-align: center;"></td>
+            <td><input type="text" class="{{row.item}} {{row.available_price}} price_input" id="{{row.available_price}}" style="width: 50px; text-align: center;"></td>
+          {%else%}
+            <td></td>
+            <td></td>
+          {%endif%}
+            <td></td>
 
-          <td><input type="text" class="{{row.available_qty}} qty_input" id="{{row.available_qty}}" style="width: 50px; text-align: center;"></td>
-          <td><input type="text" class="{{row.item}} {{row.available_price}} price_input" id="{{row.available_price}}" style="width: 50px; text-align: center;"></td>
-          <td></td>
         </tr>
         
     {% else %}
@@ -104,9 +109,14 @@
         <td>{{ row.available_price || "" }}</td>
         <td>{{ row.available_amount || "" }}</td>
 
-        <td><input type="text" class="{{row.available_qty}} qty_input" id="{{row.available_qty}}" style="width: 50px; text-align: center;"></td>
-        <td><input type="text" class="{{row.item}} {{row.available_price}} price_input" id="{{row.available_price}}" style="width: 50px; text-align: center;"></td>
-        <td></td>
+        {% if row.is_billable %}
+          <td><input type="text" class="{{row.available_qty}} qty_input" id="{{row.available_qty}}" style="width: 50px; text-align: center;"></td>
+          <td><input type="text" class="{{row.item}} {{row.available_price}} price_input" id="{{row.available_price}}" style="width: 50px; text-align: center;"></td>
+        {%else%}
+          <td></td>
+          <td></td>
+        {%endif%}
+          <td></td>
       </tr>
     {% endif %}
   {% }) %}
