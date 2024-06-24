@@ -434,7 +434,7 @@ frappe.ui.form.on('Sales Order', {
             },
             callback: function(r) {
                 if (r.message && r.message.length > 0) {
-                    frm.remove_custom_button('Create Jobs');
+                    // frm.remove_custom_button('Create Jobs');
                 }
                 else{
                     console.log("job already created", r.message)
@@ -445,6 +445,10 @@ frappe.ui.form.on('Sales Order', {
 
     custom_duplicate_row: function(frm){
         var selected_rows = frm.fields_dict['items'].grid.get_selected_children();
+        if (selected_rows.length === 0) {
+            frappe.msgprint(__('Please select a row to duplicate'));
+            return;
+        }
         selected_rows.forEach(function(row) {
             var new_row = frm.add_child('items');
             for (var field in row) {

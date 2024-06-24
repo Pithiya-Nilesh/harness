@@ -91,7 +91,8 @@ def get_stock_summary_html_data(job):
         job = frappe.get_doc("Task", job)
         data_list = []
         for material in job.custom_mterials:
-            data_list.append({ "job": job.name, "type": "planned", "item": material.material_item, "actual_qty": material.actual_quantity or "", "reserved_qty": material.reserved_quantity or "", "on_order_qty": material.ordered_quantity or "", "available_qty": material.available_quantity or "", "to_be_order_qty": material.to_be_order_quantity or ""})
+            if material.type == "Materials":
+                data_list.append({ "job": job.name, "type": "planned", "item": material.material_item, "actual_qty": material.actual_quantity or "", "reserved_qty": material.reserved_quantity or "", "on_order_qty": material.ordered_quantity or "", "available_qty": material.available_quantity or "", "to_be_order_qty": material.to_be_order_quantity or ""})
 
         return data_list
     except Exception as e:
@@ -142,9 +143,9 @@ def create_jobs(name, create_without_reserved):
                         child.rate = row.rate
                         child.amount = row.amount
                         child.actual_quantity = actual_qty
-                        child.available_quantity = 0 if (int(actual_qty) - int(reserved_qty)) < 0 else int(actual_qty) - int(reserved_qty)
+                        child.available_quantity = 0 if (int(actual_qty) - int(reserved_qty)) <= 0 else int(actual_qty) - int(reserved_qty)
                         child.reserved_quantity = reserved_qty
-                        child.to_be_order_quantity = 0 if (int(reserved_qty) - int(actual_qty)) < 0 else int(reserved_qty) - int(actual_qty)
+                        child.to_be_order_quantity = 0 if (int(reserved_qty) - int(actual_qty)) <= 0 else int(reserved_qty) - int(actual_qty)
                         
                         child.available_for_invoice_qty = row.qty
                         child.available_for_invoice_rate = row.rate

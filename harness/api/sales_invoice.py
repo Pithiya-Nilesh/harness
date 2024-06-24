@@ -47,7 +47,6 @@ import frappe
 #                             frappe.db.set_value("Mate", k.name, "available_for_invoice_amount", (k.rate * available_qty))
 #                             frappe.db.commit()     
 
-
 def set_invoiced_qty(doc, method):
     """ if sales invoice submited we need to make change in actual table related to this sales invoice in job doctype. """
     try:
@@ -129,7 +128,6 @@ def set_invoiced_qty(doc, method):
 #                     frappe.db.set_value("Mate", k.name, "available_for_invoice_amount", (k.rate * available_qty))
 #                     frappe.db.commit()  
                      
-
 def map_canclled_invoice_with_job(doc, method):
     """ if sales invoice cancelled we need to make change in actual table related to this sales invoice in job doctype. """
     try:
@@ -166,7 +164,6 @@ def map_canclled_invoice_with_job(doc, method):
     except Exception as e:
         frappe.log_error("Error: While map cancelled sales invoice in job.", e , "Sales Invoice", doc.name)
         
-
 @frappe.whitelist()
 def map_sales_invoice_from_job(dummy=""):
     """ when we click on create sales invoice button in job summary page this method map data for sales invocie """
@@ -176,12 +173,15 @@ def map_sales_invoice_from_job(dummy=""):
         customer = frappe.flags.args.customer
         sales_order = frappe.flags.args.sales_order
         section = frappe.db.get_value("Task", job, ["subject"])
+        quotation_name = frappe.db.get_value("Sales Order", filters={"name": sales_order}, fieldname=["custom_quotation_name"])
+        customer_account= frappe.db.sql(f"select account from `tabParty Account` where parent='{customer}'", as_dict=True)
+
         
         si = frappe.new_doc("Sales Invoice")
         si.customer = customer
         si.selling_price_list = ""
         si.ignore_pricing_rule = 1
-        
+        si.custom_quotation_name = quotation_name
         for i in data:
                 
             if i['ToBeInvoicedQty'] == 0:
@@ -226,6 +226,9 @@ def map_sales_invoice_from_job(dummy=""):
                 item_row.custom_section_name = section
                 # item_row.custom_type = get_types(i["Description"], job)
                 get_extra_custom_fields_value(item_row, sales_order, i["Description"])
+                
+        si.debit_to = customer_account if customer_account else debtor_account[0]['default_receivable_account']
+        si.price_list_currency = "AUD"
             
         # si.insert(ignore_mandatory=True)
         return si
@@ -240,11 +243,15 @@ def map_sales_invoice_from_sales_order(dummy=""):
     try:
         data = frappe.flags.args.data
         customer = frappe.db.get_value("Sales Order", filters={"name": sales_order}, fieldname=["customer"])
-
+        quotation_name = frappe.db.get_value("Sales Order", filters={"name": sales_order}, fieldname=["custom_quotation_name"])
+        customer_account= frappe.db.sql(f"select account from `tabParty Account` where parent='{customer}'", as_dict=True)
+        
         si = frappe.new_doc("Sales Invoice")
         si.customer = customer
         si.selling_price_list = ""
         si.ignore_pricing_rule = 1
+        si.price_list_currency = "AUD"
+        si.custom_quotation_name = quotation_name
         
         for i in data:
             if i['ToBeInvoicedQty'] == 0:
@@ -268,7 +275,7 @@ def map_sales_invoice_from_sales_order(dummy=""):
                                     i.name = %s
                             """, (i["Description"]), as_dict=True)
                     
-                debtor_account =  frappe.db.sql(" select default_receivable_account from `tabCompany` where name=%s ", (item_data[0]['company']), as_dict=True)
+                debtor_account =  frappe.db.sql("select default_receivable_account from `tabCompany` where name=%s ", (item_data[0]['company']), as_dict=True)
 
                 item_row = si.append("items", {})
                 item_row.item_code = i["Description"]
@@ -288,6 +295,7 @@ def map_sales_invoice_from_sales_order(dummy=""):
                 item_row.custom_section_name = get_section_name(i['Job'])
                 # item_row.custom_type = get_types(i["Description"], i['Job'])
                 get_extra_custom_fields_value(item_row, sales_order, i["Description"])
+        si.debit_to = customer_account if customer_account else debtor_account[0]['default_receivable_account']
 
         return si
     except Exception as e:

@@ -1,3 +1,4 @@
+import locale
 import frappe, json, ast
 
 from harness.api.utils import get_actual_qty, get_bom_sub_item, get_currency_formated_list, get_order_qty
@@ -219,6 +220,7 @@ def cancelled_status_in_jobs(doc, method):
 def sum_of_all_data(doc, method):
     sum_of_m_amount(doc, method)
     sum_of_r_amount(doc, method)
+    frappe.reload_doc("Projects", "Task", doc.name)
 
 def sum_of_m_amount(doc, method):
 
@@ -482,6 +484,7 @@ def get_table_data_for_html(job):
         #         semi_final_list.append(i)
 
         final_list = get_currency_formated_list(summary_data)
+        # print("after currencty and before logic", final_list)
         
         for i in final_list:
             for key in i:

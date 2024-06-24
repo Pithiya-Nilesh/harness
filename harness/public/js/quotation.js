@@ -31,8 +31,14 @@ frappe.ui.form.on("Quotation", {
         set_suggested_price_list_frm(frm)
     },
 
-    custom_duplicate_row: function(frm){
+    custom_duplicate_row: function(frm) {
         var selected_rows = frm.fields_dict['items'].grid.get_selected_children();
+        
+        if (selected_rows.length === 0) {
+            frappe.msgprint(__('Please select a row to duplicate'));
+            return;
+        }
+    
         selected_rows.forEach(function(row) {
             var new_row = frm.add_child('items');
             for (var field in row) {
@@ -43,8 +49,10 @@ frappe.ui.form.on("Quotation", {
                 }
             }
         });
+        
         frm.refresh_field('items');
     },
+    
     
     party_name: function(frm){
         set_suggested_price_list_frm(frm)

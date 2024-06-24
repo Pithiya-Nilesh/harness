@@ -42,7 +42,7 @@ frappe.ui.form.on("Task", {
             };
         };
 
-        calculate_and_set_summed_values(frm);    
+        calculate_and_set_summed_values(frm);
     },
 
     after_save: function(frm){
@@ -50,7 +50,7 @@ frappe.ui.form.on("Task", {
     },
 
     onload: function(frm){
-        get_stock_summary_data(frm);
+        // get_stock_summary_data(frm);
     },
    
     custom_button: function(frm){
@@ -429,7 +429,6 @@ function get_stock_summary_data(frm){
                 job: frm.doc.name
             },
             callback: function(res){
-                console.log("res", res)
                 res.message.forEach(function(row){
                     let row_name = row["row_name"]
                     frappe.model.set_value("Mate", row_name, "available_quantity", row["available_qty"])
@@ -437,6 +436,13 @@ function get_stock_summary_data(frm){
                     frappe.model.set_value("Mate", row_name, "order_quantity", row["order_qty"])
                     // frappe.model.set_value("Mate", row_name, "reserved_quantity", row["reserved_qty"])
                     frappe.model.set_value("Mate", row_name, "to_be_order_quantity", row["to_be_order_qty"])
+
+                    // row_name.available_quantity = row["available_qty"]
+                    // row.actual_quantity = row["actual_qty"]
+                    // row.order_quantity = row["order_qty"]
+                    // // row.reserved_quantity = row["reserved_qty"]
+                    // row.to_be_order_quantity = row["to_be_order_qty"]
+
                 })
                 frm.refresh_field("custom_mterials")
             }
@@ -925,9 +931,6 @@ cur_frm.cscript.onload = function(frm) {
         
     });
     
-};
-
-cur_frm.cscript.onload = function(frm) {
     cur_frm.set_query("material_item", "custom_materials1", function(doc, cdt, cdn) {
         var child = locals[cdt][cdn];
         var type = child.type;
