@@ -125,46 +125,46 @@ doctype_js = {"Sales Order" : "public/js/sales_order.js",
 # ---------------
 # Hook on document methods and events
 
-doc_events = {
-	"Stock Entry": {
-    "on_submit": "harness.api.task.update_status_and_set_actual_in_jobs",
-		# "on_update": "method",
-		# "on_trash": "method"
-	},
+# doc_events = {
+# 	"Stock Entry": {
+#     "on_submit": "harness.api.task.update_status_and_set_actual_in_jobs",
+# 		# "on_update": "method",
+# 		# "on_trash": "method"
+# 	},
  
-  "Timesheet": {
-    "on_submit": "harness.api.task.update_actual_in_jobs_from_timesheet"
-		# "on_update": "method",
-		# "on_cancel": "method",
-		# "on_trash": "method"
-	},
+#   "Timesheet": {
+#     "on_submit": "harness.api.task.update_actual_in_jobs_from_timesheet"
+# 		# "on_update": "method",
+# 		# "on_cancel": "method",
+# 		# "on_trash": "method"
+# 	},
   
-  "Sales Order": {
-      "on_update": "harness.api.utils.set_section_name_in_db",
-      "on_cancel": "harness.api.task.cancelled_status_in_jobs",
-	},
+#   "Sales Order": {
+#       "on_update": "harness.api.utils.set_section_name_in_db",
+#       "on_cancel": "harness.api.task.cancelled_status_in_jobs",
+# 	},
   
-  "Task": {
-    "after_insert": "harness.api.task.sum_of_all_data",
-    # "on_update": "harness.api.task.set_labour_total"
-	},
+#   "Task": {
+#     "after_insert": "harness.api.task.sum_of_all_data",
+#     # "on_update": "harness.api.task.set_labour_total"
+# 	},
   
-  "Sales Invoice": {
-    "on_submit": "harness.api.sales_invoice.set_invoiced_qty",
-    # "on_update": "harness.api.sales_invoice.set_invoiced_qty",
-    "on_update": "harness.api.utils.set_section_name_in_db",
-    "on_cancel": "harness.api.sales_invoice.map_canclled_invoice_with_job",
-	},
+#   "Sales Invoice": {
+#     "on_submit": "harness.api.sales_invoice.set_invoiced_qty",
+#     # "on_update": "harness.api.sales_invoice.set_invoiced_qty",
+#     "on_update": "harness.api.utils.set_section_name_in_db",
+#     "on_cancel": "harness.api.sales_invoice.map_canclled_invoice_with_job",
+# 	},
   
-  "Quotation": {
-    "on_update": "harness.api.utils.set_section_name_in_db",
-  },
+#   "Quotation": {
+#     "on_update": "harness.api.utils.set_section_name_in_db",
+#   },
   
-  "Purchase Invoice": {
-    "on_submit": "harness.api.purchase_invoice.set_data_into_job_actual_costing_from_pi",
-    "on_update": "harness.api.purchase_invoice.set_expense_account"
-  }
-}
+#   "Purchase Invoice": {
+#     "on_submit": "harness.api.purchase_invoice.set_data_into_job_actual_costing_from_pi",
+#     "on_update": "harness.api.purchase_invoice.set_expense_account"
+#   }
+# }
 
 # Scheduled Tasks
 # ---------------
