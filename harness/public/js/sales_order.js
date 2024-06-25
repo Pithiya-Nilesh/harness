@@ -558,27 +558,58 @@ frappe.ui.form.on('Sales Order', {
 
 function get_summary_data(frm) {
     let summary = {};
+    let totalAmount = 0; // Initialize total amount accumulator
+
     frm.doc.items.forEach(item => {
-        if (!summary[item.custom_type]) {
-            summary[item.custom_type] = { qty: 0, rate: 0 };
+        const key = item.item_code;  // Grouping by item_code
+        if (!summary[key]) {
+            summary[key] = { 
+                custom_type: item.custom_type,  // Adding custom_type to the summary
+                qty: 0, 
+                rate: 0, 
+                item_code: item.item_code, 
+                amount: 0 
+            };
         }
-        summary[item.custom_type].qty += item.qty;
-        summary[item.custom_type].rate += item.rate;
+
+        // Accumulate quantities, rates, and amounts for each item_code
+        summary[key].qty += item.qty;
+        summary[key].rate = item.rate; // Decide how to handle rate (overwrite or accumulate)
+        summary[key].amount += item.amount;
+
+        // Accumulate total amount
+        totalAmount += item.amount;
     });
+
+    // Add total amount to the summary object
+    summary.totalAmount = totalAmount;
+
     return summary;
 }
 
+
 function create_html_table(data) {
     let html = '<table class="table table-bordered">';
-    html += '<tr><th>Type</th><th>Quantity</th><th>Rate</th></tr>';
+    html += '<tr><th>Type</th><th>Item Name</th><th>Quantity</th><th>Rate</th><th>Amount</th></tr>';
     
-    for (let custom_type in data) {
-        html += `<tr><td>${custom_type}</td><td>${data[custom_type].qty}</td><td>${data[custom_type].rate}</td></tr>`;
-    }
+    let keys = Object.keys(data);
+    let lastIndex = keys.length - 1;
+
+    keys.forEach((item_code, index) => {
+        if (index !== lastIndex) {
+            html += `<tr><td>${data[item_code].custom_type}</td><td>${item_code}</td><td>${data[item_code].qty}</td><td>${data[item_code].rate}</td><td>${data[item_code].amount}</td></tr>`;
+        }
+    });
+
+    html += `<tr><td colspan="4" style='text-align:right;'><strong>Total Amount</strong></td><td><strong>${data.totalAmount}</strong></td></tr>`;
 
     html += '</table>';
     return html;
 }
+
+
+
+
 
 function show_confirmation_dialog(frm, html_table) {
     let d = new frappe.ui.Dialog({
