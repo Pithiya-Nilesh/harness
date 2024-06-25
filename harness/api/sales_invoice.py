@@ -227,7 +227,7 @@ def map_sales_invoice_from_job(dummy=""):
                 # item_row.custom_type = get_types(i["Description"], job)
                 get_extra_custom_fields_value(item_row, sales_order, i["Description"])
                 
-        si.debit_to = customer_account if customer_account else debtor_account[0]['default_receivable_account']
+                item_row.debit_to = customer_account if customer_account else debtor_account[0]['default_receivable_account']
         si.price_list_currency = "AUD"
             
         # si.insert(ignore_mandatory=True)
@@ -295,7 +295,7 @@ def map_sales_invoice_from_sales_order(dummy=""):
                 item_row.custom_section_name = get_section_name(i['Job'])
                 # item_row.custom_type = get_types(i["Description"], i['Job'])
                 get_extra_custom_fields_value(item_row, sales_order, i["Description"])
-        si.debit_to = customer_account if customer_account else debtor_account[0]['default_receivable_account']
+                item_row.debit_to = customer_account if customer_account else debtor_account[0]['default_receivable_account']
 
         return si
     except Exception as e:
