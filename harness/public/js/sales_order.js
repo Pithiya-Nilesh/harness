@@ -405,24 +405,8 @@ function get_summary_data(frm){
     })
 }
 
-// duplicate row data
 frappe.ui.form.on('Sales Order', {
     refresh: function(frm) {
-        // frm.fields_dict['items'].grid.add_button('Copy Selected Rows', function() {
-          
-            // var selected_rows = frm.fields_dict['items'].grid.get_selected_children();
-            // selected_rows.forEach(function(row) {
-            //     var new_row = frm.add_child('items');
-            //     for (var field in row) {
-            //         if (row.hasOwnProperty(field)) {
-            //             new_row[field] = row[field];
-            //         }
-            //     }
-            // });
-            // frm.refresh_field('items');
-        // });
-        // frm.refresh_field('items');
-
         frappe.call({
             method: "frappe.client.get_list",
             args: {
@@ -434,7 +418,7 @@ frappe.ui.form.on('Sales Order', {
             },
             callback: function(r) {
                 if (r.message && r.message.length > 0) {
-                    // frm.remove_custom_button('Create Jobs');
+                    frm.remove_custom_button('Create Jobs');
                 }
                 else{
                     console.log("job already created", r.message)
@@ -442,7 +426,8 @@ frappe.ui.form.on('Sales Order', {
             }
         });
     },
-
+    
+    // duplicate row data
     custom_duplicate_row: function(frm){
         var selected_rows = frm.fields_dict['items'].grid.get_selected_children();
         if (selected_rows.length === 0) {
@@ -463,8 +448,6 @@ frappe.ui.form.on('Sales Order', {
 
     }
 });
-
-
 
 cur_frm.cscript.onload = function(frm) {
     cur_frm.set_query("item_code", "items", function(doc, cdt, cdn) {
@@ -502,8 +485,6 @@ function check_duplicate_section_in_other_row(frm, cdt, cdn){
         }
     });
 }
-
-
 
 // change suggested price based on selected selling price list
 function set_suggested_price_list(frm, cdt, cdn){
@@ -564,4 +545,79 @@ function set_suggested_price_list_frm(frm) {
             }
         }
     }
+}
+
+frappe.ui.form.on('Sales Order', {
+    before_save: function(frm) {
+        let data = get_summary_data(frm);
+        let html_table = create_html_table(data);
+        show_confirmation_dialog(frm, html_table);
+        frappe.validated = false;
+    }
+});
+
+function get_summary_data(frm) {
+    let summary = {};
+    frm.doc.items.forEach(item => {
+        if (!summary[item.custom_type]) {
+            summary[item.custom_type] = { qty: 0, rate: 0 };
+        }
+        summary[item.custom_type].qty += item.qty;
+        summary[item.custom_type].rate += item.rate;
+    });
+    return summary;
+}
+
+function create_html_table(data) {
+    let html = '<table class="table table-bordered">';
+    html += '<tr><th>Type</th><th>Quantity</th><th>Rate</th></tr>';
+    
+    for (let custom_type in data) {
+        html += `<tr><td>${custom_type}</td><td>${data[custom_type].qty}</td><td>${data[custom_type].rate}</td></tr>`;
+    }
+
+    html += '</table>';
+    return html;
+}
+
+function show_confirmation_dialog(frm, html_table) {
+    let d = new frappe.ui.Dialog({
+        title: 'Confirm Save',
+        fields: [
+            {
+                label: 'Summary',
+                fieldtype: 'HTML',
+                options: html_table
+            }
+        ],
+        primary_action_label: 'Confirm',
+        primary_action(values) {
+            d.hide();
+            // frappe.validated = true
+            frappe.call({
+                method: 'frappe.client.save',
+                args: {
+                    doc: frm.doc
+                },
+                callback: function(response) {
+                    console.log("response", response.message.name)
+                    let name = response.message.name
+                    if (!response.exc) {
+                        frappe.show_alert({message: 'Document saved successfully', indicator: 'green'});
+                        frm.reload_doc();
+                        if (name) {
+                            frappe.set_route('Form', 'Sales Order', name);
+                        }
+                    } else {
+                        frappe.show_alert({message: 'Error saving document', indicator: 'red'});
+                    }
+                }
+            });
+        },
+        secondary_action_label: 'Cancel',
+        secondary_action() {
+            d.hide();
+        }
+    });
+    d.show();
 }
