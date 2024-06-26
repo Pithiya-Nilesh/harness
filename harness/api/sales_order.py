@@ -105,16 +105,17 @@ def create_jobs(name, create_without_reserved):
     if int(create_without_reserved) == 0:
         try:
             sql = f"""
-                SELECT sum(qty) as required_qty, warehouse, item_code from `tabSales Order Item` where parent="{name}" and custom_type="Materials" group by warehouse, item_code
+                SELECT sum(qty) as required_qty, warehouse, item_code 
+                FROM `tabSales Order Item` 
+                WHERE parent=%s AND custom_type='Materials' 
+                GROUP BY warehouse, item_code
             """
-            
-            required_qty_list = frappe.db.sql(sql, as_dict=True)
+            required_qty_list = frappe.db.sql(sql, name, as_dict=True)
             is_item_available, available_qty_and_required_qty_list = check_item_is_available(required_qty_list)
             
             if is_item_available:
                 html = get_reserved_item_html(is_item_available, available_qty_and_required_qty_list)
                 return "HTML", html
-            
             else:
                 so = frappe.get_doc("Sales Order", name)
                 child_table_data = so.get("items")
@@ -132,25 +133,22 @@ def create_jobs(name, create_without_reserved):
                     task.custom_sales_order = so.name
                     task.subject = section
                     for row in rows:
-                        
                         actual_qty = get_actual_qty(row.item_code, row.warehouse)
                         reserved_qty = row.qty
                         
                         child = task.append('custom_mterials', {})
-                        child.type =  row.custom_type
+                        child.type = row.custom_type
                         child.material_item = row.item_code
                         child.quentity = row.qty
                         child.rate = row.rate
                         child.amount = row.amount
                         child.actual_quantity = actual_qty
-                        child.available_quantity = 0 if (int(actual_qty) - int(reserved_qty)) <= 0 else int(actual_qty) - int(reserved_qty)
+                        child.available_quantity = max(0, int(actual_qty) - int(reserved_qty))
                         child.reserved_quantity = reserved_qty
-                        child.to_be_order_quantity = 0 if (int(reserved_qty) - int(actual_qty)) <= 0 else int(reserved_qty) - int(actual_qty)
-                        
+                        child.to_be_order_quantity = max(0, int(reserved_qty) - int(actual_qty))
                         child.available_for_invoice_qty = row.qty
                         child.available_for_invoice_rate = row.rate
                         child.available_for_invoice_amount = row.amount
-                        
                         child.source_warehouse = row.warehouse
                         child.target_warehouse = row.target_warehouse
                         
@@ -159,8 +157,8 @@ def create_jobs(name, create_without_reserved):
                 frappe.db.commit()
                 return "Created", count
         except Exception as e:
-            frappe.log_error("Error: While create job from so with reserved", f"Error: {e}\nso name: {name}\nwithout reserved: {create_without_reserved}", "Sales Order", name)  
-            return "Error", e
+            frappe.log_error("Error: While create job from so with reserved", f"Error: {e}\nso name: {name}\nwithout reserved: {create_without_reserved}", "Sales Order", name)
+            return "Error", str(e)
     else:
         try:
             so = frappe.get_doc("Sales Order", name)
@@ -183,20 +181,16 @@ def create_jobs(name, create_without_reserved):
                     reserved_qty = row.qty
                     
                     child = task.append('custom_mterials', {})
-                    child.type =  row.custom_type
+                    child.type = row.custom_type
                     child.material_item = row.item_code
                     child.quentity = row.qty
                     child.rate = row.rate
                     child.amount = row.amount
                     child.actual_quantity = actual_qty
-                    child.available_quantity = 0 if (int(actual_qty) - int(reserved_qty)) < 0 else int(actual_qty) - int(reserved_qty)
-                    # child.reserved_quantity = reserved_qty
-                    # child.to_be_order_quantity = int(reserved_qty) - int(actual_qty)
-                    
+                    child.available_quantity = max(0, int(actual_qty) - int(reserved_qty))
                     child.available_for_invoice_qty = row.qty
                     child.available_for_invoice_rate = row.rate
                     child.available_for_invoice_amount = row.amount
-                    
                     child.source_warehouse = row.warehouse
                     child.target_warehouse = row.target_warehouse
             
@@ -205,8 +199,9 @@ def create_jobs(name, create_without_reserved):
             frappe.db.commit()
             return "Created", count
         except Exception as e:
-            frappe.log_error("Error: While creating job without reserved qty from so", f"Error: {e}\nso name: {name}\n without reserved: {create_without_reserved}", "Sales Order", name)  
-            return "Error", e
+            frappe.log_error("Error: While creating job without reserved qty from so", f"Error: {e}\nso name: {name}\nwithout reserved: {create_without_reserved}", "Sales Order", name)
+            return "Error", str(e)
+
 
 def check_item_is_available(required_qty_list):
     """ in this function check reserved qty for job and also check item and warehouse wise. there job and task is same represent task doctype. """
