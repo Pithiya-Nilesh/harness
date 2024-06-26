@@ -574,20 +574,27 @@ function get_summary_data_popup(frm) {
             };
         }
 
-        // Accumulate quantities, rates, and amounts for each item_code
+        // Accumulate quantities and amounts for each item_code
         summary[key].qty += item.qty;
-        summary[key].rate = item.rate.toFixed(2);
-        summary[key].amount += item.amount.toFixed(2);
+        summary[key].rate += item.rate; // Accumulate rate as a number
+        summary[key].amount += item.amount; // Accumulate amount as a number
 
         // Accumulate total amount
-        totalAmount += item.amount.toFixed(2);
+        totalAmount += item.amount;
     });
 
-    // Add total amount to the summary object
+    // Format rate and amount to 2 decimal places for display
+    Object.values(summary).forEach(item => {
+        item.rate = item.rate.toFixed(2);
+        item.amount = item.amount.toFixed(2);
+    });
+
+    // Format total amount to 2 decimal places for display
     summary.totalAmount = totalAmount.toFixed(2);
 
     return summary;
 }
+
 
 
 function create_html_table(data) {
