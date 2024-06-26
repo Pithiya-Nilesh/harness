@@ -576,15 +576,15 @@ function get_summary_data_popup(frm) {
 
         // Accumulate quantities, rates, and amounts for each item_code
         summary[key].qty += item.qty;
-        summary[key].rate = item.rate; // Decide how to handle rate (overwrite or accumulate)
-        summary[key].amount += item.amount;
+        summary[key].rate = item.rate.toFixed(2);
+        summary[key].amount += item.amount.toFixed(2);
 
         // Accumulate total amount
-        totalAmount += item.amount;
+        totalAmount += item.amount.toFixed(2);
     });
 
     // Add total amount to the summary object
-    summary.totalAmount = totalAmount;
+    summary.totalAmount = totalAmount.toFixed(2);
 
     return summary;
 }
@@ -608,8 +608,6 @@ function create_html_table(data) {
     html += '</table>';
     return html;
 }
-
-
 
 
 
