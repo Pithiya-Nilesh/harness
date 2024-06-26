@@ -561,7 +561,7 @@ frappe.ui.form.on('Sales Order', {
     },
 
     refresh: function(frm){
-        frm.doc.custom_show_popup = 1
+        frm.doc.custom_show_popup = 0
     }
 });
 
@@ -637,6 +637,7 @@ function show_confirmation_dialog(frm, html_table) {
             // frappe.validated = true
             frm.doc.custom_show_popup = 1
             frm.save()
+            frm.refresh()
             // if(frm.validate()){
 
                 // frappe.call({
