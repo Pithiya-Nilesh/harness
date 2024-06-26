@@ -549,14 +549,15 @@ function set_suggested_price_list_frm(frm) {
     }
 }
 
-frappe.ui.form.on('Sales Order', {
-    before_save: function(frm) {
-        let data = get_summary_data_popup(frm);
-        let html_table = create_html_table(data);
-        show_confirmation_dialog(frm, html_table);
-        frappe.validated = false
-    }
-});
+// frappe.ui.form.on('Sales Order', {
+//     before_save: function(frm) {
+//         console.log("validated call")
+//         let data = get_summary_data_popup(frm);
+//         let html_table = create_html_table(data);
+//         show_confirmation_dialog(frm, html_table);
+//         frappe.validated = false
+//     }
+// });
 
 function get_summary_data_popup(frm) {
     let summary = {};
@@ -628,28 +629,29 @@ function show_confirmation_dialog(frm, html_table) {
         primary_action(values) {
             d.hide();
             // frappe.validated = true
-            frappe.ui.form.trigger('validate', frm);
-            frm.save()
-            // frappe.call({
-            //     method: 'frappe.client.save',
-            //     args: {
-            //         doc: frm.doc
-            //     },
-            //     callback: function(response) {
-            //         console.log("response", response.message.name)
-            //         let name = response.message.name
+            // frappe.ui.form.trigger('validate', frm);
+            // frm.save()
+            
+            frappe.call({
+                method: 'frappe.client.save',
+                args: {
+                    doc: frm.doc
+                },
+                callback: function(response) {
+                    console.log("response", response.message.name)
+                    let name = response.message.name
                     
-            //         if (!response.exc) {
-            //             frappe.show_alert({message: 'Document saved successfully', indicator: 'green'});
-            //             frm.reload_doc();
-            //             if (name) {
-            //                 frappe.set_route('Form', 'Sales Order', name);
-            //             }
-            //         } else {
-            //             frappe.show_alert({message: 'Error saving document', indicator: 'red'});
-            //         }
-            //     }
-            // });
+                    if (!response.exc) {
+                        frappe.show_alert({message: 'Document saved successfully', indicator: 'green'});
+                        frm.reload_doc();
+                        if (name) {
+                            frappe.set_route('Form', 'Sales Order', name);
+                        }
+                    } else {
+                        frappe.show_alert({message: 'Error saving document', indicator: 'red'});
+                    }
+                }
+            });
 
         },
         secondary_action_label: 'Cancel',
