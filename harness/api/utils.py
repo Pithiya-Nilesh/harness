@@ -34,7 +34,7 @@ def set_section_name_in_db(doc, method):
                     else:
                         frappe.db.sql(f"UPDATE `tabSales Order Item` SET `custom_section_name`='{section_name}' WHERE `name` = '{item.name}'")
                         # frappe.db.set_value("Sales Order Item", item.name, "custom_section_name", section_name)
-                        frappe.db.commit()
+        frappe.db.commit()
 
         if doc.doctype == "Sales Invoice":
             for item in doc.items:
@@ -43,7 +43,7 @@ def set_section_name_in_db(doc, method):
                 else:
                     frappe.db.sql(f"UPDATE `tabSales Invoice Item` SET `custom_section_name`='{section_name}' WHERE `name` = '{item.name}'")
                     # frappe.db.set_value("Sales Invoice Item", item.name, "custom_section_name", section_name)
-                    frappe.db.commit()
+        frappe.db.commit()
                     
         if doc.doctype == "Quotation":
             for item in doc.items:
@@ -52,7 +52,7 @@ def set_section_name_in_db(doc, method):
                 else:
                     frappe.db.sql(f"UPDATE `tabQuotation Item` SET `custom_section_name`='{section_name}' WHERE `name` = '{item.name}'")
                     # frappe.db.set_value("Quotation Item", item.name, "custom_section_name", section_name)
-                    frappe.db.commit()
+        frappe.db.commit()
         section_name = ""
         
     except Exception as e:

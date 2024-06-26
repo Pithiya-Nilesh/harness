@@ -160,6 +160,7 @@ def create_jobs(name, create_without_reserved):
                 return "Created", count
         except Exception as e:
             frappe.log_error("Error: While create job from so with reserved", f"Error: {e}\nso name: {name}\nwithout reserved: {create_without_reserved}", "Sales Order", name)  
+            return "Error", e
     else:
         try:
             so = frappe.get_doc("Sales Order", name)
@@ -205,7 +206,7 @@ def create_jobs(name, create_without_reserved):
             return "Created", count
         except Exception as e:
             frappe.log_error("Error: While creating job without reserved qty from so", f"Error: {e}\nso name: {name}\n without reserved: {create_without_reserved}", "Sales Order", name)  
-
+            return "Error", e
 
 def check_item_is_available(required_qty_list):
     """ in this function check reserved qty for job and also check item and warehouse wise. there job and task is same represent task doctype. """

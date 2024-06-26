@@ -210,11 +210,14 @@ function create_popup(reserved_item){
                         else if (res.message[0] === "HTML"){
                             create_popup(res.message[1])
                         }
+                        else if (res.message[0] === "ERROR"){
+                            console.error("Error", res.message[1])
+                            frappe.msgprint(res.message[1])
+                        }
                     },
                     freeze: true,
                     freeze_message: "Please wait we are remove reserved qty and creating job based on this sales order.",
                 })
-
             }
             d.hide();
         }
@@ -309,7 +312,6 @@ function create_popup(reserved_item){
     
         return jobs
     }
-
 }
 
 frappe.ui.form.on('Sales Order Item', {
