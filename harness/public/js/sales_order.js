@@ -629,26 +629,28 @@ function show_confirmation_dialog(frm, html_table) {
             d.hide();
             // frappe.validated = true
             frappe.ui.form.trigger('validate', frm);
+            frm.save()
+            // frappe.call({
+            //     method: 'frappe.client.save',
+            //     args: {
+            //         doc: frm.doc
+            //     },
+            //     callback: function(response) {
+            //         console.log("response", response.message.name)
+            //         let name = response.message.name
+                    
+            //         if (!response.exc) {
+            //             frappe.show_alert({message: 'Document saved successfully', indicator: 'green'});
+            //             frm.reload_doc();
+            //             if (name) {
+            //                 frappe.set_route('Form', 'Sales Order', name);
+            //             }
+            //         } else {
+            //             frappe.show_alert({message: 'Error saving document', indicator: 'red'});
+            //         }
+            //     }
+            // });
 
-            frappe.call({
-                method: 'frappe.client.save',
-                args: {
-                    doc: frm.doc
-                },
-                callback: function(response) {
-                    console.log("response", response.message.name)
-                    let name = response.message.name
-                    if (!response.exc) {
-                        frappe.show_alert({message: 'Document saved successfully', indicator: 'green'});
-                        frm.reload_doc();
-                        if (name) {
-                            frappe.set_route('Form', 'Sales Order', name);
-                        }
-                    } else {
-                        frappe.show_alert({message: 'Error saving document', indicator: 'red'});
-                    }
-                }
-            });
         },
         secondary_action_label: 'Cancel',
         secondary_action() {
