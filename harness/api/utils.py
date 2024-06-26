@@ -13,7 +13,10 @@ def get_currency_formatted_list(data):
                     if key.endswith("_qty"):
                         formatted_value = int(value)
                     else:
-                        formatted_value = locale.currency(value, grouping=True)
+                        try:
+                            formatted_value = locale.currency(value, grouping=True)
+                        except ValueError as e:
+                            formatted_value = value
                 else:
                     formatted_value = value
                 formatted_item[key] = formatted_value
