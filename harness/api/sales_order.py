@@ -156,7 +156,7 @@ def create_jobs(name, create_without_reserved):
                         
                     count += 1
                     task.insert()
-                    frappe.db.commit()
+                frappe.db.commit()
                 return "Created", count
         except Exception as e:
             frappe.log_error("Error: While create job from so with reserved", f"Error: {e}\nso name: {name}\nwithout reserved: {create_without_reserved}", "Sales Order", name)  
@@ -202,7 +202,7 @@ def create_jobs(name, create_without_reserved):
             
                 count += 1
                 task.insert()
-                frappe.db.commit()
+            frappe.db.commit()
             return "Created", count
         except Exception as e:
             frappe.log_error("Error: While creating job without reserved qty from so", f"Error: {e}\nso name: {name}\n without reserved: {create_without_reserved}", "Sales Order", name)  

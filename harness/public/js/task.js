@@ -50,7 +50,7 @@ frappe.ui.form.on("Task", {
     },
 
     onload: function(frm){
-        // get_stock_summary_data(frm);
+        get_stock_summary_data(frm);
     },
    
     custom_button: function(frm){
@@ -431,17 +431,17 @@ function get_stock_summary_data(frm){
             callback: function(res){
                 res.message.forEach(function(row){
                     let row_name = row["row_name"]
-                    frappe.model.set_value("Mate", row_name, "available_quantity", row["available_qty"])
-                    frappe.model.set_value("Mate", row_name, "actual_quantity", row["actual_qty"])
-                    frappe.model.set_value("Mate", row_name, "order_quantity", row["order_qty"])
-                    // frappe.model.set_value("Mate", row_name, "reserved_quantity", row["reserved_qty"])
-                    frappe.model.set_value("Mate", row_name, "to_be_order_quantity", row["to_be_order_qty"])
+                    // frappe.model.set_value("Mate", row_name, "available_quantity", row["available_qty"])
+                    // frappe.model.set_value("Mate", row_name, "actual_quantity", row["actual_qty"])
+                    // frappe.model.set_value("Mate", row_name, "order_quantity", row["order_qty"])
+                    // // frappe.model.set_value("Mate", row_name, "reserved_quantity", row["reserved_qty"])
+                    // frappe.model.set_value("Mate", row_name, "to_be_order_quantity", row["to_be_order_qty"])
 
-                    // row_name.available_quantity = row["available_qty"]
-                    // row.actual_quantity = row["actual_qty"]
-                    // row.order_quantity = row["order_qty"]
-                    // // row.reserved_quantity = row["reserved_qty"]
-                    // row.to_be_order_quantity = row["to_be_order_qty"]
+                    row_name.available_quantity = row["available_qty"]
+                    row_name.actual_quantity = row["actual_qty"]
+                    row_name.order_quantity = row["order_qty"]
+                    // row.reserved_quantity = row["reserved_qty"]
+                    row_name.to_be_order_quantity = row["to_be_order_qty"]
 
                 })
                 frm.refresh_field("custom_mterials")
