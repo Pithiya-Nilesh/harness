@@ -549,14 +549,14 @@ function set_suggested_price_list_frm(frm) {
     }
 }
 
-frappe.ui.form.on('Sales Order', {
-    before_save: function(frm) {
-        let data = get_summary_data_popup(frm);
-        let html_table = create_html_table(data);
-        show_confirmation_dialog(frm, html_table);
-        frappe.validated = false;
-    }
-});
+// frappe.ui.form.on('Sales Order', {
+//     before_save: function(frm) {
+//         let data = get_summary_data_popup(frm);
+//         let html_table = create_html_table(data);
+//         show_confirmation_dialog(frm, html_table);
+//         frappe.validated = false;
+//     }
+// });
 
 function get_summary_data_popup(frm) {
     let summary = {};
