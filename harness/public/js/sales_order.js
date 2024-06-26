@@ -549,14 +549,14 @@ function set_suggested_price_list_frm(frm) {
     }
 }
 
-// frappe.ui.form.on('Sales Order', {
-//     before_save: function(frm) {
-//         let data = get_summary_data_popup(frm);
-//         let html_table = create_html_table(data);
-//         show_confirmation_dialog(frm, html_table);
-//         frappe.validated = false;
-//     }
-// });
+frappe.ui.form.on('Sales Order', {
+    before_save: function(frm) {
+        let data = get_summary_data_popup(frm);
+        let html_table = create_html_table(data);
+        show_confirmation_dialog(frm, html_table);
+        frappe.validated = false
+    }
+});
 
 function get_summary_data_popup(frm) {
     let summary = {};
@@ -595,8 +595,6 @@ function get_summary_data_popup(frm) {
     return summary;
 }
 
-
-
 function create_html_table(data) {
     let html = '<table class="table table-bordered">';
     html += '<tr><th>Type</th><th>Item Name</th><th>Quantity</th><th>Rate</th><th>Amount</th></tr>';
@@ -616,8 +614,6 @@ function create_html_table(data) {
     return html;
 }
 
-
-
 function show_confirmation_dialog(frm, html_table) {
     let d = new frappe.ui.Dialog({
         title: 'Confirm Save',
@@ -632,6 +628,8 @@ function show_confirmation_dialog(frm, html_table) {
         primary_action(values) {
             d.hide();
             // frappe.validated = true
+            frappe.ui.form.trigger('validate', frm);
+
             frappe.call({
                 method: 'frappe.client.save',
                 args: {
