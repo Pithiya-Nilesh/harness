@@ -446,26 +446,26 @@ def get_table_data_for_html(job):
         temp_list = []
         
         for material in job.custom_mterials:
-            temp_list.append({ "job": job.name, "type": "planned", "is_billable": material.is_billable, "bom_item": material.bom_no or '', "item": material.material_item, "material_qty": material.quentity or "", "material_price": material.rate or "", "material_amount": material.amount or ""})
+            temp_list.append({ "job": job.name, "type": "planned", "is_billable": material.is_billable, "bom_item": material.bom_no or '', "item": material.material_item, "material_qty": material.quentity or "", "material_price": material.rate or 0, "material_amount": material.amount or 0})
         
         # for resource in job.custom_resources:
         #     temp_list.append({ "job": job.name, "type": "planned", "is_bom_item": False, "item": resource.service_item, "material_qty": resource.spent_hours, "material_price": resource.rate, "material_amount": resource.total_spend_hours})
 
         for actual in job.custom_materials1:
-            temp_list.append({ "job": job.name, "type": "actual", "is_billable": actual.is_billable, "bom_item": actual.bom_no or '', "item": actual.material_item, "actual_qty": actual.quentity or "", "actual_cost": actual.rate or "", "actual_amount": actual.amount or ""})
+            temp_list.append({ "job": job.name, "type": "actual", "is_billable": actual.is_billable, "bom_item": actual.bom_no or '', "item": actual.material_item, "actual_qty": actual.quentity or "", "actual_cost": actual.rate or 0, "actual_amount": actual.amount or 0})
         
         # for actual_resource in job.custom_resources1:
         #     temp_list.append({ "job": job.name, "type": "actual", "is_bom_item": False, "item": actual_resource.service_item, "actual_qty": actual_resource.spent_hours, "actual_cost": actual_resource.rate, "actual_amount": actual_resource.total_spend_hours})
 
         for invoiced in job.custom_mterials:
-            temp_list.append({ "job": job.name, "type": "invoiced", "is_billable": invoiced.is_billable, "bom_item": invoiced.bom_no or '', "item": invoiced.material_item, "invoiced_qty": invoiced.invoiced_qty or "", "invoiced_price": invoiced.invoiced_rate or "", "invoiced_amount": invoiced.invoiced_amount or ""})
+            temp_list.append({ "job": job.name, "type": "invoiced", "is_billable": invoiced.is_billable, "bom_item": invoiced.bom_no or '', "item": invoiced.material_item, "invoiced_qty": invoiced.invoiced_qty or "", "invoiced_price": invoiced.invoiced_rate or 0, "invoiced_amount": invoiced.invoiced_amount or 0})
             
         # for r_invoiced in job.custom_resources1:
         #     temp_list.append({ "job": job.name, "type": "invoiced", "is_bom_item": False, "item": r_invoiced.service_item, "invoiced_qty": r_invoiced.invoiced_qty, "invoiced_price": r_invoiced.invoiced_rate, "invoiced_amount": r_invoiced.invoiced_amount})
             
         for available in job.custom_mterials:
             # temp_list.append({ "job": job.name, "type": "available", "is_billable": available.is_billable, "bom_item": available.bom_no or '', "item": available.material_item, "available_qty": available.available_for_invoice_qty or "", "available_price": float(available.available_for_invoice_rate or 0), "available_amount": float(available.available_for_invoice_amount or 0)})
-            temp_list.append({ "job": job.name, "type": "available", "is_billable": available.is_billable, "bom_item": available.bom_no or '', "item": available.material_item, "available_qty": available.available_for_invoice_qty or "", "available_price": available.available_for_invoice_rate or "", "available_amount": available.available_for_invoice_amount or ""})
+            temp_list.append({ "job": job.name, "type": "available", "is_billable": available.is_billable, "bom_item": available.bom_no or '', "item": available.material_item, "available_qty": available.available_for_invoice_qty or "", "available_price": available.available_for_invoice_rate or 0, "available_amount": available.available_for_invoice_amount or 0})
 
         # for r_available in job.custom_resources1:
         #     temp_list.append({ "job": job.name, "type": "available", "is_bom_item": False, "item": r_available.service_item, "available_qty": r_available.available_for_invoice_qty, "available_price": r_available.available_for_invoice_rate, "available_amount": r_available.available_for_invoice_amount})
