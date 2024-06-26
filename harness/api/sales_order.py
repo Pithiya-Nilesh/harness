@@ -240,7 +240,10 @@ def check_item_is_available(required_qty_list):
             
         final_list = make_job_items_group(reserved_job_list)
         
-        return final_list if limit else [], available_qty_and_required_qty_list
+        filtered_jobs = remove_zero_qty_items(final_list)
+        
+        return filtered_jobs if limit else [], available_qty_and_required_qty_list
+    
     except Exception as e:
         frappe.log_error("Error: While check available item during creation job from so", f"Error: {e}\nrequired_qty_list: {required_qty_list}")  
 
@@ -329,6 +332,7 @@ def get_reserved_item_html(reserved_job_details, available_qty_and_required_qty_
     except Exception as e:
         frappe.log_error("Error: While get reserved item html", f"Error:{e}\nreserved_job: {reserved_job_details}\navailable_and_required_qty: {available_qty_and_required_qty_list}")
 
+
 @frappe.whitelist()
 def create_job_and_unreserved_items_in_selected_jobs(name, data):
     try:
@@ -340,7 +344,8 @@ def create_job_and_unreserved_items_in_selected_jobs(name, data):
         return response
     except Exception as e:
         frappe.log_error("Error: While create job and unreserved item in job", f"Error: {e}\nsales order: {name}\ndata: {data}")
-            
+
+          
 def remove_reserved_qty_from_job(job):
     try: 
         job = frappe.get_doc("Task", job)
@@ -350,3 +355,20 @@ def remove_reserved_qty_from_job(job):
         return
     except Exception as e:
         frappe.log_error("Error: While remove reserved qty from job", f"Error:{e}\njob: {job}")
+
+
+def remove_zero_qty_items(final_list):
+    try:
+        filtered_jobs = []
+        for job in final_list:
+            filtered_items = [item for item in job['items'] if int(item['qty']) > 0]
+            if filtered_items:
+                filtered_jobs.append({
+                    'job': job['job'],
+                    'priority': job['priority'],
+                    'items': filtered_items
+                })
+        return filtered_jobs
+    except Exception as e:
+        frappe.log_error("Error: While remove zero qty item from reserved popup", f"ERROR: {e}\ngiven list: {final_list}")
+        frappe.throw(e)

@@ -1,7 +1,7 @@
 import locale
 import frappe, json, ast
 
-from harness.api.utils import get_actual_qty, get_bom_sub_item, get_currency_formated_list, get_order_qty
+from harness.api.utils import get_actual_qty, get_bom_sub_item, get_currency_formatted_list, get_order_qty
 
 @frappe.whitelist()
 def get_task_for_stock_entry(tasks):
@@ -464,7 +464,7 @@ def get_table_data_for_html(job):
         #     temp_list.append({ "job": job.name, "type": "invoiced", "is_bom_item": False, "item": r_invoiced.service_item, "invoiced_qty": r_invoiced.invoiced_qty, "invoiced_price": r_invoiced.invoiced_rate, "invoiced_amount": r_invoiced.invoiced_amount})
             
         for available in job.custom_mterials:
-            temp_list.append({ "job": job.name, "type": "available", "is_billable": available.is_billable, "bom_item": available.bom_no or '', "item": available.material_item, "available_qty": available.available_for_invoice_qty or "", "available_price": available.available_for_invoice_rate or "", "available_amount": available.available_for_invoice_amount or ""})
+            temp_list.append({ "job": job.name, "type": "available", "is_billable": available.is_billable, "bom_item": available.bom_no or '', "item": available.material_item, "available_qty": available.available_for_invoice_qty or "", "available_price": float(available.available_for_invoice_rate or 0), "available_amount": float(available.available_for_invoice_amount or 0)})
         
         # for r_available in job.custom_resources1:
         #     temp_list.append({ "job": job.name, "type": "available", "is_bom_item": False, "item": r_available.service_item, "available_qty": r_available.available_for_invoice_qty, "available_price": r_available.available_for_invoice_rate, "available_amount": r_available.available_for_invoice_amount})
@@ -483,17 +483,16 @@ def get_table_data_for_html(job):
         #     else:
         #         semi_final_list.append(i)
 
-        final_list = get_currency_formated_list(summary_data)
-        # print("after currencty and before logic", final_list)
+        final_list = get_currency_formatted_list(summary_data)
         
         for i in final_list:
             for key in i:
                 if 'available_qty' in key and i['available_qty'] == 0:
                     i['available_qty'] = i.get('actual_qty')
                 if 'available_price' in key and i['available_price'] == "$0.00":
-                    i['available_price'] = i.get('actual_cost', "0")
+                    i['available_price'] = i.get('actual_cost', "")
                 if 'available_amount' in key and i['available_amount'] == "$0.00":
-                    i['available_amount'] = i.get('actual_amount', "0")
+                    i['available_amount'] = i.get('actual_amount', "")
                     
         for entry in final_list:
             for key, value in entry.items():

@@ -1,11 +1,11 @@
 import frappe
 import locale
 
-def get_currency_formated_list(data):
+def get_currency_formatted_list(data):
     try:
-        locale.setlocale(locale.LC_ALL, 'en_US.UTF_8')
+        locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
         
-        formated_list = []
+        formatted_list = []
         for i in data:
             formatted_item = {}
             for key, value in i.items():
@@ -17,11 +17,11 @@ def get_currency_formated_list(data):
                 else:
                     formatted_value = value
                 formatted_item[key] = formatted_value
-            formated_list.append(formatted_item)
-        
-        return formated_list
+            formatted_list.append(formatted_item)
+            
+        return formatted_list
     except Exception as e:
-        frappe.log_error("Error: While get currency in format", f"Error: {e}\ndata: {data}")
+        frappe.log_error(f"Error: While formatting currency", f"Error: {e}\ndata: {data}")
 
         
 def set_section_name_in_db(doc, method):
@@ -67,7 +67,6 @@ def set_section_name_in_db(doc, method):
         frappe.log_error("Error: While not allow to save with unassigned item", e, doc.doctype, doc.name)
 
     
-
 def get_actual_qty(item_code, warehouse):
     try:
         if not item_code or not warehouse and not is_service_item(item_code):
@@ -138,3 +137,4 @@ def get_bom_sub_item(item_code):
             False
     except Exception as e:
         frappe.log_error("Error: while getting bom items from BOM", f"Error:{e}\nitem: {item_code}")
+

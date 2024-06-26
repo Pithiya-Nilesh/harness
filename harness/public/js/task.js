@@ -452,7 +452,7 @@ function get_stock_summary_data(frm){
 }
 
 function jobCheckList(frm){
-    let checklisthtml = ` <table border="1" class="full-width-table mb-3">
+    let checklisthtml = `  <table border="1" class="full-width-table mb-3">
         <thead>
             <th>Job Status</th>
             <th></th>
@@ -462,109 +462,131 @@ function jobCheckList(frm){
         </thead>
         <tbody>
             <tr>
-                <td rowspan="2">Open</td>
+                <td rowspan="1">Open</td>
                 <td><input type="checkbox" id="checkbox_row1" onclick="logCheckboxValue(event,'row1')"></td>
-                <td id="job_check_row1" style="text-align: left;"><label for="checkbox_row1">Create Asset in SafetyCulture</label></td>
+                <td id="job_check_row1" style="text-align: left;"><label for="checkbox_row1">Create Asset in ERPNext and Push it to SC</label></td>
                 <td id="employee_name_row1"></td>
                 <td id="date_row1"></td>
             </tr>
+
             <tr>
-                <td><input type="checkbox" id="checkbox_row2" onclick="logCheckboxValue(event,'row2')"></td>
-                <td id="job_check_row2" style="text-align: left;"><label for="checkbox_row2">Create Job</label></td>
-                <td id="employee_name_row2"></td>
-                <td id="date_row2"></td>
+                <td id="job_status_row3" rowspan="18">Planning</td>
+                
+                <td colspan="2"><b>Inventory</b> </td>
+                <td </td>
+                <td </td>
             </tr>
-            <tr>
-                <td id="job_status_row3" rowspan="13">Planning</td>
-                <td><input type="checkbox" id="checkbox_row3" onclick="logCheckboxValue(event,'row3')"></td>
-                <td id="job_check_row3" style="text-align: left;"><label for="checkbox_row3">Parts Ordered Factory</label></td>
-                <td id="employee_name_row3"></td>
-                <td id="date_row3"></td>
-            </tr>
-            <tr>
-                <td><input type="checkbox" id="checkbox_row4" onclick="logCheckboxValue(event,'row4')"></td>
-                <td id="job_check_row4" style="text-align: left;"><label for="checkbox_row4">Parts Ordered Local</label></td>
-                <td id="employee_name_row4"></td>
-                <td id="date_row4"></td>
-            </tr>
-            <tr>
-                <td><input type="checkbox" id="checkbox_row5" onclick="logCheckboxValue(event,'row5')"></td>
-                <td id="job_check_row5" style="text-align: left;"><label for="checkbox_row5">Parts Received</label></td>
-                <td id="employee_name_row5"></td>
-                <td id="date_row5"></td>
-            </tr>
-            <tr>
+              <tr>
                 <td><input type="checkbox" id="checkbox_row6" onclick="logCheckboxValue(event,'row6')"></td>
-                <td id="job_check_row6" style="text-align: left;"><label for="checkbox_row6">Parts Ready to Ship</label></td>
+                <td id="job_check_row6" style="text-align: left;"><label for="checkbox_row6">Parts Ordered Factory</label></td>
                 <td id="employee_name_row6"></td>
                 <td id="date_row6"></td>
             </tr>
             <tr>
                 <td><input type="checkbox" id="checkbox_row7" onclick="logCheckboxValue(event,'row7')"></td>
-                <td id="job_check_row7" style="text-align: left;"><label for="checkbox_row7">Parts Shipped</label></td>
+                <td id="job_check_row7" style="text-align: left;"><label for="checkbox_row7">Parts Ordered Local</label></td>
                 <td id="employee_name_row7"></td>
                 <td id="date_row7"></td>
             </tr>
             <tr>
                 <td><input type="checkbox" id="checkbox_row8" onclick="logCheckboxValue(event,'row8')"></td>
-                <td id="job_check_row8" style="text-align: left;"><label for="checkbox_row8">Parts on Site</label></td>
+                <td id="job_check_row8" style="text-align: left;"><label for="checkbox_row8">Parts Received</label></td>
                 <td id="employee_name_row8"></td>
                 <td id="date_row8"></td>
             </tr>
-            <tr>
+             <tr>
                 <td><input type="checkbox" id="checkbox_row9" onclick="logCheckboxValue(event,'row9')"></td>
-                <td id="job_check_row9" style="text-align: left;"><label for="checkbox_row9">Job Scheduled</label></td>
+                <td id="job_check_row9" style="text-align: left;"><label for="checkbox_row9">Parts Reserved</label></td>
                 <td id="employee_name_row9"></td>
                 <td id="date_row9"></td>
             </tr>
-            <tr>
+             <tr>
                 <td><input type="checkbox" id="checkbox_row10" onclick="logCheckboxValue(event,'row10')"></td>
-                <td id="job_check_row10" style="text-align: left;"><label for="checkbox_row10">Employees Allocated</label></td>
+                <td id="job_check_row10" style="text-align: left;"><label for="checkbox_row10">Parts Picked (Allocated)</label></td>
                 <td id="employee_name_row10"></td>
                 <td id="date_row10"></td>
             </tr>
             <tr>
                 <td><input type="checkbox" id="checkbox_row11" onclick="logCheckboxValue(event,'row11')"></td>
-                <td id="job_check_row11" style="text-align: left;"><label for="checkbox_row11">Site Inductions</label></td>
+                <td id="job_check_row11" style="text-align: left;"><label for="checkbox_row11">Parts Ready to Ship</label></td>
                 <td id="employee_name_row11"></td>
                 <td id="date_row11"></td>
             </tr>
             <tr>
                 <td><input type="checkbox" id="checkbox_row12" onclick="logCheckboxValue(event,'row12')"></td>
-                <td id="job_check_row12" style="text-align: left;"><label for="checkbox_row12">Flights arranged</label></td>
+                <td id="job_check_row12" style="text-align: left;"><label for="checkbox_row12">Parts Shipped</label></td>
                 <td id="employee_name_row12"></td>
                 <td id="date_row12"></td>
             </tr>
+
+              <td colspan="2"><b>Payroll</b></td>
+                <td> </td>
+                <td> </td>
+
             <tr>
                 <td><input type="checkbox" id="checkbox_row13" onclick="logCheckboxValue(event,'row13')"></td>
-                <td id="job_check_row13" style="text-align: left;"><label for="checkbox_row13">Accomodation arranged</label></td>
+                <td id="job_check_row13" style="text-align: left;"><label for="checkbox_row13">Job Scheduled</label></td>
                 <td id="employee_name_row13"></td>
                 <td id="date_row13"></td>
             </tr>
             <tr>
                 <td><input type="checkbox" id="checkbox_row14" onclick="logCheckboxValue(event,'row14')"></td>
-                <td id="job_check_row14" style="text-align: left;"><label for="checkbox_row14">PO 3rd Party</label></td>
+                <td id="job_check_row14" style="text-align: left;"><label for="checkbox_row14">Employees Allocated</label></td>
                 <td id="employee_name_row14"></td>
                 <td id="date_row14"></td>
             </tr>
             <tr>
                 <td><input type="checkbox" id="checkbox_row15" onclick="logCheckboxValue(event,'row15')"></td>
-                <td id="job_check_row15" style="text-align: left;"><label for="checkbox_row15">Work Completed</label></td>
+                <td id="job_check_row15" style="text-align: left;"><label for="checkbox_row15">Site Inductions</label></td>
                 <td id="employee_name_row15"></td>
                 <td id="date_row15"></td>
             </tr>
             <tr>
-                <td rowspan="2">Ready to Start</td>
                 <td><input type="checkbox" id="checkbox_row16" onclick="logCheckboxValue(event,'row16')"></td>
-                <td id="job_check_row16" style="text-align: left;"><label for="checkbox_row16">Push Job to Safety Culture</label></td>
+                <td id="job_check_row16" style="text-align: left;"><label for="checkbox_row16">Flights arranged</label></td>
                 <td id="employee_name_row16"></td>
                 <td id="date_row16"></td>
             </tr>
             <tr>
                 <td><input type="checkbox" id="checkbox_row17" onclick="logCheckboxValue(event,'row17')"></td>
-                <td id="job_check_row17" style="text-align: left;"><label for="checkbox_row17">Push Job to ADP</label></td>
+                <td id="job_check_row17" style="text-align: left;"><label for="checkbox_row17">Accomodation arranged</label></td>
                 <td id="employee_name_row17"></td>
                 <td id="date_row17"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" id="checkbox_row18" onclick="logCheckboxValue(event,'row18')"></td>
+                <td id="job_check_row18" style="text-align: left;"><label for="checkbox_row18">Advise Employees</label></td>
+                <td id="employee_name_row18"></td>
+                <td id="date_row18"></td>
+            </tr>
+            
+              <td colspan="2"><b>Purchasing </b></td>
+                <td ></td>
+                <td></td>
+            <tr>
+                <td><input type="checkbox" id="checkbox_row19" onclick="logCheckboxValue(event,'row19')"></td>
+                <td id="job_check_row19" style="text-align: left;"><label for="checkbox_row19">PO 3rd Party</label></td>
+                <td id="employee_name_row19"></td>
+                <td id="date_row19"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" id="checkbox_row20" onclick="logCheckboxValue(event,'row20')"></td>
+                <td id="job_check_row20" style="text-align: left;"><label for="checkbox_row20">3rd Party Work Completed</label></td>
+                <td id="employee_name_row20"></td>
+                <td id="date_row20"></td>
+            </tr>
+            <tr>
+                <td rowspan="2">Ready to Start</td>
+                <td><input type="checkbox" id="checkbox_row21" onclick="logCheckboxValue(event,'row21')"></td>
+                <td id="job_check_row21" style="text-align: left;"><label for="checkbox_row21">Push Job to Safety Culture</label></td>
+                <td id="employee_name_row21"></td>
+                <td id="date_row21"></td>
+            </tr>
+            <tr>
+                <td><input type="checkbox" id="checkbox_row22" onclick="logCheckboxValue(event,'row22')"></td>
+                <td id="job_check_row22" style="text-align: left;"><label for="checkbox_row22">Push Job to ADP</label></td>
+                <td id="employee_name_row22"></td>
+                <td id="date_row22"></td>
             </tr>
         </tbody>
     </table>
