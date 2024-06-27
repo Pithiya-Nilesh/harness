@@ -407,7 +407,12 @@ function calculate_and_set_summed_values(frm) {
         // If the row does not exist, create a new row
         if (!exists) {
             let new_row = frm.add_child("custom_materials1");
-            new_row.material_item = service_item;
+            if (service_item == "undefined"){
+                new_row.material_item = "";
+            }
+            else{
+                new_row.material_item = service_item;
+            }
             new_row.rate = summed_values[service_item].rate;
             new_row.amount = summed_values[service_item].amount;
             new_row.quentity = summed_values[service_item].qty;
@@ -415,6 +420,12 @@ function calculate_and_set_summed_values(frm) {
         }
     }
 
+    // frm.doc.custom_materials1.forEach(row => {
+    //     if(row.material_item == "undefined" && row.type == "Labours"){
+    //         row.material_item = ""
+    //     }
+    // })
+    
 }
 
     // Refresh the field to show the changes
