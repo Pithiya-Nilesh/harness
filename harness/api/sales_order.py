@@ -1,7 +1,7 @@
 import json
 import frappe
 from harness.api.task import get_summary, get_table_data_for_html
-from harness.api.utils import get_actual_qty, is_service_item
+from harness.api.utils import get_actual_qty, get_bom_sub_item, is_service_item
 
 
 @frappe.whitelist()
@@ -214,29 +214,30 @@ def check_item_is_available(required_qty_list):
         open_tasks = frappe.db.get_list("Task", filters={"status": "Open"}, fields=["name"], pluck="name")
         
         for i in required_qty_list:
-            actual_qty = get_actual_qty(i.item_code, i.warehouse)
-            for open_task in open_tasks:
-                task = frappe.get_doc("Task", open_task)
-                for row in task.custom_mterials:
-                    if row.material_item == i.item_code and row.source_warehouse == i.warehouse and row.type == "Materials":
-                        alredy_reserved_qty += int(row.reserved_quantity) if row.reserved_quantity else 0
-                        if open_task not in reserved_job_list:
-                            reserved_job_list.append({"job": open_task, "priority": task.priority, "item": row.material_item or "", "warehouse": row.source_warehouse or "", "qty": row.reserved_quantity or 0})
-                            
-            # print("\n\n already reserved", alredy_reserved_qty, i.item_code)
-            if int(actual_qty) > 0:                
-                available_qty = int(actual_qty) - int(alredy_reserved_qty)
-            else:
-                available_qty = 0
-            
-            if available_qty < i.required_qty and not is_service_item(i.item_code):
-                limit = True
-                need = 0
-                need = int(i.required_qty) - int(available_qty)
-                available_qty_and_required_qty_list.append({"item": i.item_code, "warehouse": i.warehouse or "", "available_qty": available_qty or 0, "required_qty": i.required_qty or 0, "need": need or 0})
-                # pass
-            else:
-                pass
+            if not get_bom_sub_item(i.item_code):
+                actual_qty = get_actual_qty(i.item_code, i.warehouse)
+                for open_task in open_tasks:
+                    task = frappe.get_doc("Task", open_task)
+                    for row in task.custom_mterials:
+                        if row.material_item == i.item_code and row.source_warehouse == i.warehouse and row.type == "Materials":
+                            alredy_reserved_qty += int(row.reserved_quantity) if row.reserved_quantity else 0
+                            if open_task not in reserved_job_list:
+                                reserved_job_list.append({"job": open_task, "priority": task.priority, "item": row.material_item or "", "warehouse": row.source_warehouse or "", "qty": row.reserved_quantity or 0})
+                                
+                # print("\n\n already reserved", alredy_reserved_qty, i.item_code)
+                if int(actual_qty) > 0:                
+                    available_qty = int(actual_qty) - int(alredy_reserved_qty)
+                else:
+                    available_qty = 0
+                
+                if available_qty < i.required_qty and not is_service_item(i.item_code):
+                    limit = True
+                    need = 0
+                    need = int(i.required_qty) - int(available_qty)
+                    available_qty_and_required_qty_list.append({"item": i.item_code, "warehouse": i.warehouse or "", "available_qty": available_qty or 0, "required_qty": i.required_qty or 0, "need": need or 0})
+                    # pass
+                else:
+                    pass
             
         final_list = make_job_items_group(reserved_job_list)
         
