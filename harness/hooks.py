@@ -145,7 +145,7 @@ doc_events = {
 	},
   
   "Task": {
-    "after_insert": "harness.api.task.sum_of_all_data",
+    # "after_insert": "harness.api.task.sum_of_all_data",
     # "on_update": "harness.api.task.set_labour_total"
 	},
   
