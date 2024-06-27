@@ -239,7 +239,9 @@ function create_timesheet(frm){
                         } else {
                             reject(response.exc); // Reject the promise with the error message
                         }
-                    }
+                    },
+                    freeze: true,
+                    freeze_message: "Please wait we are creating timesheet based on this job.",
                 });
             });
 
@@ -294,7 +296,9 @@ function create_stock_entry(frm){
 
                 frappe.ui.form.make_quick_entry('Stock Entry', null, null, stock_entry);
             });
-        }
+        },
+        freeze: true,
+        freeze_message: "Please wait we are maping stock entry based on this job.",
     });
 }
 

@@ -120,7 +120,7 @@ frappe.ui.form.on("Sales Order", {
                     },
                     freeze: true,
                     freeze_message: "Please wait we are creating job based on this sales order.",
-                })                
+                })           
             })
         }
         
