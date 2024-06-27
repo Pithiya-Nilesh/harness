@@ -315,17 +315,17 @@ function create_popup(reserved_item){
 }
 
 frappe.ui.form.on('Sales Order Item', {
-    item_code: function(frm, cdt, cdn) {
-        frappe.model.set_value(cdt, cdn, "qty", 1);
-        if (frm.doc.selling_price_list !== "" && frm.doc.custom_fetch_price_from_price_list === 1){
-            set_suggested_price_list(frm, cdt, cdn);
-        }
-	},
-	qty: function(frm, cdt, cdn) {
-        if (frm.doc.selling_price_list !== "" && frm.doc.custom_fetch_price_from_price_list === 1){
-            set_suggested_price_list(frm, cdt, cdn);
-        }
-	},
+    // item_code: function(frm, cdt, cdn) {
+    //     frappe.model.set_value(cdt, cdn, "qty", 1);
+    //     if (frm.doc.selling_price_list !== "" && frm.doc.custom_fetch_price_from_price_list === 1){
+    //         set_suggested_price_list(frm, cdt, cdn);
+    //     }
+	// },
+	// qty: function(frm, cdt, cdn) {
+    //     if (frm.doc.selling_price_list !== "" && frm.doc.custom_fetch_price_from_price_list === 1){
+    //         set_suggested_price_list(frm, cdt, cdn);
+    //     }
+	// },
 
     custom_markup_: function(frm, cdt, cdn) {
         sum_calculate_rate(frm, cdt, cdn);
@@ -554,6 +554,7 @@ frappe.ui.form.on('Sales Order', {
         if (frm.doc.custom_show_popup === 0){
             console.log("validated call", frm.doc.customer)
             let data = get_summary_data_popup(frm);
+            console.log("data", data)
             let html_table = create_html_table(data);
             show_confirmation_dialog(frm, html_table);
             frappe.validated = false
