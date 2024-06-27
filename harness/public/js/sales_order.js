@@ -323,7 +323,9 @@ frappe.ui.form.on('Sales Order Item', {
     //         set_suggested_price_list(frm, cdt, cdn);
     //     }
 	// },
-
+    item_code: function(frm){
+        unassignedItem = false
+    },
     custom_markup_: function(frm, cdt, cdn) {
         sum_calculate_rate(frm, cdt, cdn);
     },
@@ -546,18 +548,32 @@ function set_suggested_price_list_frm(frm) {
     }
 }
 
+let unassignedItem = false
 frappe.ui.form.on('Sales Order', {
     before_save: function(frm) {
-        // Check if custom_show_popup is 0 and there is summary data to show
-        if (frm.doc.custom_show_popup === 0) {
-            let data = get_summary_data_popup(frm);
-            console.log("Summary Data:", data);
+        frm.doc.items.forEach(function(item) {
+            if (item.item_code === "Unassigned Item") {
+                unassignedItem = true
+            }
+        });
 
-            // Check if there are items in the summary data
-            if (Object.keys(data).length !== 0 && data.totalAmount > 0.00) {
-                let html_table = create_html_table(data);
-                show_confirmation_dialog(frm, html_table);
-                frappe.validated = false; // Prevent saving until confirmation
+        if (unassignedItem){
+            frappe.msgprint("Please replace Unassigned item with a real item.");
+            frappe.validated = false; // Prevent saving
+            return false; // Exit the loop early
+        }
+        else{
+            // Check if custom_show_popup is 0 and there is summary data to show
+            if (frm.doc.custom_show_popup === 0) {
+                let data = get_summary_data_popup(frm);
+                console.log("Summary Data:", data);
+
+                // Check if there are items in the summary data
+                if (Object.keys(data).length !== 0 && data.totalAmount > 0.00) {
+                    let html_table = create_html_table(data);
+                    show_confirmation_dialog(frm, html_table);
+                    frappe.validated = false; // Prevent saving until confirmation
+                }
             }
         }
     },
@@ -565,7 +581,8 @@ frappe.ui.form.on('Sales Order', {
     refresh: function(frm) {
         // Reset custom_show_popup to 0 on refresh
         frm.doc.custom_show_popup = 0;
-    }
+    },
+
 });
 
 function get_summary_data_popup(frm) {
