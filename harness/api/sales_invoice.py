@@ -50,7 +50,6 @@ import frappe
 def set_invoiced_qty(doc, method):
     """ if sales invoice submited we need to make change in actual table related to this sales invoice in job doctype. """
     try:
-        
         if doc.is_return:
             doc = frappe.get_doc("Sales Invoice", doc.return_against)
             map_canclled_invoice_with_job(doc, method)
@@ -93,6 +92,69 @@ def set_invoiced_qty(doc, method):
 
     except Exception as e:
         frappe.log_error("Error: While set invoiced qty in job after si submit.", e, "Sales Invoice", doc.name)
+        
+        
+    try:
+        sales_invoice = frappe.get_doc("Sales Invoice", doc.name)
+        company_doc = frappe.get_doc("Company", sales_invoice.company)
+
+        labour_items = []
+
+        for item in sales_invoice.items:
+            if item.custom_type == "Labours" and item.custom_job and item.expense_account:
+                labour_items.append({
+                    "item_code": item.item_code,
+                    "custom_type": item.custom_type,
+                    "extended_price": item.amount,
+                    "job": item.custom_job,
+                    "expense_account": item.expense_account
+                })
+
+        if not labour_items:
+            return
+
+        data = {
+            "company": sales_invoice.company,
+            "cost_center": sales_invoice.cost_center,
+            "custom_default_labour_account": company_doc.custom_default_labour_account,
+            "labour_items": labour_items
+        }
+
+        debit_totals = {}
+        credit_totals = {}
+
+        for item in data["labour_items"]:
+            if item["expense_account"] in debit_totals:
+                debit_totals[item["expense_account"]] += item["extended_price"]
+            else:
+                debit_totals[item["expense_account"]] = item["extended_price"]
+
+            if data["custom_default_labour_account"] in credit_totals:
+                credit_totals[data["custom_default_labour_account"]] += item["extended_price"]
+            else:
+                credit_totals[data["custom_default_labour_account"]] = item["extended_price"]
+
+        journal_entry = frappe.new_doc("Journal Entry")
+        journal_entry.voucher_type = "Journal Entry"
+        journal_entry.company = data["company"]
+        journal_entry.posting_date = frappe.utils.today()
+
+        for account, amount in debit_totals.items():
+            debit_entry = journal_entry.append("accounts")
+            debit_entry.account = account
+            debit_entry.debit_in_account_currency = amount
+            debit_entry.cost_center = data["cost_center"]
+
+        for account, amount in credit_totals.items():
+            credit_entry = journal_entry.append("accounts")
+            credit_entry.account = account
+            credit_entry.credit_in_account_currency = amount
+            credit_entry.cost_center = data["cost_center"]
+
+        journal_entry.insert()
+        frappe.db.commit()
+    except Exception as e:
+        frappe.log_error("Error: While create JE when sales invoice submit", e, "Sales Invoice", doc.name)
 
 # def map_canclled_invoice_with_job(doc, method):
 #     """ if sales invoice cancelled we need to make change in actual table related to this sales invoice in job doctype. """
