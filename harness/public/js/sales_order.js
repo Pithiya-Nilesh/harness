@@ -551,18 +551,23 @@ function set_suggested_price_list_frm(frm) {
 
 frappe.ui.form.on('Sales Order', {
     before_save: function(frm) {
-        if (frm.doc.custom_show_popup === 0){
-            console.log("validated call", frm.doc.customer)
+        // Check if custom_show_popup is 0 and there is summary data to show
+        if (frm.doc.custom_show_popup === 0) {
             let data = get_summary_data_popup(frm);
-            console.log("data", data)
-            let html_table = create_html_table(data);
-            show_confirmation_dialog(frm, html_table);
-            frappe.validated = false
+            console.log("Summary Data:", data);
+
+            // Check if there are items in the summary data
+            if (Object.keys(data).length !== 0 && data.totalAmount > 0.00) {
+                let html_table = create_html_table(data);
+                show_confirmation_dialog(frm, html_table);
+                frappe.validated = false; // Prevent saving until confirmation
+            }
         }
     },
 
-    refresh: function(frm){
-        frm.doc.custom_show_popup = 0
+    refresh: function(frm) {
+        // Reset custom_show_popup to 0 on refresh
+        frm.doc.custom_show_popup = 0;
     }
 });
 
@@ -598,7 +603,10 @@ function get_summary_data_popup(frm) {
     });
 
     // Format total amount to 2 decimal places for display
-    summary.totalAmount = totalAmount.toFixed(2);
+    
+    if (totalAmount > 0.00) {
+        summary.totalAmount = parseFloat(totalAmount.toFixed(2)); // Format totalAmount to 2 decimal places
+    }
 
     return summary;
 }
