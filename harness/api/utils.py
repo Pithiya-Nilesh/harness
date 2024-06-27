@@ -2,30 +2,30 @@ import frappe
 import locale
 
 def get_currency_formatted_list(data):
-    return data
-    # try:
-    #     locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+    # return data
+    try:
+        locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
         
-    #     formatted_list = []
-    #     for i in data:
-    #         formatted_item = {}
-    #         for key, value in i.items():
-    #             if isinstance(value, (int, float)):  # Check if the value is numeric
-    #                 if key.endswith("_qty"):
-    #                     formatted_value = int(value)
-    #                 else:
-    #                     try:
-    #                         formatted_value = locale.currency(value, grouping=True)
-    #                     except ValueError as e:
-    #                         formatted_value = value
-    #             else:
-    #                 formatted_value = value
-    #             formatted_item[key] = formatted_value
-    #         formatted_list.append(formatted_item)
+        formatted_list = []
+        for i in data:
+            formatted_item = {}
+            for key, value in i.items():
+                if isinstance(value, (int, float)):  # Check if the value is numeric
+                    if key.endswith("_qty"):
+                        formatted_value = int(value)
+                    else:
+                        try:
+                            formatted_value = locale.currency(value, grouping=True)
+                        except ValueError as e:
+                            formatted_value = value
+                else:
+                    formatted_value = value
+                formatted_item[key] = formatted_value
+            formatted_list.append(formatted_item)
             
-    #     return formatted_list
-    # except Exception as e:
-    #     frappe.log_error(f"Error: While formatting currency", f"Error: {e}\ndata: {data}")
+        return formatted_list
+    except Exception as e:
+        frappe.log_error(f"Error: While formatting currency", f"Error: {e}\ndata: {data}")
 
         
 def set_section_name_in_db(doc, method):
