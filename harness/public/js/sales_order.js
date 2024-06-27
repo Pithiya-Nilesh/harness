@@ -13,29 +13,26 @@ frappe.ui.form.on("Sales Order", {
             `
             frm.set_df_property("custom_test", "options", message_html);
         }
-
         else{
-           get_summary_data(frm)
+            get_summary_data(frm)
+            frappe.call({
+                method:"harness.api.sales_order.get_stock_summary_data",
+                args:{
+                    so_name: frm.doc.name
+                },
+                callback: function(r){
+                    if (r.message){
+                        frm.set_df_property("custom_stock_data", "options", r.message);
+                    }
+                    else{
+                        let message_html = `
+                            <div class="mb-5">There are no stock summary related to this sales order.</div>
+                        `
+                        frm.set_df_property("custom_test", "options", message_html);
+                    }
+                }
+            })  
         }
-        
-        frappe.call({
-            method:"harness.api.sales_order.get_stock_summary_data",
-            args:{
-                so_name: frm.doc.name
-            },
-            callback: function(r){
-                if (r.message){
-                    frm.set_df_property("custom_stock_data", "options", r.message);
-                }
-                else{
-                    let message_html = `
-                        <div class="mb-5">There are no stock summary related to this sales order.</div>
-                    `
-                    frm.set_df_property("custom_test", "options", message_html);
-                }
-            }
-        })
-
 
         if (frm.doc.docstatus === 1) {
             // frm.add_custom_button("Create Jobs", function() {
