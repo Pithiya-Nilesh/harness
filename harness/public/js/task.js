@@ -46,7 +46,9 @@ frappe.ui.form.on("Task", {
     },
 
     after_save: function(frm){
-        get_summary_data(frm)
+        get_summary_data(frm);
+        sum_of_m_amount(frm);
+        sum_of_r_amount(frm);
     },
 
     onload: function(frm){
@@ -125,14 +127,16 @@ function sum_of_m_amount(frm) {
         frm.doc.custom_mterials.forEach(function(row) {
             m_e_total += row.amount || 0;
         });
-        frm.set_value('custom_material_total_estimated_amount', m_e_total);
+        // frm.set_value('custom_material_total_estimated_amount', m_e_total);
+        frm.doc.custom_material_total_estimated_amount = m_e_total
     }
 
     if (frm.doc.custom_materials1 && Array.isArray(frm.doc.custom_materials1)) {
         frm.doc.custom_materials1.forEach(function(row) {
             m_a_total += row.amount || 0;
         });
-        frm.set_value('custom_material_total_actual_costing1', m_a_total);
+        // frm.set_value('custom_material_total_actual_costing1', m_a_total);
+        frm.doc.custom_material_total_actual_costing1 = m_a_total
     }
     // frm.save()
     // frm.refresh()
@@ -150,8 +154,10 @@ function sum_of_r_amount(frm) {
             r_e_total += row.total_spend_hours || 0;
             r_e_hour += row.spent_hours || 0;
         });
-        frm.set_value('custom_resource_total_estimated_hours', r_e_hour);
-        frm.set_value('custom_estimated_total_resource_cost', r_e_total);
+        // frm.set_value('custom_resource_total_estimated_hours', r_e_hour);
+        // frm.set_value('custom_estimated_total_resource_cost', r_e_total);
+        frm.doc.custom_resource_total_estimated_hours = r_e_hour
+        frm.doc.custom_estimated_total_resource_cost = r_e_total
     }
 
     if (frm.doc.custom_resources1 && Array.isArray(frm.doc.custom_resources1)) {
@@ -159,8 +165,10 @@ function sum_of_r_amount(frm) {
             r_a_total += row.total_spend_hours || 0;
             r_a_hour += row.spent_hours || 0;
         });
-        frm.set_value('custom_resource_total_actual_hours1', r_a_hour);
-        frm.set_value('custom_resource_total_actual_cost', r_a_total);
+        // frm.set_value('custom_resource_total_actual_hours1', r_a_hour);
+        // frm.set_value('custom_resource_total_actual_cost', r_a_total);
+        frm.doc.custom_resource_total_actual_hours1 = r_a_hour
+        frm.doc.custom_resource_total_actual_cost = r_a_total
     }
     // frm.save()
     // frm.refresh()
@@ -397,8 +405,8 @@ function calculate_and_set_summed_values(frm) {
         frm.doc.custom_materials1.forEach(row => {
             if (row.material_item === service_item && row.type === "Labours") {
                 // Update the existing row
-                row.rate = summed_values[service_item].rate;
-                row.amount = summed_values[service_item].amount;
+                row.rate =  (summed_values[service_item].amount / summed_values[service_item].qty);
+                row.amount = (summed_values[service_item].amount / summed_values[service_item].qty) * summed_values[service_item].qty;
                 row.quentity = summed_values[service_item].qty;
                 exists = true;
             }
@@ -413,8 +421,8 @@ function calculate_and_set_summed_values(frm) {
             else{
                 new_row.material_item = service_item;
             }
-            new_row.rate = summed_values[service_item].rate;
-            new_row.amount = summed_values[service_item].amount;
+            new_row.rate = (summed_values[service_item].amount / summed_values[service_item].qty);
+            new_row.amount = (summed_values[service_item] / summed_values[service_item].qty) * summed_values[service_item].qty;
             new_row.quentity = summed_values[service_item].qty;
             new_row.type = "Labours";
         }
