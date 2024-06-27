@@ -640,27 +640,27 @@ function show_confirmation_dialog(frm, html_table) {
             frm.refresh()
             // if(frm.validate()){
 
-                frappe.call({
-                    method: 'frappe.client.save',
-                    args: {
-                        doc: frm.doc
-                    },
-                    callback: function(response) {
-                        console.log("response", response.message.name)
-                        let name = response.message.name
+                // frappe.call({
+                //     method: 'frappe.client.save',
+                //     args: {
+                //         doc: frm.doc
+                //     },
+                //     callback: function(response) {
+                //         console.log("response", response.message.name)
+                //         let name = response.message.name
                         
-                        if (!response.exc) {
-                            frappe.show_alert({message: 'Document saved successfully', indicator: 'green'});
-                            frm.reload_doc();
-                            frm.refresh();
-                            if (name) {
-                                frappe.set_route('Form', 'Sales Order', name);
-                            }
-                        } else {
-                            frappe.show_alert({message: 'Error saving document', indicator: 'red'});
-                        }
-                    }
-                });
+                //         if (!response.exc) {
+                //             frappe.show_alert({message: 'Document saved successfully', indicator: 'green'});
+                //             frm.reload_doc();
+                //             frm.refresh();
+                //             if (name) {
+                //                 frappe.set_route('Form', 'Sales Order', name);
+                //             }
+                //         } else {
+                //             frappe.show_alert({message: 'Error saving document', indicator: 'red'});
+                //         }
+                //     }
+                // });
         // }
 
         },
