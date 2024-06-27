@@ -12,6 +12,10 @@ frappe.ui.form.on("Task", {
         //     create_sales_invoice(frm)
         // }, __("Create")); 
 
+        frm.add_custom_button("Pick List", function() {
+            create_pick_list(frm)
+        }, __("Create")); 
+
         frm.page.set_inner_btn_group_as_primary(__('Create'));
 
         jobCheckList(frm)
@@ -998,3 +1002,34 @@ cur_frm.cscript.onload = function(frm) {
     });
     
 };
+
+function create_pick_list(frm) {
+    frappe.call({
+        method: "harness.api.task.get_task_data",
+        args: {
+            task_id: frm.doc.name
+        },
+        callback: function(r) {
+            if (r.message) {
+                frappe.model.with_doctype('Pick List', function() {
+                    var doc = frappe.model.get_new_doc('Pick List');
+                    doc.job_name = r.message.task_name;
+                    doc.for_qty = 1.000;
+                    
+                   
+                    r.message.materials_data.forEach(function(material) {
+                        var child = frappe.model.add_child(doc, 'locations');
+                        child.item_code = material.material_item;
+                        child.qty = material.quantity;
+                        child.stock_qty = material.quantity;
+                        child.conversion_factor = 1; 
+
+                    });
+                    
+                    frappe.set_route('Form', 'Pick List', doc.name);
+                });
+               
+            }
+        }
+    });
+}

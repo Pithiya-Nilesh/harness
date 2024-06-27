@@ -674,3 +674,21 @@ def set_checklist_status(parent_docname, selected_checkboxes):
         frappe.log_error("Error: While Setting Checklist For Job", e, "Task", parent_docname)
         return str(e)
 
+@frappe.whitelist()
+def get_task_data(task_id):
+    task = frappe.get_doc('Task', task_id)
+    task_name = task.name
+    
+    materials_data = []
+    for material in task.custom_mterials:
+        if material.type == 'Materials':
+            materials_data.append({
+                'material_item': material.material_item,
+                'quantity': material.quentity
+            })
+    
+    return {
+        'task_name': task_name,
+        'materials_data': materials_data
+    }
+    
