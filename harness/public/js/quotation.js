@@ -276,3 +276,12 @@ function check_duplicate_section_in_other_row(frm, cdt, cdn){
         }
     }
 });
+
+
+frappe.ui.form.on("Quotation",{
+    refresh: function(frm){
+        frm.add_custom_button("Create SO for HMWS", function(frm){
+            console.log("We will implement to create SO for HMWS")
+        }, "Create")
+    }
+})

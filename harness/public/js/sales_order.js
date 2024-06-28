@@ -694,3 +694,11 @@ function show_confirmation_dialog(frm, html_table) {
     });
     d.show();
 }
+
+frappe.ui.form.on('Sales Order', {
+    refresh: function(frm){
+        frm.add_custom_button("Create PO for EIG", function(frm){
+            console.log("We map data on this button")
+        }, __("Create"))
+    }
+})
