@@ -269,12 +269,13 @@ def map_sales_invoice_from_job(dummy=""):
                             """, (i["Description"]), as_dict=True)
                     
                 debtor_account =  frappe.db.sql(" select default_receivable_account from `tabCompany` where name=%s ", (item_data[0]['company']), as_dict=True)
-                    
+                income_account =  frappe.db.sql(" select default_income_account from `tabCompany` where name=%s ", (item_data[0]['company']), as_dict=True)
+                
                 item_row = si.append("items", {})
                 item_row.item_code = i["Description"]
                 item_row.item_name = item_data[0]['item_name']
                 item_row.uom = item_data[0]['stock_uom']
-                item_row.income_account = item_data[0]['income_account']
+                item_row.income_account = item_data[0]['income_account'] if item_data[0]['income_account'] else income_account[0]['default_income_account']
                 item_row.cost_center = item_data[0]['selling_cost_center']
                 item_row.warehouse = item_data[0]['default_warehouse']
                 item_row.qty = i['ToBeInvoicedQty']
@@ -288,6 +289,7 @@ def map_sales_invoice_from_job(dummy=""):
                 item_row.custom_section_name = section
                 # item_row.custom_type = get_types(i["Description"], job)
                 get_extra_custom_fields_value(item_row, sales_order, i["Description"])
+                
         debit_to = customer_account[0]['account'] if customer_account[0]['account'] else debtor_account[0]['default_receivable_account']
         si.debit_to = debit_to
         si.price_list_currency = "AUD"
@@ -338,12 +340,13 @@ def map_sales_invoice_from_sales_order(dummy=""):
                             """, (i["Description"]), as_dict=True)
                     
                 debtor_account =  frappe.db.sql("select default_receivable_account from `tabCompany` where name=%s ", (item_data[0]['company']), as_dict=True)
+                income_account =  frappe.db.sql(" select default_income_account from `tabCompany` where name=%s ", (item_data[0]['company']), as_dict=True)
 
                 item_row = si.append("items", {})
                 item_row.item_code = i["Description"]
                 item_row.item_name = item_data[0]['item_name']
                 item_row.uom = item_data[0]['stock_uom']
-                item_row.income_account = item_data[0]['income_account']
+                item_row.income_account = item_data[0]['income_account'] if item_data[0]['income_account'] else income_account[0]['default_income_account']
                 # item_row.cost_center = item_data[0]['selling_cost_center']
                 item_row.warehouse = item_data[0]['default_warehouse']
                 item_row.qty = i['ToBeInvoicedQty']
