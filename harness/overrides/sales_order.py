@@ -6,7 +6,7 @@ from frappe.utils.data import cint
 
 class CustomSalesOrder(SalesOrder):
     def validate_with_previous_doc(self):
-        super().validate_with_previous_doc(
+        super(SalesOrder, self).validate_with_previous_doc(
             {
                 "Quotation": {"ref_dn_field": "prevdoc_docname", "compare_fields": [["company", "="]]},
                 "Quotation Item": {
