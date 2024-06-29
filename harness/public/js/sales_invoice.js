@@ -210,3 +210,18 @@ function check_duplicate_section_in_other_row(frm, cdt, cdn){
         }
     });
 }
+
+
+frappe.ui.form.on("Sales Invoice", {
+    refresh: function(frm) {
+        frm.add_custom_button("Create PI for EIG", function() {
+            // frappe.model.open_mapped_doc({
+            //     method: "harness.api.purchase_order.create_sales_order",
+            //     frm: frm,
+            //     args: {
+            //         docname: frm.doc.name
+            //     }
+            // });
+        }, "Create");
+    }
+});
