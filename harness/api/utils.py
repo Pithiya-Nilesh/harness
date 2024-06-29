@@ -62,13 +62,13 @@ def set_section_name_in_db(doc, method):
     except Exception as e:
         frappe.log_error("Error: While set section name in db after update", e, doc.doctype, doc.name)
     
-    # don`t allow user to save data with unassigned item in items child table.
-    try:
-        for item in doc.items:
-            if item.item_code == "Unassigned Item":
-                frappe.throw("Please replace Unassigned item with real item.")
-    except Exception as e:
-        frappe.log_error("Error: While not allow to save with unassigned item", e, doc.doctype, doc.name)
+    # # don`t allow user to save data with unassigned item in items child table.
+    # try:
+    #     for item in doc.items:
+    #         if item.item_code == "Unassigned Item":
+    #             frappe.throw("Please replace Unassigned item with real item.")
+    # except Exception as e:
+    #     frappe.log_error("Error: While not allow to save with unassigned item", e, doc.doctype, doc.name)
 
     
 def get_actual_qty(item_code, warehouse):
