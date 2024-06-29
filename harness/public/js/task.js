@@ -251,7 +251,12 @@ function create_timesheet(frm){
         // When all promises are resolved, display the message
         Promise.all(promises)
             .then(function() {
-                frappe.msgprint(count +" Timesheets created successfully.");
+                if (count > 1){
+                    frappe.msgprint(count +" Timesheets created successfully.");
+                }
+                else{
+                    frappe.msgprint(count +" Timesheet created successfully.");
+                }
             })
             .catch(function(error) {
                 frappe.msgprint("Error creating Timesheets: " + error);
@@ -867,7 +872,6 @@ function get_summary_data(frm){
     })
 }
 
-
 frappe.ui.form.on("Resource", {
     service_item: function(frm, cdt, cdn){
         var child_doc = locals[cdt][cdn]
@@ -878,7 +882,6 @@ frappe.ui.form.on("Resource", {
         checkTotalHours(frm)
     }
 })
-
 
 function checkThisItemInLabours(frm, item) {
     var found = false;
@@ -892,7 +895,6 @@ function checkThisItemInLabours(frm, item) {
         frappe.msgprint(`This item ${item} is not in the table for type Labours.`);
     }
 }
-
 
 function checkTotalHours(frm){
     let items_with_total_hours = []
@@ -951,8 +953,6 @@ frappe.ui.form.on("Task", {
 
     }
 })
-
-
 
 cur_frm.cscript.onload = function(frm) {
     cur_frm.set_query("material_item", "custom_mterials", function(doc, cdt, cdn) {
@@ -1017,7 +1017,7 @@ function create_pick_list(frm) {
             if (r.message) {
                 frappe.model.with_doctype('Pick List', function() {
                     var doc = frappe.model.get_new_doc('Pick List');
-                    doc.job_name = r.message.task_name;
+                    // doc.job_name = r.message.task_name;
                     doc.for_qty = 1.000;
                     
                    
@@ -1026,6 +1026,7 @@ function create_pick_list(frm) {
                         child.item_code = material.material_item;
                         child.qty = material.quantity;
                         child.stock_qty = material.quantity;
+                        child.custom_job_order = r.message.task_name;
                         child.conversion_factor = 1; 
 
                     });
