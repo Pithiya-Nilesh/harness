@@ -198,15 +198,15 @@ def map_canclled_invoice_with_job(doc, method):
                 job = frappe.get_doc("Task", i.custom_job)
                 for j in job.custom_mterials:
                     if j.material_item == i.item_code:
-                        invoiced_qty = j.invoiced_qty - i.qty
+                        invoiced_qty = float(j.invoiced_qty) - float(i.qty)
                         j.invoiced_qty = invoiced_qty
                         j.invoiced_rate = j.rate
-                        j.amount = (j.rate * invoiced_qty)
+                        j.amount = (float(j.rate) * float(invoiced_qty))
 
-                        available_qty = j.available_for_invoice_qty + i.qty 
+                        available_qty = float(j.available_for_invoice_qty) + float(i.qty )
                         j.available_for_invoice_qty = available_qty
                         j.available_for_invoice_rate = j.rate
-                        j.available_for_invoice_amount = (j.rate * available_qty)
+                        j.available_for_invoice_amount = (float(j.rate) * float(available_qty))
                 job.save()
                 frappe.db.commit()       
                 # for k in job.custom_resources1:
@@ -236,8 +236,20 @@ def map_sales_invoice_from_job(dummy=""):
         sales_order = frappe.flags.args.sales_order
         section = frappe.db.get_value("Task", job, ["subject"])
         quotation_name = frappe.db.get_value("Sales Order", filters={"name": sales_order}, fieldname=["custom_quotation_name"])
-        customer_account= frappe.db.sql(f"select account from `tabParty Account` where parent='{customer}'", as_dict=True)
-
+        customer_account = frappe.db.sql(f"select account from `tabParty Account` where parent='{customer}'", as_dict=True)       
+        
+        debit_to = ""
+        if customer_account[0]['account']:
+            debit_to = customer_account[0]['account']
+        else:
+            customer_group = frappe.db.get_value("customer", filters={"name": customer}, fieldname=["customer_group"])
+            if customer_group:
+                account = frappe.db.sql(f"select account from `tabParty Account` where parent='{customer_group}'", as_dict=True)
+                if account[0]['account']:
+                    debit_to = account[0]['account']
+            
+            
+        # customer_account[0]['account'] if customer_account[0]['account'] else debtor_account[0]['default_receivable_account']
         
         si = frappe.new_doc("Sales Invoice")
         si.customer = customer
@@ -290,8 +302,7 @@ def map_sales_invoice_from_job(dummy=""):
                 # item_row.custom_type = get_types(i["Description"], job)
                 get_extra_custom_fields_value(item_row, sales_order, i["Description"])
                 
-        debit_to = customer_account[0]['account'] if customer_account[0]['account'] else debtor_account[0]['default_receivable_account']
-        si.debit_to = debit_to
+        si.debit_to = debit_to if debit_to else debtor_account[0]['default_receivable_account']
         si.price_list_currency = "AUD"
             
         # si.insert(ignore_mandatory=True)
@@ -310,6 +321,17 @@ def map_sales_invoice_from_sales_order(dummy=""):
         quotation_name = frappe.db.get_value("Sales Order", filters={"name": sales_order}, fieldname=["custom_quotation_name"])
         customer_account= frappe.db.sql(f"select account from `tabParty Account` where parent='{customer}'", as_dict=True)
         
+        debit_to = ""
+        if customer_account[0]['account']:
+            debit_to = customer_account[0]['account']
+        else:
+            customer_group = frappe.db.get_value("customer", filters={"name": customer}, fieldname=["customer_group"])
+            if customer_group:
+                account = frappe.db.sql(f"select account from `tabParty Account` where parent='{customer_group}'", as_dict=True)
+                if account[0]['account']:
+                    debit_to = account[0]['account']
+            
+            
         si = frappe.new_doc("Sales Invoice")
         si.customer = customer
         si.selling_price_list = ""
@@ -360,8 +382,7 @@ def map_sales_invoice_from_sales_order(dummy=""):
                 item_row.custom_section_name = get_section_name(i['Job'])
                 # item_row.custom_type = get_types(i["Description"], i['Job'])
                 get_extra_custom_fields_value(item_row, sales_order, i["Description"])
-        si.debit_to = customer_account[0]['account'] if customer_account[0]['account'] else debtor_account[0]['default_receivable_account']
-
+        si.debit_to = debit_to if debit_to else debtor_account[0]['default_receivable_account']
         return si
     except Exception as e:
         frappe.log_error("Error: While map sales invoice from sales order summary.", e, "Sales Order", sales_order)  
