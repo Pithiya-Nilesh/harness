@@ -278,10 +278,48 @@ function check_duplicate_section_in_other_row(frm, cdt, cdn){
 });
 
 
-frappe.ui.form.on("Quotation",{
-    refresh: function(frm){
-        frm.add_custom_button("Create SO for HMWS", function(frm){
-            console.log("We will implement to create SO for HMWS")
-        }, "Create")
+// frappe.ui.form.on("Quotation", {
+//     refresh: function(frm) {
+//         frm.add_custom_button("Create SO for HMWS", function() {
+//             let quotation = frm.doc
+//             if (quotation) {
+//                 let sales_order = frappe.model.get_new_doc("Sales Order");
+
+//                 const fields_to_skip = ['name', 'doctype', 'owner', 'creation', 'modified', 'modified_by', 'idx'];
+
+//                 for (let field in quotation) {
+//                     if (sales_order.hasOwnProperty(field) && !fields_to_skip.includes(field)) {
+//                         sales_order[field] = quotation[field];
+//                     }
+//                 }
+
+//                 sales_order.items = quotation.items.map(item => {
+//                     let new_item = {};
+//                     for (let field in item) {
+//                         new_item[field] = item[field];
+//                     }
+//                     return new_item;
+//                 });
+
+//                 frappe.set_route("Form", "Sales Order", sales_order.name);
+//             }
+//         }, "Create");
+//     }
+// });
+
+frappe.ui.form.on("Quotation", {
+    refresh: function(frm) {
+        if(!frm.is_dirty() && !frm.is_new()){
+            frm.add_custom_button("Create SO for HMWS", function() {
+                // frappe.model.open_mapped_doc({
+                //     method: "harness.api.quotation.create_sales_order",
+                //     frm: frm,
+                //     args: {
+                //         docname: frm.doc.name
+                //     }
+                // });
+            }, "Create");
+        }
     }
-})
+});
+
