@@ -120,11 +120,10 @@ def get_custom_html_data(quotations):
         return data_list
     except Exception as e:
         frappe.log_error("Error: While get html data for quotation summary.", e, "Quotation", quotations)
-        
-        
+
 @frappe.whitelist()
 def qty_wise_selling_price( item_code="", quantity="", customer="", selling_price_list="", date=""):
-    if item_code and quantity and customer and selling_price_list:
+    if item_code and quantity and selling_price_list:
         
         predefined_qtys = [1, 2, 3, 4, 5, 6, 7, 10, 15, 20, 30, 50, 100]
         if int(quantity) not in predefined_qtys:
@@ -157,3 +156,81 @@ def qty_wise_selling_price( item_code="", quantity="", customer="", selling_pric
 
         frappe.response.rate = rate[0].get("rate") if rate else 0
         frappe.response.suggested_price = suggested[0].get("rate") if suggested else 0
+
+
+@frappe.whitelist()
+def qty_wise_price( item_code, quantity, customer="", buying_price_list=None, date=None):
+    print("\n\n asdf", quantity)
+    print("\n\n item code ", item_code)
+    if item_code and quantity:
+        print("\n\n in if")
+        predefined_qtys = [1, 2, 3, 4, 5, 6, 7, 10, 15, 20, 30, 50, 100]
+        if int(quantity) not in predefined_qtys:
+            nearest_lower_value = max(filter(lambda x: x < int(quantity), predefined_qtys))
+            quantity = str(nearest_lower_value)
+
+        query = """
+            SELECT QWR.rate
+            FROM `tabItem Price` AS IP
+            LEFT JOIN `tabQuantity Wise Rate` AS QWR ON IP.name = QWR.parent
+            LEFT JOIN `tabCustomer` AS C ON IP.custom_customer_group = C.customer_group
+            WHERE %s = IP.item_code AND QWR.quantity = %s AND C.name = %s AND IP.selling = 1
+        """
+        rate = frappe.db.sql(query, (item_code, quantity, customer), as_dict=True)
+        query_cost = """
+            SELECT QWR.rate
+            FROM `tabItem Price` AS IP
+            LEFT JOIN `tabQuantity Wise Rate` AS QWR ON IP.name = QWR.parent
+            WHERE %s = IP.item_code
+                AND QWR.quantity = %s
+                AND (IP.price_list = %s OR %s IS NULL OR %s = '')
+        """
+        unit_cost = frappe.db.sql(query_cost, (item_code, quantity, buying_price_list, buying_price_list, buying_price_list), as_dict=True)
+        if not rate:
+            query = """
+                SELECT QWR.rate
+                FROM `tabItem Price` AS IP
+                LEFT JOIN `tabQuantity Wise Rate` AS QWR ON IP.name = QWR.parent
+                WHERE %s = IP.item_code AND QWR.quantity = %s AND (IP.custom_customer_group = '' OR IP.custom_customer_group IS NULL) AND IP.selling = 1;
+            """
+            rate = frappe.db.sql(query, (item_code, quantity), as_dict=True)
+        if rate and unit_cost:
+            frappe.response.rate = rate[0].get("rate") if rate[0].get("rate") else 0
+            frappe.response.unit_cost = unit_cost[0].get("rate") if unit_cost[0].get("rate") else 0
+        else:
+            frappe.response.rate = 0
+            frappe.response.unit_cost = 0
+    else:
+        print("\n\n else")
+        
+@frappe.whitelist()
+def create_sales_order(target_doc=None):
+    """Create Sales Order from Quotation"""
+    docname = frappe.flags.args.docname
+    source_doc = frappe.get_doc("Quotation", docname)
+    
+    sales_order = frappe.new_doc("Sales Order")
+    
+    exclude_fields = ["name", "doctype", "owner", "creation", "modified", "modified_by", "items"]
+
+    for field in source_doc.meta.fields:
+        fieldname = field.fieldname
+        if fieldname not in exclude_fields:
+            sales_order.set(fieldname, source_doc.get(fieldname))
+
+    for item in source_doc.get("items"):
+        new_item = sales_order.append('items', {})
+        for field in item.meta.fields:
+            fieldname = field.fieldname
+            if fieldname not in exclude_fields + ["parent"]:
+                new_item.set(fieldname, item.get(fieldname))
+    
+    sales_order.naming_series = "SAL-ORD-.YYYY.-"
+    sales_order.customer = "HMWS Inc (Customer)"
+    sales_order.custom_quotation_reference = source_doc.name
+    sales_order.branch = ""
+    sales_order.cost_center = ""
+    sales_order.set_warehouse = "Goods in Transit - EIG"
+    
+    
+    return sales_order

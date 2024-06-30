@@ -875,11 +875,19 @@ function get_summary_data(frm){
 frappe.ui.form.on("Resource", {
     service_item: function(frm, cdt, cdn){
         var child_doc = locals[cdt][cdn]
-        checkThisItemInLabours(frm, child_doc.service_item)
+        var child_table_name = child_doc.parentfield;
+        
+        if (child_table_name === "custom_resources") {
+            checkThisItemInLabours(frm, child_doc.service_item)
+        }
     },
     spent_hours: function(frm, cdt, cdn){
         var child_doc = locals[cdt][cdn]
-        checkTotalHours(frm)
+        var child_table_name = child_doc.parentfield;
+        
+        if (child_table_name === "custom_resources") {
+            checkTotalHours(frm)
+        }
     }
 })
 
@@ -1034,6 +1042,127 @@ function create_pick_list(frm) {
                     frappe.set_route('Form', 'Pick List', doc.name);
                 });
                
+            }
+        }
+    });
+}
+
+// get selling price for planned material
+frappe.ui.form.on('Mate', {
+    material_item: function(frm, cdt, cdn){
+        frappe.model.set_value(cdt, cdn, "quentity", 1);
+        set_selling_price_for_material(frm, cdt, cdn, "mate");
+    },
+
+    quentity: function(frm, cdt, cdn){
+        set_selling_price_for_material(frm, cdt, cdn, "mate");
+    }
+
+})
+
+// get selling and buying price for planned and actual resources
+frappe.ui.form.on('Resource', {
+    service_item: function(frm, cdt, cdn){
+        frappe.model.set_value(cdt, cdn, "spent_hours", 1);
+        var child_doc = locals[cdt][cdn]
+        var child_table_name = child_doc.parentfield;
+        
+        if (child_table_name === "custom_resources") {
+            set_selling_price_for_material(frm, cdt, cdn, "res")
+        }
+        else{
+            set_buying_price_for_matirial(frm, cdt, cdn, "res")
+        }
+    },
+
+    spent_hours: function(frm, cdt, cdn){
+        var child_doc = locals[cdt][cdn]
+        var child_table_name = child_doc.parentfield;
+        
+        if (child_table_name === "custom_resources") {
+            set_selling_price_for_material(frm, cdt, cdn, "res")
+        }
+        else{
+            set_buying_price_for_matirial(frm, cdt, cdn, "res")
+        }
+    }
+
+})
+
+
+// get buying price for actual material
+frappe.ui.form.on('Material', {
+    material_item: function(frm, cdt, cdn){
+        frappe.model.set_value(cdt, cdn, "quentity", 1);
+        set_buying_price_for_matirial(frm, cdt, cdn, "mate")
+    },
+
+    quentity: function(frm, cdt, cdn){
+        set_buying_price_for_matirial(frm, cdt, cdn, "mate")
+    }
+
+})
+
+
+function set_selling_price_for_material(frm, cdt, cdn, type){
+    var row = locals[cdt][cdn];
+    let item = ''
+    let qty = ''
+    if (type === "mate"){
+        item = row.material_item
+        qty = row.quentity
+    }
+    else if(type == "res"){
+        item = row.service_item
+        qty = row.spent_hours  
+    }
+    frappe.call({
+        method: "harness.api.quotation.qty_wise_selling_price",
+        args: {
+            item_code: item,
+            quantity: qty,
+            selling_price_list: "Standard Selling",
+        },
+        callback: function (response) {
+            console.log("suggested price", response)
+            if (response.rate) {
+                // setTimeout(function() {
+                    // if (frm.doc.selling_price_list === ""){
+                        frappe.model.set_value(row.doctype, row.name, "rate", response.rate);
+                    // row.rate = response.suggested_price
+                    // frappe.model.set_value(row.doctype, row.name, "custom_unit_cost", response.unit_cost);
+                    // }
+                // }, 100);
+            }
+        }
+    });
+}
+
+
+function set_buying_price_for_matirial(frm, cdt, cdn, type){
+    var row = locals[cdt][cdn];
+    let item = ''
+    let qty = ''
+    if (type === "mate"){
+        item = row.material_item
+        qty = row.quentity
+    }
+    else if(type == "res"){
+        item = row.service_item
+        qty = row.spent_hours  
+    }
+    frappe.call({
+        method: "harness.api.quotation.qty_wise_price",
+        args: {
+            item_code: item,
+            quantity: qty,
+            buying_price_list: "Standard Buying",
+            customer: ""
+        },
+        callback: function (response) {
+            console.log("response", response.rate)
+            if (response.rate) {
+                frappe.model.set_value(row.doctype, row.name, "rate", response.rate);
             }
         }
     });

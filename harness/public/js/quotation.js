@@ -311,13 +311,13 @@ frappe.ui.form.on("Quotation", {
     refresh: function(frm) {
         if(!frm.is_dirty() && !frm.is_new()){
             frm.add_custom_button("Create SO for HMWS", function() {
-                // frappe.model.open_mapped_doc({
-                //     method: "harness.api.quotation.create_sales_order",
-                //     frm: frm,
-                //     args: {
-                //         docname: frm.doc.name
-                //     }
-                // });
+                frappe.model.open_mapped_doc({
+                    method: "harness.api.quotation.create_sales_order",
+                    frm: frm,
+                    args: {
+                        docname: frm.doc.name
+                    }
+                });
             }, "Create");
         }
     }

@@ -135,10 +135,10 @@ doc_events = {
 	},
  
   "Timesheet": {
-    "on_submit": "harness.api.task.update_actual_in_jobs_from_timesheet"
+    "on_submit": "harness.api.timesheet.update_actual_in_jobs_from_timesheet",
 		# "on_update": "method",
-		# "on_cancel": "method",
-		# "on_trash": "method"
+		"on_cancel": "harness.api.timesheet.remove_data_from_actual",
+		"on_trash": "harness.api.timesheet.remove_data_from_actual"
 	},
   
   "Sales Order": {

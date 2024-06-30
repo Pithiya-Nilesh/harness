@@ -190,26 +190,6 @@ def get_conversion_factor(item):
 #     return [sid, items_table]
 
 
-def update_actual_in_jobs_from_timesheet(doc, method):
-    """ when timesheet doctype submited and also get all items and store in job atual resource table """
-    try:
-        for i in doc.time_logs:
-            if i.task:
-                task = frappe.get_doc("Task", i.task)
-                new_row = task.append("custom_resources1", {})
-                new_row.service_item = i.custom_service_item
-                new_row.resource_name = doc.employee
-                new_row.department = i.custom_department
-                new_row.activity_type = i.activity_type
-                new_row.spent_hours = i.hours
-                new_row.rate = i.billing_rate
-                new_row.total_spend_hours = i.billing_amount
-                task.save()
-            else:
-                pass
-    except Exception as e:
-        frappe.log_error("Error: While update actual in job after timesheet submit", e, "Timesheet", doc.name)
-
 def cancelled_status_in_jobs(doc, method):
     """ cancelled status in job when canclled doctype in sales order"""
     tasks = frappe.db.get_list("Task", filters={"custom_sales_order": doc.name}, fields=["name"])
@@ -546,28 +526,23 @@ def rearrange_items(data):
 
 
 def map_summary_data(data):
+    # print("\n\n data", data)
     try:
         final_list = []
         for item_dict in data:
-        
-            # if "bom_item" in item_dict:
-            #     final_list.append(item_dict)
-            
-            # else:
-                # Check if an item with the same name exists in the output list            
-                found = False
-                for out_dict in final_list:
-                    # if "bom_item" in out_dict:
-                    #     final_list.append(out_dict)
-                    # else:
-                        if out_dict["item"] == item_dict["item"] and out_dict["bom_item"] == item_dict["bom_item"]:
-                            # Merge the dictionaries
-                            out_dict.update(item_dict)
-                            found = True
-                            break
-                if not found:
-                    # If item not found, add it to the output list
-                    final_list.append(item_dict)
+            # Check if an item with the same name exists in the output list            
+            found = False
+            for out_dict in final_list:
+                print("\n\n item dict", item_dict)
+                print("\n\n out dict", out_dict)
+                if out_dict["item"] == item_dict["item"] and out_dict["bom_item"] == item_dict["bom_item"]:
+                    # Merge the dictionaries
+                    out_dict.update(item_dict)
+                    found = True
+                    break
+            if not found:
+                # If item not found, add it to the output list
+                final_list.append(item_dict)
                 
         return final_list
     except Exception as e:
