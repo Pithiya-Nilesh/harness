@@ -28,3 +28,22 @@ frappe.ui.form.on('Pick List', {
     },
 });
 
+
+frappe.ui.form.on('Pick List', {
+    after_save: function(frm) {
+        frappe.call({
+            method: 'harness.api.pick_list.set_child_table_data',
+            args: {
+                docname: frm.docname
+            }
+        });
+    },
+    after_cancel: function(frm) {
+        frappe.call({
+            method: 'harness.api.pick_list.clear_custom_pick_list_data',
+            args: {
+                docname: frm.docname
+            }
+        });
+    }
+});
