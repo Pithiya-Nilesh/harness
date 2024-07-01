@@ -908,38 +908,40 @@ function checkTotalHours(frm){
     let items_with_total_hours = []
     let material_labour_items = frm.doc.custom_mterials
 
-    frm.doc.custom_resources.forEach(function(row){
-        let existingItem = items_with_total_hours.find(item => item.item === row.service_item);
-            
-        // If the item exists, update its total hours
-        if(existingItem) {
-            existingItem.total_hours += row.spent_hours;
-        } else {
-            // Otherwise, add the item to the array
-            items_with_total_hours.push({
-                item: row.service_item,
-                total_hours: row.spent_hours
-            });
-        }
-    });
+    if(frm.doc.custom_resources){
+        frm.doc.custom_resources.forEach(function(row){
+            let existingItem = items_with_total_hours.find(item => item.item === row.service_item);
+                
+            // If the item exists, update its total hours
+            if(existingItem) {
+                existingItem.total_hours += row.spent_hours;
+            } else {
+                // Otherwise, add the item to the array
+                items_with_total_hours.push({
+                    item: row.service_item,
+                    total_hours: row.spent_hours
+                });
+            }
+        });
 
-    // Now compare the items_with_total_hours with material_labour_item
-    items_with_total_hours.forEach(function(item) {
+        // Now compare the items_with_total_hours with material_labour_item
+        items_with_total_hours.forEach(function(item) {
 
-        let material_labour_item = material_labour_items.find(labour_item => labour_item.material_item === item.item && labour_item.type == "Labours");
-        if(material_labour_item) {
-            if(parseFloat(item.total_hours) > parseFloat(material_labour_item.quentity)) {
-                console.log("in last item")
-                frappe.msgprint(`Hours exceeded for ${item.item}`);
+            let material_labour_item = material_labour_items.find(labour_item => labour_item.material_item === item.item && labour_item.type == "Labours");
+            if(material_labour_item) {
+                if(parseFloat(item.total_hours) > parseFloat(material_labour_item.quentity)) {
+                    console.log("in last item")
+                    frappe.msgprint(`Hours exceeded for ${item.item}`);
+                }
+                else{
+                    console.log("in else")
+                }
             }
             else{
-                console.log("in else")
+                console.log("elseee")
             }
-        }
-        else{
-            console.log("elseee")
-        }
-    });
+        });
+    }
 }
 
 var labour_items_list = []

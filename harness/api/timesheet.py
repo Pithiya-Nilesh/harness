@@ -23,13 +23,13 @@ def update_actual_in_jobs_from_timesheet(doc, method):
 
 
 @frappe.whitelist(allow_guest=True)
-def remove_data_from_actual(doc, method):
+def remove_data_from_actual_in_job(doc, method):
     try:
         employee_id = doc.employee
         for i in doc.time_logs:
             job = frappe.get_doc("Task", i.task)
             for j in job.custom_resources1:
-                if j.service_item == i.custom_service_item and j.resource_name == employee_id:
+                if j.service_item == i.custom_service_item and j.resource_name == employee_id and j.type == "Labours":
                     frappe.db.delete('Resource', j.name)
                 else:
                     pass
@@ -37,4 +37,9 @@ def remove_data_from_actual(doc, method):
             job.save()
         
     except Exception as e:
-        frappe.log_error("Error: While update actual in job after timesheet cancel", e, "Timesheet", doc.name)            
+        message = ""
+        if method == "on_cancel":
+            message = "Error: While update actual in job after stock entry cancel"
+        elif method == "on_trash":
+            message = "Error: While update actual in job after stock entry delete"
+        frappe.log_error(message, e, "Timesheet", doc.name)

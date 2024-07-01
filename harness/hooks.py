@@ -129,16 +129,17 @@ override_doctype_class = {
 
 doc_events = {
 	"Stock Entry": {
-    "on_submit": "harness.api.task.update_status_and_set_actual_in_jobs",
+    "on_submit": "harness.api.stock_entry.update_status_and_set_actual_in_jobs",
 		# "on_update": "method",
-		# "on_trash": "method"
+    "on_cancel": "harness.api.stock_entry.remove_data_from_actual_in_job",
+		"on_trash": "harness.api.stock_entry.remove_data_from_actual_in_job"
 	},
  
   "Timesheet": {
     "on_submit": "harness.api.timesheet.update_actual_in_jobs_from_timesheet",
 		# "on_update": "method",
-		"on_cancel": "harness.api.timesheet.remove_data_from_actual",
-		"on_trash": "harness.api.timesheet.remove_data_from_actual"
+		"on_cancel": "harness.api.timesheet.remove_data_from_actual_in_job",
+		# "on_trash": "harness.api.timesheet.remove_data_from_actual_in_job"
 	},
   
   "Sales Order": {
