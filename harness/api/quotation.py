@@ -159,7 +159,7 @@ def qty_wise_selling_price( item_code="", quantity="", customer="", selling_pric
 
 
 @frappe.whitelist()
-def qty_wise_price( item_code, quantity, customer="", buying_price_list=None, date=None):
+def qty_wise_price(item_code, quantity, customer="", buying_price_list=None, date=None):
     if item_code and quantity:
         predefined_qtys = [1, 2, 3, 4, 5, 6, 7, 10, 15, 20, 30, 50, 100]
         if int(quantity) not in predefined_qtys:

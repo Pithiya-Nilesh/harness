@@ -718,3 +718,49 @@ frappe.ui.form.on("Sales Order", {
         }
     }
 });
+
+
+frappe.ui.form.on('Sales Order', {
+    refresh: function(frm) {
+        set_target_warehouse(frm);
+    },
+    validate: function(frm) {
+        set_target_warehouse(frm);
+    },
+    onload: function(frm) {
+        set_target_warehouse(frm);
+    },
+    set_warehouse: function(frm) {
+        set_target_warehouse(frm);
+    },
+    items: {
+        warehouse: function(frm, cdt, cdn) {
+            set_target_warehouse(frm, cdt, cdn);
+        }
+    }
+});
+
+function set_target_warehouse(frm, cdt, cdn) {
+    var setWarehouse = frm.doc.set_warehouse;
+    var targetWarehouse;
+
+    if (setWarehouse === 'AHS Raw Materials - HMWS') {
+        targetWarehouse = 'AHS Work In Progress - HMWS';
+    } else if (setWarehouse === 'HMWS INC Raw Materials - HMWS') {
+        targetWarehouse = 'HMWS INC Work In Progress - HMWS';
+    } else if (setWarehouse === 'Core Brisbane Raw Materials - HMWS') {
+        targetWarehouse = 'Core Brisbane Work In Progress - HMWS';    
+    } else if (setWarehouse === 'Core Perth Raw Materials - HMWS') {
+        targetWarehouse = 'Core Perth Work In Progress - HMWS';    
+    } else if (setWarehouse === 'Core Perth Production Raw Materials - HMWS') {
+        targetWarehouse = 'Core Perth Production Work In Progress - HMWS';    
+    } else {
+        
+    }
+
+    
+    frm.doc.items.forEach(function(item) {
+       
+        frappe.model.set_value(item.doctype, item.name, 'target_warehouse', targetWarehouse);
+    });
+}
