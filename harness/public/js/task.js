@@ -1152,7 +1152,7 @@ function set_buying_price_for_matirial(frm, cdt, cdn, type){
         qty = row.spent_hours  
     }
     frappe.call({
-        method: "harness.api.quotation.qty_wise_price",
+        method: "harness.api.quotation.qty_wise_price_buying",
         args: {
             item_code: item,
             quantity: qty,

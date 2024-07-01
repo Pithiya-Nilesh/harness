@@ -159,44 +159,32 @@ def qty_wise_selling_price( item_code="", quantity="", customer="", selling_pric
 
 
 @frappe.whitelist()
-def qty_wise_price(item_code, quantity, customer="", buying_price_list=None, date=None):
-    if item_code and quantity:
-        predefined_qtys = [1, 2, 3, 4, 5, 6, 7, 10, 15, 20, 30, 50, 100]
-        if int(quantity) not in predefined_qtys:
-            nearest_lower_value = max(filter(lambda x: x < int(quantity), predefined_qtys))
-            quantity = str(nearest_lower_value)
+def qty_wise_price_buying(item_code, quantity, supplier=""):
+    predefined_qtys = [1, 2, 3, 4, 5, 6, 7, 10, 15, 20, 30, 50, 100]
+    if int(quantity) not in predefined_qtys:
+        nearest_lower_value = max(filter(lambda x: x < int(quantity), predefined_qtys))
+        quantity = str(nearest_lower_value)
 
+    query = """
+        SELECT QWR.rate
+        FROM `tabItem Price` AS IP
+        LEFT JOIN `tabQuantity Wise Rate` AS QWR ON IP.name = QWR.parent
+        LEFT JOIN `tabSupplier` AS C ON IP.supplier = C.name
+        WHERE %s = IP.item_code AND QWR.quantity = %s AND C.name = %s AND IP.buying = 1
+    """
+    rate = frappe.db.sql(query, (item_code, quantity, supplier), as_dict=True)
+    if not rate:
         query = """
             SELECT QWR.rate
             FROM `tabItem Price` AS IP
             LEFT JOIN `tabQuantity Wise Rate` AS QWR ON IP.name = QWR.parent
-            LEFT JOIN `tabCustomer` AS C ON IP.custom_customer_group = C.customer_group
-            WHERE %s = IP.item_code AND QWR.quantity = %s AND C.name = %s AND IP.buying = 1
+            WHERE %s = IP.item_code AND QWR.quantity = %s AND (IP.supplier = '' OR IP.supplier IS NULL) AND IP.buying = 1;
         """
-        rate = frappe.db.sql(query, (item_code, quantity, customer), as_dict=True)
-        query_cost = """
-            SELECT QWR.rate
-            FROM `tabItem Price` AS IP
-            LEFT JOIN `tabQuantity Wise Rate` AS QWR ON IP.name = QWR.parent
-            WHERE %s = IP.item_code
-                AND QWR.quantity = %s
-                AND (IP.price_list = %s OR %s IS NULL OR %s = '')
-        """
-        unit_cost = frappe.db.sql(query_cost, (item_code, quantity, buying_price_list, buying_price_list, buying_price_list), as_dict=True)
-        if not rate:
-            query = """
-                SELECT QWR.rate
-                FROM `tabItem Price` AS IP
-                LEFT JOIN `tabQuantity Wise Rate` AS QWR ON IP.name = QWR.parent
-                WHERE %s = IP.item_code AND QWR.quantity = %s AND (IP.custom_customer_group = '' OR IP.custom_customer_group IS NULL) AND IP.buying = 1;
-            """
-            rate = frappe.db.sql(query, (item_code, quantity), as_dict=True)
-        if rate:
-            frappe.response.rate = rate[0].get("rate") if rate[0].get("rate") else 0
-            # frappe.response.unit_cost = unit_cost[0].get("rate") if unit_cost[0].get("rate") else 0
-        else:
-            frappe.response.rate = 0
-        #     frappe.response.unit_cost = 0
+        rate = frappe.db.sql(query, (item_code, quantity), as_dict=True)
+    if rate:
+        frappe.response.rate = rate[0].get("rate") if rate[0].get("rate") else 0
+    else:
+        frappe.response.rate = 0
 
         
 @frappe.whitelist()
