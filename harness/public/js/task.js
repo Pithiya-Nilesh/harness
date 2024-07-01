@@ -215,10 +215,10 @@ function create_timesheet(frm){
             time_log_row.task = frm.doc.name;
             time_log_row.is_billable = 1;
             time_log_row.billing_hours = row.spent_hours;
-            time_log_row.base_billing_rate = row.rate;
-            time_log_row.base_billing_amount = row.total_spend_hours;
-            time_log_row.billing_rate = row.rate;
-            time_log_row.billing_amount = row.total_spend_hours;
+            // time_log_row.base_billing_rate = row.rate;
+            // time_log_row.base_billing_amount = row.total_spend_hours;
+            // time_log_row.billing_rate = row.rate;
+            // time_log_row.billing_amount = row.total_spend_hours;
 
             time_log_table.push(time_log_row);
 
