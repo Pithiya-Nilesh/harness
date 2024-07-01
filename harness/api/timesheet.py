@@ -29,10 +29,12 @@ def remove_data_from_actual_in_job(doc, method):
         for i in doc.time_logs:
             job = frappe.get_doc("Task", i.task)
             for j in job.custom_resources1:
-                if j.service_item == i.custom_service_item and j.resource_name == employee_id and j.type == "Labours":
+                if j.service_item == i.custom_service_item and j.resource_name == employee_id and j.type == "Labours" and j.spent_hours == i.hours:
                     frappe.db.delete('Resource', j.name)
-                else:
-                    pass
+                elif j.service_item == i.custom_service_item and j.resource_name == employee_id and j.type == "Labours" and j.spent_hours >= i.hours:
+                    spent_hours = float(j.spent_hours) - float(i.hours)
+                    j.spent_hours = spent_hours
+                    frappe.db.sql(f"update `tabMaterial` set quentity={spent_hours} where name='{j.name}'")
             frappe.db.commit()
             job.save()
         
