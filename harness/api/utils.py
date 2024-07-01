@@ -144,32 +144,24 @@ def get_bom_sub_item(item_code):
 
 
 @frappe.whitelist()
-def cancel_and_delete_docs_in_date_range(doctype, from_date, to_date):
+def cancel_and_delete_docs_in_date_range(doctype, from_date="", to_date=""):
     from frappe.utils import getdate
-    # Ensure dates are in correct format
+    from_date = "2024-03-01"
+    to_date = "2024-07-01"
     from_date = getdate(from_date)
     to_date = getdate(to_date)
-
-    # Fetch documents within the date range
     docs = frappe.get_all(doctype, filters={
         'creation': ['between', [from_date, to_date]],
-        'docstatus': 1  # Ensure only submitted documents are considered
+        'docstatus': 1
     })
 
     for doc in docs:
         try:
-            # Load the document
             doc_instance = frappe.get_doc(doctype, doc.name)
-            
-            # Cancel the document
             doc_instance.cancel()
-
-            # Delete the document
             frappe.delete_doc(doctype, doc.name, force=1)
         except Exception as e:
             frappe.log_error(message=str(e), title="Cancel and Delete Error")
 
     return f"Cancelled and deleted {len(docs)} documents from {doctype} within the date range {from_date} to {to_date}."
 
-# Example call:
-# cancel_and_delete_docs_in_date_range("Sales Order", "2024-01-01", "2024-01-31")
