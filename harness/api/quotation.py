@@ -171,7 +171,7 @@ def qty_wise_price(item_code, quantity, customer="", buying_price_list=None, dat
             FROM `tabItem Price` AS IP
             LEFT JOIN `tabQuantity Wise Rate` AS QWR ON IP.name = QWR.parent
             LEFT JOIN `tabCustomer` AS C ON IP.custom_customer_group = C.customer_group
-            WHERE %s = IP.item_code AND QWR.quantity = %s AND C.name = %s AND IP.selling = 1
+            WHERE %s = IP.item_code AND QWR.quantity = %s AND C.name = %s AND IP.buying = 1
         """
         rate = frappe.db.sql(query, (item_code, quantity, customer), as_dict=True)
         query_cost = """
@@ -188,7 +188,7 @@ def qty_wise_price(item_code, quantity, customer="", buying_price_list=None, dat
                 SELECT QWR.rate
                 FROM `tabItem Price` AS IP
                 LEFT JOIN `tabQuantity Wise Rate` AS QWR ON IP.name = QWR.parent
-                WHERE %s = IP.item_code AND QWR.quantity = %s AND (IP.custom_customer_group = '' OR IP.custom_customer_group IS NULL) AND IP.selling = 1;
+                WHERE %s = IP.item_code AND QWR.quantity = %s AND (IP.custom_customer_group = '' OR IP.custom_customer_group IS NULL) AND IP.buying = 1;
             """
             rate = frappe.db.sql(query, (item_code, quantity), as_dict=True)
         if rate:
