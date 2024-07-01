@@ -216,13 +216,13 @@ frappe.ui.form.on("Sales Invoice", {
     refresh: function(frm) {
         if(!frm.is_dirty() && !frm.is_new()){
             frm.add_custom_button("Create PI for EIG", function() {
-                // frappe.model.open_mapped_doc({
-                //     method: "harness.api.sales_invoice.create_purchase_invoice",
-                //     frm: frm,
-                //     args: {
-                //         docname: frm.doc.name
-                //     }
-                // });
+                frappe.model.open_mapped_doc({
+                    method: "harness.api.sales_invoice.create_purchase_invoice",
+                    frm: frm,
+                    args: {
+                        docname: frm.doc.name
+                    }
+                });
             }, "Create");
         }
     }

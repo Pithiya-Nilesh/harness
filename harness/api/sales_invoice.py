@@ -409,3 +409,33 @@ def get_section_name(job):
     section = frappe.db.get_value("Task", job, ["subject"])
     return section if section else ""
 
+
+@frappe.whitelist()
+def create_purchase_invoice(target_doc=None):
+    """Create Sales Invoice from Purchase Invoice"""
+    docname = frappe.flags.args.docname
+    source_doc = frappe.get_doc("Sales Invoice", docname)
+    
+    purchase_invoice = frappe.new_doc("Purchase Invoice")
+    
+    exclude_fields = ["name", "doctype", "owner", "creation", "modified", "modified_by", "items"]
+
+    for field in source_doc.meta.fields:
+        fieldname = field.fieldname
+        if fieldname not in exclude_fields:
+            purchase_invoice.set(fieldname, source_doc.get(fieldname))
+
+    for item in source_doc.get("items"):
+        new_item = purchase_invoice.append('items', {})
+        for field in item.meta.fields:
+            fieldname = field.fieldname
+            if fieldname not in exclude_fields + ["parent"]:
+                new_item.set(fieldname, item.get(fieldname))
+    
+    purchase_invoice.naming_series = "SAL-ORD-.YYYY.-"
+    # purchase_invoice.customer = "HMWS Inc (Customer)"
+    # purchase_invoice.custom_quotation_reference = source_doc.name
+    # purchase_invoice.branch = ""
+    # purchase_invoice.cost_center = ""
+    # purchase_invoice.set_warehouse = "Goods in Transit - EIG"
+    return purchase_invoice

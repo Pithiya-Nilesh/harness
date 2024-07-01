@@ -373,3 +373,35 @@ def remove_zero_qty_items(final_list):
     except Exception as e:
         frappe.log_error("Error: While remove zero qty item from reserved popup", f"ERROR: {e}\ngiven list: {final_list}")
         frappe.throw(e)
+
+
+@frappe.whitelist()
+def create_purchase_order(target_doc=None):
+    """Create Purchase Order from Sales Order"""
+    
+    docname = frappe.flags.args.docname
+    source_doc = frappe.get_doc("Sales Order", docname)
+    
+    purchase_order = frappe.new_doc("Purchase Order")
+    
+    exclude_fields = ["name", "doctype", "owner", "creation", "modified", "modified_by", "idx", "items"]
+
+    for field in source_doc.meta.fields:
+        fieldname = field.fieldname
+        if fieldname not in exclude_fields:
+            purchase_order.set(fieldname, source_doc.get(fieldname))
+        
+    for item in source_doc.get("items"):
+        new_item = purchase_order.append('items', {})
+        for field in item.meta.fields:
+            fieldname = field.fieldname
+            if fieldname not in exclude_fields + ["parent"]:
+                new_item.set(fieldname, item.get(fieldname))
+    
+    purchase_order.supplier = "EIG"
+    purchase_order.naming_series = "PUR-ORD-.YYYY.-"
+    purchase_order.branch = ""
+    purchase_order.cost_center = "Main - EIG"
+    purchase_order.set_warehouse = "Goods in Transit - EIG"
+    
+    return purchase_order
