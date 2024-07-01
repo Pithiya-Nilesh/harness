@@ -194,12 +194,12 @@ def qty_wise_price( item_code, quantity, customer="", buying_price_list=None, da
                 WHERE %s = IP.item_code AND QWR.quantity = %s AND (IP.custom_customer_group = '' OR IP.custom_customer_group IS NULL) AND IP.selling = 1;
             """
             rate = frappe.db.sql(query, (item_code, quantity), as_dict=True)
-        if rate and unit_cost:
-            frappe.response.rate = rate[0].get("rate") if rate[0].get("rate") else 0
-            frappe.response.unit_cost = unit_cost[0].get("rate") if unit_cost[0].get("rate") else 0
-        else:
-            frappe.response.rate = 0
-            frappe.response.unit_cost = 0
+        # if rate and unit_cost:
+        frappe.response.rate = rate[0].get("rate") if rate[0].get("rate") else 0
+            # frappe.response.unit_cost = unit_cost[0].get("rate") if unit_cost[0].get("rate") else 0
+        # else:
+        #     frappe.response.rate = 0
+        #     frappe.response.unit_cost = 0
     else:
         print("\n\n else")
         
